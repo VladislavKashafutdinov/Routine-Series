@@ -48,6 +48,7 @@ export interface Strings {
   statusBroken: string;
   statusActive: string;
   statusRewardClaimed: string;
+  clickToToggle: string;
 }
 
 const en: Strings = {
@@ -80,6 +81,7 @@ const en: Strings = {
   statusBroken: 'Broken ✗',
   statusActive: 'Active',
   statusRewardClaimed: 'Reward claimed ✓',
+  clickToToggle: 'Click to toggle',
 };
 
 const ru: Strings = {
@@ -112,6 +114,7 @@ const ru: Strings = {
   statusBroken: 'Прервана ✗',
   statusActive: 'Активна',
   statusRewardClaimed: 'Награда получена ✓',
+  clickToToggle: 'Кликните для переключения',
 };
 
 export const translations: Record<Lang, Strings> = { en, ru };

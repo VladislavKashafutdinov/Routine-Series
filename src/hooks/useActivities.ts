@@ -103,10 +103,12 @@ export function useActivities() {
     });
   };
 
-  const toggleDone = async (activityId: number) => {
-    const dateStr = today();
+  const toggleDate = async (activityId: number, dateStr: string) => {
     const activity = await db.activities.get(activityId);
     if (!activity) return;
+
+    // Only allow toggling past or today, not future
+    if (dateStr > today()) return;
 
     // Find or create active series
     let activeSeries = await db.series
@@ -114,7 +116,6 @@ export function useActivities() {
       .first();
 
     if (!activeSeries) {
-      // Count previous series to assign number
       const allSeries = await db.series.where({ activityId }).toArray();
       const nextNumber = allSeries.length + 1;
 
@@ -130,16 +131,13 @@ export function useActivities() {
 
     if (!activeSeries) return;
 
-    // Check if today already done in this series
+    // Check if date already completed in this series
     const existing = await db.completions
       .where({ seriesId: activeSeries.id, date: dateStr })
       .first();
 
     if (existing) {
-      // Undo: remove completion
       await db.completions.delete(existing.id!);
-
-      // If series is now empty and never had completions before today, delete it
       const remaining = await db.completions
         .where({ seriesId: activeSeries.id })
         .count();
@@ -147,7 +145,6 @@ export function useActivities() {
         await db.series.delete(activeSeries.id!);
       }
     } else {
-      // Add completion
       await db.completions.add({
         seriesId: activeSeries.id!,
         activityId,
@@ -166,6 +163,10 @@ export function useActivities() {
     }
   };
 
+  const toggleDone = async (activityId: number) => {
+    await toggleDate(activityId, today());
+  };
+
   const claimReward = async (seriesId: number) => {
     await db.series.update(seriesId, { rewardIssued: true });
   };
@@ -181,5 +182,5 @@ export function useActivities() {
     await db.series.where({ activityId }).delete();
   };
 
-  return { activities, loading, addActivity, toggleDone, claimReward, deleteActivity };
+  return { activities, loading, addActivity, toggleDone, toggleDate, claimReward, deleteActivity };
 }

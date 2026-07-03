@@ -9,8 +9,5 @@
 - Настроена сборка и type-check
 - Созданы README.md, CLAUDE.md, TODO.md, DONE.md, JOURNAL.md
 - Добавлена локализация русский/английский
-- Переработана доменная модель:
-  - Activity: seriesLength, reward, currency
-  - Новая сущность Series (active/completed/broken, rewardIssued)
-  - Completion привязан к Series
-  - Прогресс-бар, получение награды, история серий
+- Переработана доменная модель (Activity, Series, Completion, миграция БД)
+- Добавлено редактирование дней активной серии задним числом (клик по клеткам в модалке)

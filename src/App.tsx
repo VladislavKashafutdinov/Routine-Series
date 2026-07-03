@@ -8,7 +8,7 @@ import type { ActivityWithSeries } from './types';
 import './App.css';
 
 function App() {
-  const { activities, loading, addActivity, toggleDone, claimReward, deleteActivity } =
+  const { activities, loading, addActivity, toggleDone, toggleDate, claimReward, deleteActivity } =
     useActivities();
   const [historyTarget, setHistoryTarget] =
     useState<ActivityWithSeries | null>(null);
@@ -41,6 +41,7 @@ function App() {
         <HistoryModal
           activity={historyTarget}
           onClose={() => setHistoryTarget(null)}
+          onToggleDate={toggleDate}
         />
       )}
     </div>

@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import { liveQuery } from 'dexie';
 import { db } from '../db/db';
-import { getDateRange } from '../utils/date';
+import { getDateRange, today } from '../utils/date';
 import { useLocale } from '../i18n/LocaleContext';
 import type { ActivityWithSeries, Series, Completion } from '../types';
 
 interface HistoryModalProps {
   activity: ActivityWithSeries;
   onClose: () => void;
+  onToggleDate: (activityId: number, date: string) => void;
 }
 
-export function HistoryModal({ activity, onClose }: HistoryModalProps) {
+export function HistoryModal({ activity, onClose, onToggleDate }: HistoryModalProps) {
   const { t } = useLocale();
   const [allSeries, setAllSeries] = useState<Series[]>([]);
   const [allCompletions, setAllCompletions] = useState<Completion[]>([]);
+  const todayStr = today();
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -40,7 +42,29 @@ export function HistoryModal({ activity, onClose }: HistoryModalProps) {
   }, [activity.id]);
 
   const dates = getDateRange(60);
-  const doneSet = new Set(allCompletions.map((c) => c.date));
+
+  // Grid shows completions from active series only (for editing)
+  const activeSeries = allSeries.find((s) => s.status === 'active');
+  const activeDoneSet = new Set(
+    allCompletions
+      .filter((c) => activeSeries && c.seriesId === activeSeries.id)
+      .map((c) => c.date)
+  );
+
+  // All other completions (for showing in grid with different color)
+  const otherDoneSet = new Set(
+    allCompletions
+      .filter((c) => !activeSeries || c.seriesId !== activeSeries.id)
+      .map((c) => c.date)
+  );
+
+  const isEditable = !!activeSeries;
+
+  const handleDayClick = (date: string) => {
+    if (!isEditable) return;
+    if (date > todayStr) return; // no future dates
+    onToggleDate(activity.id, date);
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -66,15 +90,32 @@ export function HistoryModal({ activity, onClose }: HistoryModalProps) {
           </div>
         </div>
 
-        <h3 className="modal__subtitle">{t.lastNDays(60)}</h3>
+        <h3 className="modal__subtitle">
+          {t.lastNDays(60)}
+          {isEditable && <span className="modal__hint"> — {t.clickToToggle}</span>}
+        </h3>
         <div className="modal__grid">
-          {dates.map((d) => (
-            <div
-              key={d}
-              className={`modal__day ${doneSet.has(d) ? 'modal__day--done' : ''}`}
-              title={d}
-            />
-          ))}
+          {dates.map((d) => {
+            const isActive = activeDoneSet.has(d);
+            const isOther = otherDoneSet.has(d);
+            const isFuture = d > todayStr;
+            const clickable = isEditable && !isFuture;
+
+            let cls = 'modal__day';
+            if (isActive) cls += ' modal__day--active';
+            else if (isOther) cls += ' modal__day--other';
+            if (isFuture) cls += ' modal__day--future';
+            if (clickable) cls += ' modal__day--clickable';
+
+            return (
+              <div
+                key={d}
+                className={cls}
+                title={isFuture ? d : clickable ? `${d} — ${t.clickToToggle}` : d}
+                onClick={() => handleDayClick(d)}
+              />
+            );
+          })}
         </div>
 
         <h3 className="modal__subtitle">{t.seriesHistory}</h3>
