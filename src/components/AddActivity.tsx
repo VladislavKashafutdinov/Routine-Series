@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useLocale } from '../i18n/LocaleContext';
 
 interface AddActivityProps {
   onAdd: (name: string) => Promise<void>;
 }
 
 export function AddActivity({ onAdd }: AddActivityProps) {
+  const { t } = useLocale();
   const [name, setName] = useState('');
   const [error, setError] = useState('');
 
@@ -12,7 +14,7 @@ export function AddActivity({ onAdd }: AddActivityProps) {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) {
-      setError('Enter a name');
+      setError(t.addError);
       return;
     }
     setError('');
@@ -25,7 +27,7 @@ export function AddActivity({ onAdd }: AddActivityProps) {
       <input
         className="add-activity__input"
         type="text"
-        placeholder="New daily task…"
+        placeholder={t.addPlaceholder}
         value={name}
         onChange={(e) => {
           setName(e.target.value);
@@ -34,7 +36,7 @@ export function AddActivity({ onAdd }: AddActivityProps) {
         autoFocus
       />
       <button className="add-activity__btn" type="submit">
-        + Add
+        {t.addButton}
       </button>
       {error && <span className="add-activity__error">{error}</span>}
     </form>

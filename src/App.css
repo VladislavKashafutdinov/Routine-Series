@@ -18,6 +18,23 @@
   letter-spacing: -0.02em;
 }
 
+.app-lang {
+  margin-top: 8px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.app-lang:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
 .app-main {
   display: flex;
   flex-direction: column;

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useActivities } from './hooks/useActivities';
+import { useLocale } from './i18n/LocaleContext';
 import { AddActivity } from './components/AddActivity';
 import { Dashboard } from './components/Dashboard';
 import { HistoryModal } from './components/HistoryModal';
@@ -11,11 +12,19 @@ function App() {
     useActivities();
   const [historyTarget, setHistoryTarget] =
     useState<ActivityWithStreak | null>(null);
+  const { lang, setLang } = useLocale();
 
   return (
     <div className="app">
       <header className="app-header">
         <h1>Routine Series</h1>
+        <button
+          className="app-lang"
+          onClick={() => setLang(lang === 'en' ? 'ru' : 'en')}
+          title={lang === 'en' ? 'Русский' : 'English'}
+        >
+          {lang === 'en' ? '🇷🇺 RU' : '🇬🇧 EN'}
+        </button>
       </header>
       <main className="app-main">
         <AddActivity onAdd={addActivity} />

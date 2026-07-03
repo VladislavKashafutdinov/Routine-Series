@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { getDateRange } from '../utils/date';
+import { useLocale } from '../i18n/LocaleContext';
 import type { ActivityWithStreak } from '../types';
 
 interface HistoryModalProps {
@@ -8,7 +9,8 @@ interface HistoryModalProps {
 }
 
 export function HistoryModal({ activity, onClose }: HistoryModalProps) {
-  // Close on Escape
+  const { t } = useLocale();
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -26,7 +28,7 @@ export function HistoryModal({ activity, onClose }: HistoryModalProps) {
         className="modal"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
-        aria-label={`History for ${activity.name}`}
+        aria-label={t.historyAria(activity.name)}
       >
         <div className="modal__header">
           <h2>{activity.name}</h2>
@@ -37,14 +39,14 @@ export function HistoryModal({ activity, onClose }: HistoryModalProps) {
 
         <div className="modal__stats">
           <div>
-            <strong>Current streak:</strong> {activity.currentStreak} days
+            <strong>{t.currentStreak}</strong> {activity.currentStreak} {t.daysSuffix(activity.currentStreak)}
           </div>
           <div>
-            <strong>Longest streak:</strong> {activity.longestStreak} days
+            <strong>{t.longestStreak}</strong> {activity.longestStreak} {t.daysSuffix(activity.longestStreak)}
           </div>
         </div>
 
-        <h3 className="modal__subtitle">Last 60 days</h3>
+        <h3 className="modal__subtitle">{t.lastNDays(60)}</h3>
         <div className="modal__grid">
           {dates.map((d) => (
             <div

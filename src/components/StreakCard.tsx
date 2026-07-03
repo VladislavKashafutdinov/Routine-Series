@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useLocale } from '../i18n/LocaleContext';
 import type { ActivityWithStreak } from '../types';
 
 interface StreakCardProps {
@@ -14,6 +15,7 @@ export const StreakCard = memo(function StreakCard({
   onDelete,
   onShowHistory,
 }: StreakCardProps) {
+  const { t } = useLocale();
   const flameIcon = activity.isDoneToday ? '🔥' : '🕯️';
 
   return (
@@ -25,9 +27,9 @@ export const StreakCard = memo(function StreakCard({
         <button
           className="streak-card__delete"
           onClick={() => {
-            if (confirm(`Delete "${activity.name}"?`)) onDelete(activity.id);
+            if (confirm(t.deleteConfirm(activity.name))) onDelete(activity.id);
           }}
-          title="Delete"
+          title={t.deleteTitle}
         >
           ×
         </button>
@@ -40,7 +42,7 @@ export const StreakCard = memo(function StreakCard({
         <span className="streak-card__flame">{flameIcon}</span>
         <span className="streak-card__count">{activity.currentStreak}</span>
         <span className="streak-card__label">
-          day{activity.currentStreak !== 1 ? 's' : ''}
+          {t.streakDays(activity.currentStreak)}
         </span>
       </button>
 
@@ -50,7 +52,7 @@ export const StreakCard = memo(function StreakCard({
         }`}
         onClick={() => onToggleDone(activity.id)}
       >
-        {activity.isDoneToday ? '✓ Done today' : 'Mark done'}
+        {activity.isDoneToday ? t.doneToday : t.markDone}
       </button>
     </div>
   );

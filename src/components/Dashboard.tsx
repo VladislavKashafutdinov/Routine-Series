@@ -1,4 +1,5 @@
 import { StreakCard } from './StreakCard';
+import { useLocale } from '../i18n/LocaleContext';
 import type { ActivityWithStreak } from '../types';
 
 interface DashboardProps {
@@ -16,14 +17,16 @@ export function Dashboard({
   onDelete,
   onShowHistory,
 }: DashboardProps) {
+  const { t } = useLocale();
+
   if (loading) {
-    return <div className="dashboard__loading">Loading…</div>;
+    return <div className="dashboard__loading">{t.loading}</div>;
   }
 
   if (activities.length === 0) {
     return (
       <div className="dashboard__empty">
-        No tasks yet. Add one above to get started.
+        {t.empty}
       </div>
     );
   }
