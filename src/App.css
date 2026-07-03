@@ -131,8 +131,8 @@
 /* === Dashboard === */
 
 .dashboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 
@@ -144,38 +144,87 @@
   font-size: 1rem;
 }
 
-/* === StreakCard === */
-
-.streak-card {
+.dashboard__group {
   background: var(--color-surface);
   border-radius: var(--radius);
-  padding: 20px;
   box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.dashboard__group-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.dashboard__group-header:hover {
+  background: var(--color-bg);
+}
+
+.dashboard__group-arrow {
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+}
+
+/* === RewardSummary === */
+
+.reward-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  flex-wrap: wrap;
+}
+
+.reward-summary__label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.reward-summary__item {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  background: var(--color-bg);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* === ActivityGroup === */
+
+.activity-group {
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 12px;
-  transition: transform 0.15s, box-shadow 0.15s;
 }
 
-.streak-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+.activity-group--done {
+  border-left: 3px solid var(--color-primary);
 }
 
-.streak-card--done {
-  border: 2px solid var(--color-primary);
-}
-
-.streak-card__header {
-  width: 100%;
+.activity-group__header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 8px;
 }
 
-.streak-card__name {
+.activity-group__name {
   font-weight: 600;
   font-size: 0.95rem;
   overflow: hidden;
@@ -184,7 +233,7 @@
   flex: 1;
 }
 
-.streak-card__delete {
+.activity-group__delete {
   background: none;
   border: none;
   color: var(--color-text-muted);
@@ -196,22 +245,30 @@
   transition: opacity 0.15s, color 0.15s;
 }
 
-.streak-card:hover .streak-card__delete {
+.activity-group:hover .activity-group__delete,
+.dashboard__group:hover .activity-group__delete {
   opacity: 1;
 }
 
-.streak-card__delete:hover {
+.activity-group__delete:hover {
   color: var(--color-danger);
 }
 
-.streak-card__progress {
-  width: 100%;
+/* Progress */
+
+.activity-group__active {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activity-group__progress {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.streak-card__bar {
+.activity-group__bar {
   flex: 1;
   height: 8px;
   background: var(--color-border);
@@ -219,58 +276,70 @@
   overflow: hidden;
 }
 
-.streak-card__fill {
+.activity-group__fill {
   height: 100%;
   background: var(--color-primary);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
 
-.streak-card__progress-text {
+.activity-group__progress-text {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-text-muted);
-  min-width: 40px;
+  min-width: 60px;
   text-align: right;
+  white-space: nowrap;
 }
 
-.streak-card__streak {
-  background: none;
-  border: none;
+/* Done button */
+
+.activity-group__done {
   display: flex;
-  align-items: baseline;
-  gap: 4px;
-  padding: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 2px solid var(--color-border);
   border-radius: var(--radius);
-  transition: background 0.15s;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
-.streak-card__streak:hover {
-  background: var(--color-bg);
+.activity-group__done--no {
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
-.streak-card__flame {
-  font-size: 1.5rem;
+.activity-group__done--no:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
-.streak-card__count {
-  font-size: 2.2rem;
-  font-weight: 800;
-  line-height: 1;
+.activity-group__done--yes {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
 }
 
-.streak-card__label {
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
+.activity-group__done--yes:hover {
+  background: var(--color-primary-hover);
 }
 
-.streak-card__reward-info {
+.activity-group__flame {
+  font-size: 1.2rem;
+}
+
+.activity-group__reward-info {
   font-size: 0.8rem;
   color: var(--color-text-muted);
+  text-align: center;
 }
 
-.streak-card__claim {
-  width: 100%;
+/* Claim button */
+
+.activity-group__claim {
   padding: 8px 16px;
   border: 2px dashed var(--color-primary);
   border-radius: var(--radius);
@@ -282,10 +351,52 @@
   transition: all 0.2s;
 }
 
-.streak-card__claim:hover {
+.activity-group__claim:hover {
   background: var(--color-primary);
   color: #fff;
   border-style: solid;
+}
+
+/* Series history inline */
+
+.activity-group__history {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.activity-group__series {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  background: var(--color-bg);
+}
+
+.activity-group__series--completed {
+  border-left: 2px solid var(--color-primary);
+}
+
+.activity-group__series--broken {
+  border-left: 2px solid var(--color-danger);
+}
+
+.activity-group__series--active {
+  border-left: 2px solid #ffa726;
+}
+
+.activity-group__series-num {
+  font-weight: 700;
+}
+
+.activity-group__series-days {
+  color: var(--color-text-muted);
+}
+
+.activity-group__series-status {
+  font-weight: 600;
 }
 
 .streak-card__done {

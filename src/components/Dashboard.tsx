@@ -1,4 +1,5 @@
-import { StreakCard } from './StreakCard';
+import { RewardSummary } from './RewardSummary';
+import { ActivityGroup } from './ActivityGroup';
 import { useLocale } from '../i18n/LocaleContext';
 import type { ActivityWithSeries } from '../types';
 
@@ -26,24 +27,29 @@ export function Dashboard({
   }
 
   if (activities.length === 0) {
-    return (
-      <div className="dashboard__empty">
-        {t.empty}
-      </div>
-    );
+    return <div className="dashboard__empty">{t.empty}</div>;
   }
 
   return (
     <div className="dashboard">
+      <RewardSummary activities={activities} />
+
       {activities.map((a) => (
-        <StreakCard
-          key={a.id}
-          activity={a}
-          onToggleDone={onToggleDone}
-          onDelete={onDelete}
-          onShowHistory={onShowHistory}
-          onClaimReward={onClaimReward}
-        />
+        <div key={a.id} className="dashboard__group">
+          <button
+            className="dashboard__group-header"
+            onClick={() => onShowHistory(a)}
+          >
+            {a.name}
+            <span className="dashboard__group-arrow">→</span>
+          </button>
+          <ActivityGroup
+            activity={a}
+            onToggleDone={onToggleDone}
+            onDelete={onDelete}
+            onClaimReward={onClaimReward}
+          />
+        </div>
       ))}
     </div>
   );
