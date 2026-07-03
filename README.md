@@ -27,17 +27,28 @@
 
 ```
 Activity {
-  id: string
+  id: number
   name: string
   createdAt: DateTime
-  color?: string
-  archived: boolean
+  seriesLength: number      // целевая длина серии в днях
+  reward: number            // награда за завершённую серию
+  currency: string          // единица измерения награды
 }
 
-StreakEntry {
-  id: string
-  activityId: string
-  date: string (YYYY-MM-DD)
-  completedAt: DateTime
+Series {
+  id: number
+  activityId: number
+  number: number            // порядковый номер серии (#1, #2...)
+  status: 'active' | 'completed' | 'broken'
+  rewardIssued: boolean     // награда выдана?
+  createdAt: DateTime
+}
+
+Completion {
+  id: number
+  seriesId: number          // к какой серии относится отметка
+  activityId: number        // к какой активности (денормализация для удобства)
+  date: string (YYYY-MM-DD) // дата выполнения
+  createdAt: DateTime
 }
 ```
