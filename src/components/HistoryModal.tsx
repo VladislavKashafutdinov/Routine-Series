@@ -1,15 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { liveQuery } from 'dexie';
+import { db } from '../db/db';
 import { getDateRange } from '../utils/date';
 import { useLocale } from '../i18n/LocaleContext';
-import type { ActivityWithStreak } from '../types';
+import type { ActivityWithSeries, Series, Completion } from '../types';
 
 interface HistoryModalProps {
-  activity: ActivityWithStreak;
+  activity: ActivityWithSeries;
   onClose: () => void;
 }
 
 export function HistoryModal({ activity, onClose }: HistoryModalProps) {
   const { t } = useLocale();
+  const [allSeries, setAllSeries] = useState<Series[]>([]);
+  const [allCompletions, setAllCompletions] = useState<Completion[]>([]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -19,8 +23,24 @@ export function HistoryModal({ activity, onClose }: HistoryModalProps) {
     return () => window.removeEventListener('keydown', handler);
   }, [onClose]);
 
+  useEffect(() => {
+    const subscription = liveQuery(() =>
+      Promise.all([
+        db.series.where({ activityId: activity.id }).toArray(),
+        db.completions.where({ activityId: activity.id }).toArray(),
+      ])
+    ).subscribe({
+      next: ([sers, comps]) => {
+        setAllSeries(sers.sort((a, b) => b.number - a.number));
+        setAllCompletions(comps);
+      },
+      error: (err) => console.error(err),
+    });
+    return () => subscription.unsubscribe();
+  }, [activity.id]);
+
   const dates = getDateRange(60);
-  const doneSet = new Set(activity.completions.map((c) => c.date));
+  const doneSet = new Set(allCompletions.map((c) => c.date));
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -39,10 +59,10 @@ export function HistoryModal({ activity, onClose }: HistoryModalProps) {
 
         <div className="modal__stats">
           <div>
-            <strong>{t.currentStreak}</strong> {activity.currentStreak} {t.daysSuffix(activity.currentStreak)}
+            {t.seriesLengthLabel}: {activity.seriesLength} {t.daysSuffix(activity.seriesLength)}
           </div>
           <div>
-            <strong>{t.longestStreak}</strong> {activity.longestStreak} {t.daysSuffix(activity.longestStreak)}
+            {t.rewardLabel}: {activity.reward} {activity.currency}
           </div>
         </div>
 
@@ -56,6 +76,40 @@ export function HistoryModal({ activity, onClose }: HistoryModalProps) {
             />
           ))}
         </div>
+
+        <h3 className="modal__subtitle">{t.seriesHistory}</h3>
+        {allSeries.length === 0 ? (
+          <p className="modal__empty">{t.noSeriesYet}</p>
+        ) : (
+          <ul className="modal__series-list">
+            {allSeries.map((s) => {
+              const comps = allCompletions.filter((c) => c.seriesId === s.id);
+              const days = new Set(comps.map((c) => c.date)).size;
+              return (
+                <li key={s.id} className={`modal__series-item modal__series-item--${s.status}`}>
+                  <span className="modal__series-num">#{s.number}</span>
+                  <span className="modal__series-days">
+                    {days}/{activity.seriesLength} {t.daysSuffix(activity.seriesLength)}
+                  </span>
+                  <span className="modal__series-status">
+                    {s.status === 'completed'
+                      ? s.rewardIssued
+                        ? t.statusRewardClaimed
+                        : t.statusCompleted
+                      : s.status === 'broken'
+                        ? t.statusBroken
+                        : t.statusActive}
+                  </span>
+                  {s.status === 'completed' && activity.reward > 0 && (
+                    <span className="modal__series-reward">
+                      {s.rewardIssued ? '✓' : ''} {activity.reward} {activity.currency}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </div>
   );

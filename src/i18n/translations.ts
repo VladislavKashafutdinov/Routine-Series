@@ -19,6 +19,10 @@ export interface Strings {
   addPlaceholder: string;
   addButton: string;
   addError: string;
+  addErrorLength: string;
+  seriesLengthLabel: string;
+  rewardLabel: string;
+  currencyLabel: string;
 
   // StreakCard
   deleteConfirm: (name: string) => string;
@@ -26,6 +30,7 @@ export interface Strings {
   streakDays: (n: number) => string;
   doneToday: string;
   markDone: string;
+  claimReward: string;
 
   // Dashboard
   loading: string;
@@ -37,18 +42,29 @@ export interface Strings {
   daysSuffix: (n: number) => string;
   longestStreak: string;
   lastNDays: (n: number) => string;
+  seriesHistory: string;
+  noSeriesYet: string;
+  statusCompleted: string;
+  statusBroken: string;
+  statusActive: string;
+  statusRewardClaimed: string;
 }
 
 const en: Strings = {
   addPlaceholder: 'New daily task…',
   addButton: '+ Add',
   addError: 'Enter a name',
+  addErrorLength: 'Series length must be at least 1',
+  seriesLengthLabel: 'Days',
+  rewardLabel: 'Reward',
+  currencyLabel: 'Currency',
 
   deleteConfirm: (name: string) => `Delete "${name}"?`,
   deleteTitle: 'Delete',
   streakDays: (n: number) => enPlural(n, 'day', 'days'),
   doneToday: '✓ Done today',
   markDone: 'Mark done',
+  claimReward: 'Claim reward',
 
   loading: 'Loading…',
   empty: 'No tasks yet. Add one above to get started.',
@@ -58,18 +74,29 @@ const en: Strings = {
   daysSuffix: (n: number) => enPlural(n, 'day', 'days'),
   longestStreak: 'Longest streak:',
   lastNDays: (n: number) => `Last ${n} days`,
+  seriesHistory: 'Series history',
+  noSeriesYet: 'No series yet.',
+  statusCompleted: 'Completed ✓',
+  statusBroken: 'Broken ✗',
+  statusActive: 'Active',
+  statusRewardClaimed: 'Reward claimed ✓',
 };
 
 const ru: Strings = {
   addPlaceholder: 'Новая ежедневная задача…',
   addButton: '+ Добавить',
   addError: 'Введите название',
+  addErrorLength: 'Длина серии должна быть не менее 1',
+  seriesLengthLabel: 'Дней',
+  rewardLabel: 'Награда',
+  currencyLabel: 'Валюта',
 
   deleteConfirm: (name: string) => `Удалить «${name}»?`,
   deleteTitle: 'Удалить',
   streakDays: (n: number) => ruPlural(n, 'день', 'дня', 'дней'),
   doneToday: '✓ Выполнено',
   markDone: 'Отметить',
+  claimReward: 'Получить награду',
 
   loading: 'Загрузка…',
   empty: 'Пока нет задач. Добавьте первую выше.',
@@ -79,6 +106,12 @@ const ru: Strings = {
   daysSuffix: (n: number) => ruPlural(n, 'день', 'дня', 'дней'),
   longestStreak: 'Лучшая серия:',
   lastNDays: (n: number) => `Последние ${n} ${ruPlural(n, 'день', 'дня', 'дней')}`,
+  seriesHistory: 'История серий',
+  noSeriesYet: 'Серий пока нет.',
+  statusCompleted: 'Завершена ✓',
+  statusBroken: 'Прервана ✗',
+  statusActive: 'Активна',
+  statusRewardClaimed: 'Награда получена ✓',
 };
 
 export const translations: Record<Lang, Strings> = { en, ru };

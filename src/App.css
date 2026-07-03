@@ -45,9 +45,14 @@
 
 .add-activity {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add-activity__row {
+  display: flex;
   gap: 8px;
   align-items: center;
-  flex-wrap: wrap;
 }
 
 .add-activity__input {
@@ -81,6 +86,40 @@
 
 .add-activity__btn:hover {
   background: var(--color-primary-hover);
+}
+
+.add-activity__opts {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.add-activity__opt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.add-activity__opt--short {
+  max-width: 120px;
+}
+
+.add-activity__num {
+  width: 64px;
+  padding: 4px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  text-align: center;
+  outline: none;
+}
+
+.add-activity__num:focus {
+  border-color: var(--color-primary);
 }
 
 .add-activity__error {
@@ -165,6 +204,36 @@
   color: var(--color-danger);
 }
 
+.streak-card__progress {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.streak-card__bar {
+  flex: 1;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.streak-card__fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.streak-card__progress-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  min-width: 40px;
+  text-align: right;
+}
+
 .streak-card__streak {
   background: none;
   border: none;
@@ -193,6 +262,30 @@
 .streak-card__label {
   color: var(--color-text-muted);
   font-size: 0.85rem;
+}
+
+.streak-card__reward-info {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.streak-card__claim {
+  width: 100%;
+  padding: 8px 16px;
+  border: 2px dashed var(--color-primary);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.streak-card__claim:hover {
+  background: var(--color-primary);
+  color: #fff;
+  border-style: solid;
 }
 
 .streak-card__done {
@@ -304,4 +397,62 @@
 
 .modal__day--done {
   background: var(--color-primary);
+}
+
+.modal__empty {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.modal__series-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.modal__series-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--color-bg);
+  font-size: 0.85rem;
+}
+
+.modal__series-item--completed {
+  border-left: 3px solid var(--color-primary);
+}
+
+.modal__series-item--broken {
+  border-left: 3px solid var(--color-danger);
+}
+
+.modal__series-item--active {
+  border-left: 3px solid #ffa726;
+}
+
+.modal__series-num {
+  font-weight: 700;
+  min-width: 32px;
+}
+
+.modal__series-days {
+  flex: 1;
+}
+
+.modal__series-status {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.modal__series-reward {
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  font-weight: 600;
 }

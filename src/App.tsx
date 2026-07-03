@@ -4,14 +4,14 @@ import { useLocale } from './i18n/LocaleContext';
 import { AddActivity } from './components/AddActivity';
 import { Dashboard } from './components/Dashboard';
 import { HistoryModal } from './components/HistoryModal';
-import type { ActivityWithStreak } from './types';
+import type { ActivityWithSeries } from './types';
 import './App.css';
 
 function App() {
-  const { activities, loading, addActivity, toggleDone, deleteActivity } =
+  const { activities, loading, addActivity, toggleDone, claimReward, deleteActivity } =
     useActivities();
   const [historyTarget, setHistoryTarget] =
-    useState<ActivityWithStreak | null>(null);
+    useState<ActivityWithSeries | null>(null);
   const { lang, setLang } = useLocale();
 
   return (
@@ -34,6 +34,7 @@ function App() {
           onToggleDone={toggleDone}
           onDelete={deleteActivity}
           onShowHistory={setHistoryTarget}
+          onClaimReward={claimReward}
         />
       </main>
       {historyTarget && (

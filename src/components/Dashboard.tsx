@@ -1,13 +1,14 @@
 import { StreakCard } from './StreakCard';
 import { useLocale } from '../i18n/LocaleContext';
-import type { ActivityWithStreak } from '../types';
+import type { ActivityWithSeries } from '../types';
 
 interface DashboardProps {
-  activities: ActivityWithStreak[];
+  activities: ActivityWithSeries[];
   loading: boolean;
   onToggleDone: (id: number) => void;
   onDelete: (id: number) => void;
-  onShowHistory: (activity: ActivityWithStreak) => void;
+  onShowHistory: (activity: ActivityWithSeries) => void;
+  onClaimReward: (seriesId: number) => void;
 }
 
 export function Dashboard({
@@ -16,6 +17,7 @@ export function Dashboard({
   onToggleDone,
   onDelete,
   onShowHistory,
+  onClaimReward,
 }: DashboardProps) {
   const { t } = useLocale();
 
@@ -40,6 +42,7 @@ export function Dashboard({
           onToggleDone={onToggleDone}
           onDelete={onDelete}
           onShowHistory={onShowHistory}
+          onClaimReward={onClaimReward}
         />
       ))}
     </div>
