@@ -1,26 +1,16 @@
 import { RewardSummary } from './RewardSummary';
 import { ActivityGroup } from './ActivityGroup';
 import { useLocale } from '../i18n/LocaleContext';
+import { useActivitiesContext } from '../hooks/ActivitiesContext';
 import type { ActivityWithSeries } from '../types';
 
 interface DashboardProps {
-  activities: ActivityWithSeries[];
-  loading: boolean;
-  onToggleDone: (id: number) => void;
-  onDelete: (id: number) => void;
   onShowHistory: (activity: ActivityWithSeries) => void;
-  onClaimReward: (seriesId: number) => void;
 }
 
-export function Dashboard({
-  activities,
-  loading,
-  onToggleDone,
-  onDelete,
-  onShowHistory,
-  onClaimReward,
-}: DashboardProps) {
+export function Dashboard({ onShowHistory }: DashboardProps) {
   const { t } = useLocale();
+  const { activities, loading } = useActivitiesContext();
 
   if (loading) {
     return <div className="dashboard__loading">{t.loading}</div>;
@@ -32,7 +22,7 @@ export function Dashboard({
 
   return (
     <div className="dashboard">
-      <RewardSummary activities={activities} />
+      <RewardSummary />
 
       {activities.map((a) => (
         <div key={a.id} className="dashboard__group">
@@ -43,12 +33,7 @@ export function Dashboard({
             {a.name}
             <span className="dashboard__group-arrow">→</span>
           </button>
-          <ActivityGroup
-            activity={a}
-            onToggleDone={onToggleDone}
-            onDelete={onDelete}
-            onClaimReward={onClaimReward}
-          />
+          <ActivityGroup activity={a} />
         </div>
       ))}
     </div>

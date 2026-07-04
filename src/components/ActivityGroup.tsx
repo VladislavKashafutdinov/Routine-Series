@@ -2,22 +2,18 @@ import { memo, useEffect, useState } from 'react';
 import { liveQuery } from 'dexie';
 import { db } from '../db/db';
 import { useLocale } from '../i18n/LocaleContext';
+import { useActivitiesContext } from '../hooks/ActivitiesContext';
 import type { ActivityWithSeries, Series, Completion } from '../types';
 
 interface ActivityGroupProps {
   activity: ActivityWithSeries;
-  onToggleDone: (id: number) => void;
-  onDelete: (id: number) => void;
-  onClaimReward: (seriesId: number) => void;
 }
 
 export const ActivityGroup = memo(function ActivityGroup({
   activity,
-  onToggleDone,
-  onDelete,
-  onClaimReward,
 }: ActivityGroupProps) {
   const { t } = useLocale();
+  const { toggleDone, deleteActivity, claimReward } = useActivitiesContext();
   const [seriesList, setSeriesList] = useState<Series[]>([]);
   const [completions, setCompletions] = useState<Completion[]>([]);
 
@@ -49,7 +45,6 @@ export const ActivityGroup = memo(function ActivityGroup({
 
   return (
     <div className={`activity-group ${activity.isDoneToday ? 'activity-group--done' : ''}`}>
-      {/* Header */}
       <div className="activity-group__header">
         <span className="activity-group__name" title={activity.name}>
           {activity.name}
@@ -57,7 +52,7 @@ export const ActivityGroup = memo(function ActivityGroup({
         <button
           className="activity-group__delete"
           onClick={() => {
-            if (confirm(t.deleteConfirm(activity.name))) onDelete(activity.id);
+            if (confirm(t.deleteConfirm(activity.name))) deleteActivity(activity.id);
           }}
           title={t.deleteTitle}
         >
@@ -65,7 +60,6 @@ export const ActivityGroup = memo(function ActivityGroup({
         </button>
       </div>
 
-      {/* Active series: progress + mark done */}
       <div className="activity-group__active">
         <div className="activity-group__progress">
           <div className="activity-group__bar">
@@ -80,7 +74,7 @@ export const ActivityGroup = memo(function ActivityGroup({
           className={`activity-group__done ${
             activity.isDoneToday ? 'activity-group__done--yes' : 'activity-group__done--no'
           }`}
-          onClick={() => onToggleDone(activity.id)}
+          onClick={() => toggleDone(activity.id)}
         >
           <span className="activity-group__flame">{flameIcon}</span>
           {activity.isDoneToday ? t.doneToday : t.markDone}
@@ -93,17 +87,15 @@ export const ActivityGroup = memo(function ActivityGroup({
         )}
       </div>
 
-      {/* Claim reward */}
       {activity.lastCompletedSeries && activity.reward > 0 && (
         <button
           className="activity-group__claim"
-          onClick={() => onClaimReward(activity.lastCompletedSeries!.id!)}
+          onClick={() => claimReward(activity.lastCompletedSeries!.id!)}
         >
           {t.claimReward}: {activity.reward} {activity.currency}
         </button>
       )}
 
-      {/* Series history */}
       {seriesList.length > 0 && (
         <div className="activity-group__history">
           {seriesList.slice(0, 5).map((s) => {

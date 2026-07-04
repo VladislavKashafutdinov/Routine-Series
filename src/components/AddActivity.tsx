@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
-
-interface AddActivityProps {
-  onAdd: (name: string, seriesLength: number, reward: number, currency: string) => Promise<void>;
-}
+import { useActivitiesContext } from '../hooks/ActivitiesContext';
 
 const DEFAULT_LENGTH = 7;
 const DEFAULT_REWARD = 0;
 const DEFAULT_CURRENCY = '₽';
 
-export function AddActivity({ onAdd }: AddActivityProps) {
+export function AddActivity() {
   const { t } = useLocale();
+  const { addActivity } = useActivitiesContext();
   const [name, setName] = useState('');
   const [seriesLength, setSeriesLength] = useState(DEFAULT_LENGTH);
   const [reward, setReward] = useState(DEFAULT_REWARD);
@@ -30,7 +28,7 @@ export function AddActivity({ onAdd }: AddActivityProps) {
       return;
     }
     setError('');
-    await onAdd(trimmed, seriesLength, reward, currency);
+    await addActivity(trimmed, seriesLength, reward, currency);
     setName('');
     setSeriesLength(DEFAULT_LENGTH);
     setReward(DEFAULT_REWARD);

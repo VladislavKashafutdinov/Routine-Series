@@ -3,16 +3,17 @@ import { liveQuery } from 'dexie';
 import { db } from '../db/db';
 import { getDateRange, today } from '../utils/date';
 import { useLocale } from '../i18n/LocaleContext';
+import { useActivitiesContext } from '../hooks/ActivitiesContext';
 import type { ActivityWithSeries, Series, Completion } from '../types';
 
 interface HistoryModalProps {
   activity: ActivityWithSeries;
   onClose: () => void;
-  onToggleDate: (activityId: number, date: string) => void;
 }
 
-export function HistoryModal({ activity, onClose, onToggleDate }: HistoryModalProps) {
+export function HistoryModal({ activity, onClose }: HistoryModalProps) {
   const { t } = useLocale();
+  const { toggleDate } = useActivitiesContext();
   const [allSeries, setAllSeries] = useState<Series[]>([]);
   const [allCompletions, setAllCompletions] = useState<Completion[]>([]);
   const todayStr = today();
@@ -43,7 +44,6 @@ export function HistoryModal({ activity, onClose, onToggleDate }: HistoryModalPr
 
   const dates = getDateRange(60);
 
-  // Grid shows completions from active series only (for editing)
   const activeSeries = allSeries.find((s) => s.status === 'active');
   const activeDoneSet = new Set(
     allCompletions
@@ -51,7 +51,6 @@ export function HistoryModal({ activity, onClose, onToggleDate }: HistoryModalPr
       .map((c) => c.date)
   );
 
-  // All other completions (for showing in grid with different color)
   const otherDoneSet = new Set(
     allCompletions
       .filter((c) => !activeSeries || c.seriesId !== activeSeries.id)
@@ -62,8 +61,8 @@ export function HistoryModal({ activity, onClose, onToggleDate }: HistoryModalPr
 
   const handleDayClick = (date: string) => {
     if (!isEditable) return;
-    if (date > todayStr) return; // no future dates
-    onToggleDate(activity.id, date);
+    if (date > todayStr) return;
+    toggleDate(activity.id, date);
   };
 
   return (

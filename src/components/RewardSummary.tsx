@@ -1,14 +1,10 @@
 import { useLocale } from '../i18n/LocaleContext';
-import type { ActivityWithSeries } from '../types';
+import { useActivitiesContext } from '../hooks/ActivitiesContext';
 
-interface RewardSummaryProps {
-  activities: ActivityWithSeries[];
-}
-
-export function RewardSummary({ activities }: RewardSummaryProps) {
+export function RewardSummary() {
   const { t } = useLocale();
+  const { activities } = useActivitiesContext();
 
-  // Aggregate unclaimed rewards by currency
   const totals: Record<string, number> = {};
   for (const a of activities) {
     if (a.lastCompletedSeries && a.reward > 0) {
