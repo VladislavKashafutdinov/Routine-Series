@@ -2,7 +2,6 @@ import { useLocale } from '../i18n/LocaleContext';
 
 export function LangSwitcher() {
   const { lang, setLang } = useLocale();
-
   return (
     <button
       className="app-lang"

@@ -4,44 +4,28 @@ export interface Activity {
   id?: number;
   name: string;
   createdAt: Date;
-  seriesLength: number; // target series length in days (default 7)
-  reward: number;       // reward value for completing a series
-  currency: string;     // reward unit (e.g. "₽", "coins")
-}
-
-export type SeriesStatus = 'active' | 'completed' | 'broken';
-
-export interface Series {
-  id?: number;
-  activityId: number;
-  number: number;         // ordinal: #1, #2, ...
-  status: SeriesStatus;
-  rewardIssued: boolean;  // has the reward been claimed?
-  createdAt: Date;
+  seriesLength: number; // target days per series (default 7)
+  reward: number;       // reward for completing a series
+  currency: string;     // e.g. "₽"
 }
 
 export interface Completion {
   id?: number;
-  seriesId: number;
-  activityId: number;     // denormalized for easy querying
-  date: string;           // "YYYY-MM-DD" in local timezone
-  createdAt: Date;
+  activityId: number;
+  date: string; // "YYYY-MM-DD"
 }
 
-// ---- Computed views ----
+// ---- Computed ----
 
-export interface SeriesWithCompletions extends Series {
-  completions: Completion[];
-}
-
-export interface ActivityWithSeries {
+export interface ActivityWithStreak {
   id: number;
   name: string;
   createdAt: Date;
   seriesLength: number;
   reward: number;
   currency: string;
-  activeSeries: SeriesWithCompletions | null;
-  lastCompletedSeries: SeriesWithCompletions | null; // most recent completed, for reward claim
+  currentStreak: number;  // consecutive days up to today
+  longestStreak: number;   // best ever
   isDoneToday: boolean;
+  completions: Completion[];
 }
