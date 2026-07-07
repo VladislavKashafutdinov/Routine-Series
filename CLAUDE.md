@@ -53,6 +53,12 @@ Current schema is described in [README.md § Структура данных](RE
 
 - **Task-driven development** — code changes (add/modify/delete) are only allowed when there is a corresponding task in [TODO.md](TODO.md). Without a task, only documentation files may be edited: `CLAUDE.md`, `TODO.md`, `README.md`, `DONE.md`, `JOURNAL.md`.
 - **Mark in-progress before starting** — when the next step is identified and the user explicitly says to begin work, mark the step as «в работе» in [TODO.md](TODO.md) before making any code changes.
+- **User verifies before done** — after implementation, the user reviews the result. Only mark a step as `[x]` done after the user's explicit confirmation.
+- **Bug workflow** — bugs are handled in a separate cycle:
+  1. User describes the bug
+  2. Find the root cause (investigation)
+  3. Write a step-by-step fix plan (numbered steps)
+  4. Either the user or Claude, upon request, adds the fix steps to the «Взять в работу» section of [TODO.md](TODO.md)
 
 ## Design decisions
 

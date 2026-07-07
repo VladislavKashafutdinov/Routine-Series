@@ -3,6 +3,7 @@ import { LangSwitcher } from './components/LangSwitcher';
 import { PageTabs } from './components/PageTabs';
 import { TimeTravel } from './components/TimeTravel';
 import { Dashboard } from './components/Dashboard';
+import { MonitoringPage } from './components/MonitoringPage';
 import type { Page } from './components/PageTabs';
 import './App.css';
 
@@ -19,7 +20,7 @@ export default function App() {
       </header>
       <main className="app-main">
         {page === 'dashboard' && <Dashboard />}
-        {page === 'monitoring' && <div className="app-placeholder">Мониторинг (будет в задаче 10)</div>}
+        {page === 'monitoring' && <MonitoringPage />}
         {page === 'archive' && <div className="app-placeholder">Архив (будет в задаче 11)</div>}
       </main>
     </div>

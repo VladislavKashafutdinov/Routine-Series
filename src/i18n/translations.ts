@@ -38,6 +38,15 @@ export interface Strings {
   pendingTitle: string;
   doneTitle: string;
 
+  // Monitoring
+  monitoringTitle: string;
+  seriesHistoryTab: string;
+  rewardHistoryTab: string;
+  issueReward: string;
+  earned: string;
+  issued: string;
+  unissued: string;
+
   // HistoryModal
   historyAria: (name: string) => string;
   currentStreak: string;
@@ -75,6 +84,14 @@ const en: Strings = {
   pendingTitle: 'Not done',
   doneTitle: 'Done',
 
+  monitoringTitle: 'Monitoring',
+  seriesHistoryTab: 'Series history',
+  rewardHistoryTab: 'Reward history',
+  issueReward: 'Issue reward',
+  earned: 'Earned',
+  issued: 'Issued',
+  unissued: 'To issue',
+
   historyAria: (name: string) => `History for ${name}`,
   currentStreak: 'Current streak:',
   daysSuffix: (n: number) => enPlural(n, 'day', 'days'),
@@ -110,6 +127,14 @@ const ru: Strings = {
   empty: 'Пока нет задач. Добавьте первую выше.',
   pendingTitle: 'Не выполнено',
   doneTitle: 'Выполнено',
+
+  monitoringTitle: 'Мониторинг',
+  seriesHistoryTab: 'История серий',
+  rewardHistoryTab: 'История начислений',
+  issueReward: 'Начислить',
+  earned: 'Заработано',
+  issued: 'Начислено',
+  unissued: 'К начислению',
 
   historyAria: (name: string) => `История: ${name}`,
   currentStreak: 'Текущая серия:',
