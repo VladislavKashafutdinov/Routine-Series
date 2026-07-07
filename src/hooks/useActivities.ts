@@ -3,9 +3,20 @@ import { liveQuery } from 'dexie';
 import { db } from '../db/db';
 import { today } from '../utils/date';
 import { computeCurrentStreak, computeLongestStreak } from '../utils/streak';
-import type { Activity, ActivityWithStreak, Completion } from '../types';
+import type { Activity, ActivityWithStreak, Completion, SeriesDefinition } from '../types';
 
-function build(activity: Activity, allCompletions: Completion[], todayStr: string): ActivityWithStreak {
+function latestDef(defs: SeriesDefinition[], activityId: number): SeriesDefinition {
+  const actDefs = defs.filter((d) => d.activityId === activityId);
+  return actDefs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
+}
+
+function build(
+  activity: Activity,
+  allCompletions: Completion[],
+  allDefs: SeriesDefinition[],
+  todayStr: string
+): ActivityWithStreak {
+  const def = latestDef(allDefs, activity.id!);
   const dates = allCompletions
     .filter((c) => c.activityId === activity.id)
     .map((c) => c.date);
@@ -15,9 +26,9 @@ function build(activity: Activity, allCompletions: Completion[], todayStr: strin
     name: activity.name,
     archived: activity.archived,
     createdAt: activity.createdAt,
-    seriesLength: activity.seriesLength,
-    reward: activity.reward,
-    currency: activity.currency,
+    seriesLength: def?.seriesLength ?? 7,
+    reward: def?.reward ?? 0,
+    currency: def?.currency ?? '₽',
     currentStreak: computeCurrentStreak(dates, todayStr),
     longestStreak: computeLongestStreak(dates),
     isDoneToday: dates.includes(todayStr),
@@ -31,14 +42,15 @@ export function useActivities() {
 
   useEffect(() => {
     const sub = liveQuery(async () => {
-      const [acts, comps] = await Promise.all([
+      const [acts, comps, defs] = await Promise.all([
         db.activities.toArray(),
         db.completions.toArray(),
+        db.seriesDefinitions.toArray(),
       ]);
       const todayStr = today();
       return acts
         .filter((a) => !a.archived)
-        .map((a) => build(a, comps, todayStr));
+        .map((a) => build(a, comps, defs, todayStr));
     }).subscribe({
       next: (data) => { setActivities(data); setLoading(false); },
       error: (err) => { console.error(err); setLoading(false); },

@@ -1,5 +1,6 @@
 import { memo, useState } from 'react';
 import { useActivities } from '../hooks/useActivities';
+import { SeriesProgress } from './SeriesProgress';
 import type { ActivityWithStreak } from '../types';
 
 interface Props {
@@ -39,6 +40,7 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
           {activity.name}
         </span>
       )}
+      <SeriesProgress completions={activity.completions} seriesLength={activity.seriesLength} />
     </div>
   );
 });

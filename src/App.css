@@ -129,6 +129,18 @@
 
 .card__name:hover { background: var(--bg); }
 
+/* === SeriesProgress === */
+
+.sprog { display: flex; gap: 3px; justify-content: center; }
+
+.sprog__dot {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  background: var(--border);
+}
+
+.sprog__dot--done { background: var(--primary); }
+
 .card__name-input {
   font-size: 0.95rem;
   font-weight: 600;
