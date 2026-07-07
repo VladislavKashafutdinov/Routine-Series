@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LangSwitcher } from './components/LangSwitcher';
 import { PageTabs } from './components/PageTabs';
-import { AddActivity } from './components/AddActivity';
+import { Dashboard } from './components/Dashboard';
 import type { Page } from './components/PageTabs';
 import './App.css';
 
@@ -16,7 +16,7 @@ export default function App() {
         <PageTabs page={page} onChange={setPage} />
       </header>
       <main className="app-main">
-        {page === 'dashboard' && <AddActivity />}
+        {page === 'dashboard' && <Dashboard />}
         {page === 'monitoring' && <div className="app-placeholder">Мониторинг (будет в задаче 10)</div>}
         {page === 'archive' && <div className="app-placeholder">Архив (будет в задаче 11)</div>}
       </main>

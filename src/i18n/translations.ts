@@ -35,6 +35,8 @@ export interface Strings {
   // Dashboard
   loading: string;
   empty: string;
+  pendingTitle: string;
+  doneTitle: string;
 
   // HistoryModal
   historyAria: (name: string) => string;
@@ -70,6 +72,8 @@ const en: Strings = {
 
   loading: 'Loading…',
   empty: 'No tasks yet. Add one above to get started.',
+  pendingTitle: 'Not done',
+  doneTitle: 'Done',
 
   historyAria: (name: string) => `History for ${name}`,
   currentStreak: 'Current streak:',
@@ -104,6 +108,8 @@ const ru: Strings = {
 
   loading: 'Загрузка…',
   empty: 'Пока нет задач. Добавьте первую выше.',
+  pendingTitle: 'Не выполнено',
+  doneTitle: 'Выполнено',
 
   historyAria: (name: string) => `История: ${name}`,
   currentStreak: 'Текущая серия:',

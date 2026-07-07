@@ -78,6 +78,39 @@
 
 .add-activity__error { color: var(--danger); font-size: 0.85rem; }
 
+/* === Dashboard === */
+
+.dash-msg { text-align: center; color: var(--muted); padding: 48px 16px; }
+
+.dashboard { display: flex; flex-direction: column; gap: 24px; }
+
+.dash-section__title {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.dash-placeholder-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  font-size: 0.9rem;
+}
+
+.dash-placeholder-card--done {
+  border: 2px solid var(--primary);
+}
+
 /* Placeholder */
 
 .app-placeholder {
