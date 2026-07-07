@@ -1,4 +1,5 @@
 import { memo, useState } from 'react';
+import { useLocale } from '../i18n/LocaleContext';
 import { useActivities } from '../hooks/useActivities';
 import { SeriesProgress } from './SeriesProgress';
 import type { ActivityWithStreak } from '../types';
@@ -8,7 +9,8 @@ interface Props {
 }
 
 export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
-  const { updateName } = useActivities();
+  const { t } = useLocale();
+  const { updateName, toggleDone } = useActivities();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(activity.name);
 
@@ -41,6 +43,12 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
         </span>
       )}
       <SeriesProgress completions={activity.completions} seriesLength={activity.seriesLength} />
+      <button
+        className={`card__done ${activity.isDoneToday ? 'card__done--yes' : 'card__done--no'}`}
+        onClick={() => toggleDone(activity.id)}
+      >
+        {activity.isDoneToday ? t.doneToday : t.markDone}
+      </button>
     </div>
   );
 });

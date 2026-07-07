@@ -141,6 +141,31 @@
 
 .sprog__dot--done { background: var(--primary); }
 
+.card__done {
+  width: 100%;
+  padding: 8px;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.card__done--no {
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--border);
+}
+
+.card__done--no:hover { border-color: var(--primary); color: var(--primary); }
+
+.card__done--yes {
+  background: var(--primary);
+  color: #fff;
+  border: 2px solid var(--primary);
+}
+
+.card__done--yes:hover { background: var(--primary-hover); }
+
 .card__name-input {
   font-size: 0.95rem;
   font-weight: 600;
