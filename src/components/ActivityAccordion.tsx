@@ -1,5 +1,6 @@
 import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
+import { SeriesWidget } from './SeriesWidget';
 import type { ActivityWithStreak } from '../types';
 
 type Tab = 'series' | 'rewards';
@@ -53,9 +54,15 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
             </button>
           </div>
           <div className="accordion__tab-content">
-            {tab === 'series' && (
-              <div className="accordion__placeholder">{t.seriesHistoryTab} (будет в 10b)</div>
-            )}
+            {tab === 'series' && (activity.series.length > 0 ? (
+              <div className="accordion__series-list">
+                {activity.series.map((s) => (
+                  <SeriesWidget key={s.number} series={s} activityId={activity.id} />
+                ))}
+              </div>
+            ) : (
+              <div className="accordion__placeholder">{t.noSeriesYet}</div>
+            ))}
             {tab === 'rewards' && (
               <div className="accordion__placeholder">{t.rewardHistoryTab} (будет в 10c)</div>
             )}
