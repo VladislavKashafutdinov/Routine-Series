@@ -3,6 +3,7 @@ import { liveQuery } from 'dexie';
 import { db } from '../db/db';
 import { today } from '../utils/date';
 import { computeCurrentStreak, computeLongestStreak } from '../utils/streak';
+import { useTimeOffset } from './TimeOffsetContext';
 import type { Activity, ActivityWithStreak, Completion, SeriesDefinition } from '../types';
 
 function latestDef(defs: SeriesDefinition[], activityId: number): SeriesDefinition {
@@ -39,6 +40,7 @@ function build(
 export function useActivities() {
   const [activities, setActivities] = useState<ActivityWithStreak[]>([]);
   const [loading, setLoading] = useState(true);
+  const { offset } = useTimeOffset();
 
   useEffect(() => {
     const sub = liveQuery(async () => {
@@ -47,7 +49,7 @@ export function useActivities() {
         db.completions.toArray(),
         db.seriesDefinitions.toArray(),
       ]);
-      const todayStr = today();
+      const todayStr = today(offset);
       return acts
         .filter((a) => !a.archived)
         .map((a) => build(a, comps, defs, todayStr));
@@ -56,7 +58,7 @@ export function useActivities() {
       error: (err) => { console.error(err); setLoading(false); },
     });
     return () => sub.unsubscribe();
-  }, []);
+  }, [offset]);
 
   const addActivity = async (name: string, seriesLength: number, reward: number, currency: string) => {
     const id = await db.activities.add({ name: name.trim(), archived: false, createdAt: new Date() });
@@ -74,7 +76,7 @@ export function useActivities() {
   };
 
   const toggleDone = async (activityId: number) => {
-    const dateStr = today();
+    const dateStr = today(offset);
     const existing = await db.completions
       .where({ activityId, date: dateStr })
       .first();

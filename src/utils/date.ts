@@ -1,5 +1,6 @@
-export function today(): string {
+export function today(offsetDays: number = 0): string {
   const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
@@ -12,9 +13,10 @@ export function dayDiff(a: string, b: string): number {
   return Math.round((db.getTime() - da.getTime()) / 86_400_000);
 }
 
-export function getDateRange(days: number): string[] {
+export function getDateRange(days: number, offsetDays: number = 0): string[] {
   const result: string[] = [];
   const now = new Date();
+  now.setDate(now.getDate() + offsetDays);
   for (let i = 0; i < days; i++) {
     const d = new Date(now);
     d.setDate(d.getDate() - i);

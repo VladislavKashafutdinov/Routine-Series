@@ -19,6 +19,50 @@
 
 /* Page tabs */
 
+/* === TimeTravel === */
+
+.time-travel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.time-travel__btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.time-travel__btn:hover { border-color: var(--primary); }
+
+.time-travel__date {
+  font-size: 0.95rem;
+  font-weight: 700;
+  min-width: 100px;
+  text-align: center;
+}
+
+.time-travel__date--virtual { color: #ffa726; }
+
+.time-travel__reset {
+  background: none;
+  border: 1px solid #ffa726;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  color: #ffa726;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.time-travel__reset:hover { background: #ffa726; color: #fff; }
+
 .page-tabs {
   display: flex;
   justify-content: center;
