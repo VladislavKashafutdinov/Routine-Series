@@ -9,9 +9,8 @@ npm run dev       # Start dev server (Vite HMR on localhost:5173)
 npm run build     # Type-check (tsc -b) then production build
 npm run preview   # Serve production build locally
 npm run lint      # ESLint
+npm run test      # Vitest (unit tests)
 ```
-
-No test runner is configured yet.
 
 ## Tech constraints
 
