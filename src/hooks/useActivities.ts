@@ -4,7 +4,7 @@ import { db } from '../db/db';
 import { today } from '../utils/date';
 import { useTimeOffset } from './TimeOffsetContext';
 import { computeSeries } from '../utils/series';
-import type { Activity, ActivityWithStreak, Completion, SeriesDefinition } from '../types';
+import type { Activity, ActivityWithStreak, Completion, RewardIssue, SeriesDefinition } from '../types';
 
 function latestDef(defs: SeriesDefinition[], activityId: number): SeriesDefinition {
   const actDefs = defs.filter((d) => d.activityId === activityId);
@@ -15,14 +15,20 @@ function build(
   activity: Activity,
   allCompletions: Completion[],
   allDefs: SeriesDefinition[],
+  allRewardIssues: RewardIssue[],
   todayStr: string
 ): ActivityWithStreak {
   const def = latestDef(allDefs, activity.id!);
   const actDefs = allDefs.filter((d) => d.activityId === activity.id);
   const actComps = allCompletions.filter((c) => c.activityId === activity.id);
+  const actRewardIssues = allRewardIssues.filter((r) => r.activityId === activity.id);
   const series = computeSeries(actDefs, actComps, todayStr);
 
   const activeSeries = series.find((s) => s.status === 'active');
+  const totalEarned = series
+    .filter((s) => s.status === 'completed')
+    .reduce((sum, s) => sum + s.reward, 0);
+  const totalIssued = actRewardIssues.reduce((sum, r) => sum + r.amount, 0);
 
   return {
     id: activity.id!,
@@ -34,6 +40,9 @@ function build(
     currency: def?.currency ?? '₽',
     currentStreak: activeSeries ? activeSeries.completions.length : 0,
     longestStreak: series.reduce((max, s) => Math.max(max, s.completions.length), 0),
+    totalEarned,
+    totalIssued,
+    totalUnissued: totalEarned - totalIssued,
     isDoneToday: actComps.some((c) => c.date === todayStr),
     completions: actComps,
   };
@@ -46,15 +55,16 @@ export function useActivities() {
 
   useEffect(() => {
     const sub = liveQuery(async () => {
-      const [acts, comps, defs] = await Promise.all([
+      const [acts, comps, defs, issues] = await Promise.all([
         db.activities.toArray(),
         db.completions.toArray(),
         db.seriesDefinitions.toArray(),
+        db.rewardIssues.toArray(),
       ]);
       const todayStr = today(offset);
       return acts
         .filter((a) => !a.archived)
-        .map((a) => build(a, comps, defs, todayStr));
+        .map((a) => build(a, comps, defs, issues, todayStr));
     }).subscribe({
       next: (data) => { setActivities(data); setLoading(false); },
       error: (err) => { console.error(err); setLoading(false); },
