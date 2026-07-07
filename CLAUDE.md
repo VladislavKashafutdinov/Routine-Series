@@ -49,6 +49,11 @@ See [README.md § Data flow](README.md#data-flow) for the full diagram.
 
 Current schema is described in [README.md § Структура данных](README.md#структура-данных).
 
+## Workflow constraints
+
+- **Task-driven development** — code changes (add/modify/delete) are only allowed when there is a corresponding task in [TODO.md](TODO.md). Without a task, only documentation files may be edited: `CLAUDE.md`, `TODO.md`, `README.md`, `DONE.md`, `JOURNAL.md`.
+- **Mark in-progress before starting** — when the next step is identified and the user explicitly says to begin work, mark the step as «в работе» in [TODO.md](TODO.md) before making any code changes.
+
 ## Design decisions
 
 - **No routing** — page switching via `Page` state (`'dashboard' | 'monitoring' | 'archive'`).
