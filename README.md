@@ -101,6 +101,48 @@
 - Список активностей, помеченные, как архивные
   - Возможность вернуть активность из архива
 
+## Схема вложенности компонентов
+
+```
+App
+├── AppHeader
+│   ├── LangSwitcher
+│   ├── PageTabs                («Выполнение» | «Мониторинг» | «Архив»)
+│   └── TimeTravel              (◀ YYYY-MM-DD ▶ «Сегодня»)
+│
+├── [«Выполнение»] Dashboard
+│   ├── AddActivity             (название + длина/награда/валюта)
+│   ├── Section «Не выполнено»
+│   │   └── ActivityCard[]
+│   │       ├── EditableName
+│   │       ├── SeriesProgress  (квадратики, только отображение)
+│   │       ├── MarkDoneButton  («Отметить»)
+│   │       └── DeleteButton
+│   └── Section «Выполнено»
+│       └── ActivityCard[]
+│           ├── EditableName
+│           ├── SeriesProgress  (квадратики, только отображение)
+│           ├── UndoButton      («Отменить»)
+│           └── DeleteButton
+│
+├── [«Мониторинг»] MonitoringPage
+│   └── ActivityAccordion[]
+│       ├── Заголовок: название + RewardCounters
+│       ├── EditSeriesDefinition (кнопка → форма)
+│       ├── IssueRewardButton   («Начислить»)
+│       ├── Вкладка «История серий»
+│       │   └── SeriesWidget[]  (квадратики с кликами + даты старта/конца)
+│       └── Вкладка «История начислений»
+│           └── RewardIssueTable
+│               ├── RewardIssueRow[]
+│               │   └── InlineEdit (дата/сумма/валюта)
+│               └── Пагинация
+│
+└── [«Архив»] ArchivePage
+    └── ArchivedActivityRow[]
+        └── RestoreButton
+```
+
 ## Структура данных
 
 **Activity** — повторяющаяся задача, которую пользователь должен выполнять каждый день (например, «Отжимания», «Чтение», «Уборка»).
