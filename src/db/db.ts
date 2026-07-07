@@ -1,10 +1,11 @@
 import Dexie, { type Table } from 'dexie';
-import type { Activity, SeriesDefinition, Completion } from '../types';
+import type { Activity, SeriesDefinition, Completion, RewardIssue } from '../types';
 
 export class RoutineDB extends Dexie {
   activities!: Table<Activity, number>;
   seriesDefinitions!: Table<SeriesDefinition, number>;
   completions!: Table<Completion, number>;
+  rewardIssues!: Table<RewardIssue, number>;
 
   constructor() {
     super('RoutineSeriesDB');
@@ -32,6 +33,13 @@ export class RoutineDB extends Dexie {
           createdAt: a.createdAt,
         });
       }
+    });
+
+    this.version(3).stores({
+      activities: '++id, name, createdAt',
+      seriesDefinitions: '++id, activityId, createdAt',
+      completions: '++id, activityId, date, [activityId+date]',
+      rewardIssues: '++id, activityId, date',
     });
   }
 }

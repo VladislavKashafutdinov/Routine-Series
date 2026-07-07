@@ -16,6 +16,14 @@ export interface SeriesDefinition {
   createdAt: Date;       // when this version was created
 }
 
+export interface RewardIssue {
+  id?: number;
+  activityId: number;
+  date: string;   // "YYYY-MM-DD" — дата выдачи
+  amount: number;  // размер выданной награды
+  currency: string; // валюта
+}
+
 export interface Completion {
   id?: number;
   activityId: number;

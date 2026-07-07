@@ -31,9 +31,9 @@
 - [x] Проброс offset во все компоненты
 
 ### 5. RewardIssue — модель
-- [ ] Добавить тип `RewardIssue` в types/index.ts
-- [ ] Добавить таблицу `rewardIssues` в db.ts
-- [ ] Методы в хуке: создать, удалить, редактировать RewardIssue
+- [x] Добавить тип `RewardIssue` в types/index.ts
+- [x] Добавить таблицу `rewardIssues` в db.ts
+- [x] Методы в хуке: создать, удалить, редактировать RewardIssue
 
 ### 6. Вычисление серий
 - [ ] Реализовать алгоритм из README («Как формируются серии»)

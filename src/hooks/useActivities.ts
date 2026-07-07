@@ -87,17 +87,31 @@ export function useActivities() {
     }
   };
 
+  const addRewardIssue = async (activityId: number, amount: number, currency: string, date: string) => {
+    await db.rewardIssues.add({ activityId, amount, currency, date });
+  };
+
+  const updateRewardIssue = async (id: number, amount: number, currency: string, date: string) => {
+    await db.rewardIssues.update(id, { amount, currency, date });
+  };
+
+  const deleteRewardIssue = async (id: number) => {
+    await db.rewardIssues.delete(id);
+  };
+
   const deleteActivity = async (activityId: number) => {
     const hasCompletions = (await db.completions.where({ activityId }).count()) > 0;
-    // RewardIssue check will be added when the table exists (Task 6)
-    if (hasCompletions) {
+    const hasRewardIssues = (await db.rewardIssues.where({ activityId }).count()) > 0;
+    if (hasCompletions || hasRewardIssues) {
       await db.activities.update(activityId, { archived: true });
     } else {
       await db.activities.delete(activityId);
       await db.seriesDefinitions.where({ activityId }).delete();
+      await db.rewardIssues.where({ activityId }).delete();
       await db.completions.where({ activityId }).delete();
     }
   };
 
-  return { activities, loading, addActivity, updateName, toggleDone, deleteActivity };
+  return { activities, loading, addActivity, updateName, toggleDone,
+    addRewardIssue, updateRewardIssue, deleteRewardIssue, deleteActivity };
 }
