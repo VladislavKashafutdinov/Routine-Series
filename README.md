@@ -6,6 +6,25 @@
 
 Не выработка привычек, а мотивация через поощрение за непрерывное выполнение необходимых дел без пропусков. Если серия прерывается (день пропущен) — серия начинается заново. Награда — за длину серии без пропусков.
 
+## Data flow
+
+```
+User action
+  (add / toggle done / update name / delete / change offset)
+  → useActivities / TimeOffsetContext
+    → Dexie CRUD on IndexedDB tables
+      → liveQuery subscription fires (re-subscribes on offset change)
+        → build() for each activity:
+          - finds latest SeriesDefinition → seriesLength, reward, currency
+          - filters completions → computeCurrentStreak(), computeLongestStreak()
+          - checks today's completion → isDoneToday
+        → ActivityWithStreak[] computed
+          → Dashboard re-renders with updated cards
+```
+
+Все мутации данных проходят через `useActivities()` — компоненты никогда не обращаются к `db` напрямую.
+Смещение виртуальной даты из `TimeOffsetContext` передаётся в `today(offset)` — в `liveQuery` и в `toggleDone`.
+
 ## Технологии
 
 - **Первый этап**: React SPA (Vite + TypeScript), без сервера
@@ -181,6 +200,20 @@ RewardIssue {
   currency: string           // валюта
 }
 ```
+
+### Индексы и миграции (Dexie)
+
+Текущая версия БД: **v2**.
+
+| Таблица | Первичный ключ | Индексы |
+|---|---|---|
+| `activities` | `++id` (auto) | `name`, `createdAt` |
+| `seriesDefinitions` | `++id` (auto) | `activityId`, `createdAt` |
+| `completions` | `++id` (auto) | `activityId`, `date`, `[activityId+date]` (compound) |
+
+Составной индекс `[activityId+date]` обеспечивает эффективную проверку «была ли эта активность выполнена в эту дату» — одна операция `.where({activityId, date})` вместо перебора.
+
+**Миграция v1 → v2:** при обновлении для каждой существующей активности создаётся `SeriesDefinition` с копией её старых параметров (`seriesLength`, `reward`, `currency`) и датой создания, равной дате создания активности.
 
 ### SeriesDefinition — версионирование параметров
 
