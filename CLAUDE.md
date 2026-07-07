@@ -56,5 +56,8 @@ Current schema is described in [README.md § Структура данных](RE
 - **No CSS framework** — plain CSS with BEM-like naming. Themes via `prefers-color-scheme: dark` media query and CSS custom properties.
 - **No `dexie-react-hooks`** — uses Dexie's built-in `liveQuery()` + React `useEffect`/`useState` to avoid an extra dependency.
 - **`toggleDone` is an undo** — clicking "Mark done" adds a completion; clicking again on the same day removes it.
-- **Soft-delete** — `deleteActivity` sets `archived: true` if completions exist, otherwise hard-deletes.
+- **Soft-delete** — `deleteActivity` sets `archived: true` if completions exist, otherwise hard-deletes. Archived activities are filtered out in `liveQuery`.
+- **Series are computed, not stored** — no Series table. Status, streak counts, and completion history are derived from `Completion` records + `SeriesDefinition` parameters. See [README § Как формируются серии](README.md#как-формируются-серии).
+- **SeriesDefinition versioning** — `seriesLength`, `reward`, `currency` are not on `Activity`. They live in `SeriesDefinition` with `createdAt`. Changing params creates a new version; old series keep their old params.
 - **Time travel** — `TimeOffsetContext` stores day offset; `today()` and `getDateRange()` accept optional offset parameter.
+- **i18n via LocaleContext** — language detected from browser, persisted to `localStorage`. Translations in `src/i18n/translations.ts`.
