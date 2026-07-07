@@ -32,6 +32,18 @@ export interface Completion {
 
 // ---- Computed ----
 
+/** Computed series view — not stored in DB */
+export interface ComputedSeries {
+  number: number;
+  status: 'active' | 'completed' | 'broken';
+  seriesLength: number;
+  reward: number;
+  currency: string;
+  startDate: string;          // first completion date
+  endDate?: string;           // last completion date (completed/broken)
+  completions: Completion[];
+}
+
 export interface ActivityWithStreak {
   id: number;
   name: string;
@@ -47,4 +59,5 @@ export interface ActivityWithStreak {
   totalUnissued: number;    // earned − issued
   isDoneToday: boolean;
   completions: Completion[];
+  series: ComputedSeries[];
 }

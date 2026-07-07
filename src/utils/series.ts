@@ -1,17 +1,5 @@
 import { dayDiff } from './date';
-import type { Completion, SeriesDefinition } from '../types';
-
-/** Computed series view — not stored in DB */
-export interface ComputedSeries {
-  number: number;
-  status: 'active' | 'completed' | 'broken';
-  seriesLength: number;
-  reward: number;
-  currency: string;
-  startDate: string;          // first completion date
-  endDate?: string;           // last completion date (completed/broken)
-  completions: Completion[];
-}
+import type { Completion, SeriesDefinition, ComputedSeries } from '../types';
 
 /** Check if a gap between two dates breaks a series (gap > 1 day) */
 export function isGapBreak(prevDate: string, nextDate: string): boolean {

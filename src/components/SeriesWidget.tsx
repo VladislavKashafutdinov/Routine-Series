@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { today } from '../utils/date';
 import { useTimeOffset } from '../hooks/TimeOffsetContext';
 import { useActivities } from '../hooks/useActivities';
-import type { ComputedSeries } from '../utils/series';
+import type { ComputedSeries } from '../types';
 
 interface Props {
   series: ComputedSeries;

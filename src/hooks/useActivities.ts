@@ -45,6 +45,7 @@ function build(
     totalUnissued: totalEarned - totalIssued,
     isDoneToday: actComps.some((c) => c.date === todayStr),
     completions: actComps,
+    series,
   };
 }
 
