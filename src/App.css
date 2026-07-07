@@ -377,6 +377,12 @@
   min-height: 40px;
 }
 
+.accordion__series-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .accordion__placeholder {
   font-size: 0.85rem;
   color: var(--text-secondary, #888);
