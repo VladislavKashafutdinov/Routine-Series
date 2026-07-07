@@ -206,6 +206,46 @@
 
 .sprog__dot--done { background: var(--primary); }
 
+/* === SeriesWidget === */
+
+.swidget {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.swidget__date {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #888);
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.swidget__squares {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+  flex: 1;
+}
+
+.swidget__dot {
+  width: 18px; height: 18px;
+  border-radius: 3px;
+  background: var(--border);
+}
+
+.swidget__dot--done { background: var(--primary); }
+
+.swidget__dot--clickable {
+  cursor: pointer;
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.swidget__dot--clickable:hover {
+  filter: brightness(1.2);
+}
+
 .card__done {
   width: 100%;
   padding: 8px;

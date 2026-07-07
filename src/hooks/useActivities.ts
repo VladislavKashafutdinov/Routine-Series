@@ -99,6 +99,17 @@ export function useActivities() {
     }
   };
 
+  const toggleDate = async (activityId: number, date: string) => {
+    const existing = await db.completions
+      .where({ activityId, date })
+      .first();
+    if (existing) {
+      await db.completions.delete(existing.id!);
+    } else {
+      await db.completions.add({ activityId, date });
+    }
+  };
+
   const addRewardIssue = async (activityId: number, amount: number, currency: string, date: string) => {
     await db.rewardIssues.add({ activityId, amount, currency, date });
   };
@@ -124,6 +135,6 @@ export function useActivities() {
     }
   };
 
-  return { activities, loading, addActivity, updateName, toggleDone,
+  return { activities, loading, addActivity, updateName, toggleDone, toggleDate,
     addRewardIssue, updateRewardIssue, deleteRewardIssue, deleteActivity };
 }
