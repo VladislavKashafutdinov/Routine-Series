@@ -1,6 +1,8 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
 import type { ActivityWithStreak } from '../types';
+
+type Tab = 'series' | 'rewards';
 
 interface Props {
   activity: ActivityWithStreak;
@@ -10,6 +12,7 @@ interface Props {
 
 export const ActivityAccordion = memo(function ActivityAccordion({ activity, isOpen, onToggle }: Props) {
   const { t } = useLocale();
+  const [tab, setTab] = useState<Tab>('series');
 
   return (
     <div className={`accordion ${isOpen ? 'accordion--open' : ''}`}>
@@ -33,8 +36,30 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
       </button>
       {isOpen && (
         <div className="accordion__body">
-          {/* TODO: tabs in 10b, 10c */}
-          <div className="accordion__placeholder">История серий / История начислений (будут в следующих задачах)</div>
+          <div className="accordion__tabs">
+            <button
+              className={`accordion__tab ${tab === 'series' ? 'accordion__tab--active' : ''}`}
+              onClick={() => setTab('series')}
+              type="button"
+            >
+              {t.seriesHistoryTab}
+            </button>
+            <button
+              className={`accordion__tab ${tab === 'rewards' ? 'accordion__tab--active' : ''}`}
+              onClick={() => setTab('rewards')}
+              type="button"
+            >
+              {t.rewardHistoryTab}
+            </button>
+          </div>
+          <div className="accordion__tab-content">
+            {tab === 'series' && (
+              <div className="accordion__placeholder">{t.seriesHistoryTab} (будет в 10b)</div>
+            )}
+            {tab === 'rewards' && (
+              <div className="accordion__placeholder">{t.rewardHistoryTab} (будет в 10c)</div>
+            )}
+          </div>
         </div>
       )}
     </div>

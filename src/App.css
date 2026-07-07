@@ -345,6 +345,38 @@
   border-top: 1px solid var(--border);
 }
 
+.accordion__tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+
+.accordion__tab {
+  padding: 6px 14px;
+  border: none;
+  background: none;
+  color: var(--text-secondary, #888);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.accordion__tab:hover {
+  color: var(--text);
+}
+
+.accordion__tab--active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.accordion__tab-content {
+  min-height: 40px;
+}
+
 .accordion__placeholder {
   font-size: 0.85rem;
   color: var(--text-secondary, #888);
