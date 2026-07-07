@@ -114,6 +114,13 @@
 
 .card--done { border: 2px solid var(--primary); }
 
+.card__header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
 .card__name {
   font-weight: 600;
   font-size: 0.95rem;
@@ -128,6 +135,20 @@
 }
 
 .card__name:hover { background: var(--bg); }
+
+.card__del {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0;
+}
+
+.card:hover .card__del { opacity: 1; }
+.card__del:hover { color: var(--danger); }
 
 /* === SeriesProgress === */
 

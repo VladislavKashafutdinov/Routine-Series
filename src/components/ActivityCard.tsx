@@ -10,7 +10,7 @@ interface Props {
 
 export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
   const { t } = useLocale();
-  const { updateName, toggleDone } = useActivities();
+  const { updateName, toggleDone, deleteActivity } = useActivities();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(activity.name);
 
@@ -24,24 +24,33 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
 
   return (
     <div className={`card ${activity.isDoneToday ? 'card--done' : ''}`}>
-      {editing ? (
-        <input
-          className="card__name-input"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={save}
-          onKeyDown={(e) => { if (e.key === 'Enter') save(); if (e.key === 'Escape') { setName(activity.name); setEditing(false); } }}
-          autoFocus
-        />
-      ) : (
-        <span
-          className="card__name"
-          title={activity.name}
-          onClick={() => { setName(activity.name); setEditing(true); }}
+      <div className="card__header">
+        {editing ? (
+          <input
+            className="card__name-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={save}
+            onKeyDown={(e) => { if (e.key === 'Enter') save(); if (e.key === 'Escape') { setName(activity.name); setEditing(false); } }}
+            autoFocus
+          />
+        ) : (
+          <span
+            className="card__name"
+            title={activity.name}
+            onClick={() => { setName(activity.name); setEditing(true); }}
+          >
+            {activity.name}
+          </span>
+        )}
+        <button
+          className="card__del"
+          onClick={() => { if (confirm(t.deleteConfirm(activity.name))) deleteActivity(activity.id); }}
+          title={t.deleteTitle}
         >
-          {activity.name}
-        </span>
-      )}
+          ×
+        </button>
+      </div>
       <SeriesProgress completions={activity.completions} seriesLength={activity.seriesLength} />
       <button
         className={`card__done ${activity.isDoneToday ? 'card__done--yes' : 'card__done--no'}`}
