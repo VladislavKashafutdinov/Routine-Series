@@ -3,6 +3,7 @@
 export interface Activity {
   id?: number;
   name: string;
+  archived: boolean;
   createdAt: Date;
 }
 
@@ -26,6 +27,7 @@ export interface Completion {
 export interface ActivityWithStreak {
   id: number;
   name: string;
+  archived: boolean;
   createdAt: Date;
   seriesLength: number;
   reward: number;

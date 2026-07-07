@@ -13,6 +13,7 @@ function build(activity: Activity, allCompletions: Completion[], todayStr: strin
   return {
     id: activity.id!,
     name: activity.name,
+    archived: activity.archived,
     createdAt: activity.createdAt,
     seriesLength: activity.seriesLength,
     reward: activity.reward,
@@ -35,7 +36,9 @@ export function useActivities() {
         db.completions.toArray(),
       ]);
       const todayStr = today();
-      return acts.map((a) => build(a, comps, todayStr));
+      return acts
+        .filter((a) => !a.archived)
+        .map((a) => build(a, comps, todayStr));
     }).subscribe({
       next: (data) => { setActivities(data); setLoading(false); },
       error: (err) => { console.error(err); setLoading(false); },
@@ -44,7 +47,7 @@ export function useActivities() {
   }, []);
 
   const addActivity = async (name: string, seriesLength: number, reward: number, currency: string) => {
-    const id = await db.activities.add({ name: name.trim(), createdAt: new Date() });
+    const id = await db.activities.add({ name: name.trim(), archived: false, createdAt: new Date() });
     await db.seriesDefinitions.add({
       activityId: id as number,
       seriesLength,
@@ -67,8 +70,15 @@ export function useActivities() {
   };
 
   const deleteActivity = async (activityId: number) => {
-    await db.activities.delete(activityId);
-    await db.completions.where({ activityId }).delete();
+    const hasCompletions = (await db.completions.where({ activityId }).count()) > 0;
+    // RewardIssue check will be added when the table exists (Task 6)
+    if (hasCompletions) {
+      await db.activities.update(activityId, { archived: true });
+    } else {
+      await db.activities.delete(activityId);
+      await db.seriesDefinitions.where({ activityId }).delete();
+      await db.completions.where({ activityId }).delete();
+    }
   };
 
   return { activities, loading, addActivity, toggleDone, deleteActivity };

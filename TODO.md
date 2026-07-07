@@ -179,9 +179,9 @@ App
 - [x] `addActivity`: создаёт Activity + первый SeriesDefinition
 
 ### 2. Архивация активностей
-- [ ] Добавить `archived: boolean` в `Activity`
-- [ ] Логика удаления: hard-delete при отсутствии Completion и RewardIssue, иначе `archived = true`
-- [ ] Фильтрация архивных активностей в дашборде и мониторинге
+- [x] Добавить `archived: boolean` в `Activity`
+- [x] Логика удаления: hard-delete при отсутствии Completion и RewardIssue, иначе `archived = true`
+- [x] Фильтрация архивных активностей в дашборде и мониторинге
 
 ### 3. Главная страница — Активности сегодня
 - [ ] `PageTabs` — переключение страниц в шапке
