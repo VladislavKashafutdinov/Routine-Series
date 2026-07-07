@@ -57,6 +57,10 @@ export function useActivities() {
     });
   };
 
+  const updateName = async (activityId: number, name: string) => {
+    await db.activities.update(activityId, { name: name.trim() });
+  };
+
   const toggleDone = async (activityId: number) => {
     const dateStr = today();
     const existing = await db.completions
@@ -81,5 +85,5 @@ export function useActivities() {
     }
   };
 
-  return { activities, loading, addActivity, toggleDone, deleteActivity };
+  return { activities, loading, addActivity, updateName, toggleDone, deleteActivity };
 }

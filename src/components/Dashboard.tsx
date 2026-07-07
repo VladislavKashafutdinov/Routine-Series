@@ -1,4 +1,5 @@
 import { AddActivity } from './AddActivity';
+import { ActivityCard } from './ActivityCard';
 import { useLocale } from '../i18n/LocaleContext';
 import { useActivities } from '../hooks/useActivities';
 
@@ -24,9 +25,7 @@ export function Dashboard() {
           <h2 className="dash-section__title">{t.pendingTitle}</h2>
           <div className="dash-grid">
             {pending.map((a) => (
-              <div key={a.id} className="dash-placeholder-card">
-                {a.name} — {a.currentStreak}/{a.seriesLength} дней
-              </div>
+              <ActivityCard key={a.id} activity={a} />
             ))}
           </div>
         </section>
@@ -37,9 +36,7 @@ export function Dashboard() {
           <h2 className="dash-section__title">{t.doneTitle}</h2>
           <div className="dash-grid">
             {done.map((a) => (
-              <div key={a.id} className="dash-placeholder-card dash-placeholder-card--done">
-                {a.name} — {a.currentStreak}/{a.seriesLength} дней
-              </div>
+              <ActivityCard key={a.id} activity={a} />
             ))}
           </div>
         </section>
