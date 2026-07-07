@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { liveQuery } from 'dexie';
 import { db } from '../db/db';
 import { today } from '../utils/date';
-import { computeCurrentStreak, computeLongestStreak } from '../utils/streak';
 import { useTimeOffset } from './TimeOffsetContext';
+import { computeSeries } from '../utils/series';
 import type { Activity, ActivityWithStreak, Completion, SeriesDefinition } from '../types';
 
 function latestDef(defs: SeriesDefinition[], activityId: number): SeriesDefinition {
@@ -18,9 +18,11 @@ function build(
   todayStr: string
 ): ActivityWithStreak {
   const def = latestDef(allDefs, activity.id!);
-  const dates = allCompletions
-    .filter((c) => c.activityId === activity.id)
-    .map((c) => c.date);
+  const actDefs = allDefs.filter((d) => d.activityId === activity.id);
+  const actComps = allCompletions.filter((c) => c.activityId === activity.id);
+  const series = computeSeries(actDefs, actComps, todayStr);
+
+  const activeSeries = series.find((s) => s.status === 'active');
 
   return {
     id: activity.id!,
@@ -30,10 +32,10 @@ function build(
     seriesLength: def?.seriesLength ?? 7,
     reward: def?.reward ?? 0,
     currency: def?.currency ?? '₽',
-    currentStreak: computeCurrentStreak(dates, todayStr),
-    longestStreak: computeLongestStreak(dates),
-    isDoneToday: dates.includes(todayStr),
-    completions: allCompletions.filter((c) => c.activityId === activity.id),
+    currentStreak: activeSeries ? activeSeries.completions.length : 0,
+    longestStreak: series.reduce((max, s) => Math.max(max, s.completions.length), 0),
+    isDoneToday: actComps.some((c) => c.date === todayStr),
+    completions: actComps,
   };
 }
 
