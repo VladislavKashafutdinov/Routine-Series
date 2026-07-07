@@ -52,11 +52,11 @@
 - [x] Будущие даты не кликабельны
 
 ### 9. Апгрейд Node.js до v26
-- [ ] Установить Node.js 26 LTS (совместимость с ESLint 9, современный JS)
-- [ ] Проверить `npm run build` (tsc + vite)
-- [ ] Проверить `npm run lint` (ESLint)
-- [ ] Проверить `npm run test` (Vitest)
-- [ ] Проверить `npm run dev` (Vite HMR)
+- [x] Установить Node.js 24 LTS (до 26 не дотянули, но structuredClone есть)
+- [x] Проверить `npm run build` (tsc + vite)
+- [x] Проверить `npm run lint` (ESLint)
+- [x] Проверить `npm run test` (Vitest)
+- [x] Проверить `npm run dev` (Vite HMR)
 
 ### 10. Страница мониторинга
 - [ ] `MonitoringPage` — список раскрывающихся блоков
@@ -81,5 +81,6 @@
 
 ## Отложено
 
+- [ ] Обновиться до Node.js 26 LTS (сейчас v24)
 - [ ] Заменить × на иконку корзины в кнопке удаления ActivityCard
 - [ ] TimeTravel: сделать скрываемым, менее заметным, компактным — это инструмент тестирования, а не пользовательский
