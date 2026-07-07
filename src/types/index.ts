@@ -4,9 +4,15 @@ export interface Activity {
   id?: number;
   name: string;
   createdAt: Date;
-  seriesLength: number; // target days per series (default 7)
-  reward: number;       // reward for completing a series
-  currency: string;     // e.g. "₽"
+}
+
+export interface SeriesDefinition {
+  id?: number;
+  activityId: number;
+  seriesLength: number;  // target days per series
+  reward: number;        // reward for completing a series
+  currency: string;      // e.g. "₽"
+  createdAt: Date;       // when this version was created
 }
 
 export interface Completion {

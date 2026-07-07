@@ -172,11 +172,11 @@ App
 ## Взять в работу
 
 ### 1. SeriesDefinition — модель и миграция
-- [ ] Добавить тип `SeriesDefinition` в types/index.ts
-- [ ] Убрать `seriesLength`, `reward`, `currency` из `Activity`
-- [ ] Добавить таблицу `seriesDefinitions` в db.ts (миграция v1→v2)
-- [ ] Миграция: перенос существующих параметров из Activity в SeriesDefinition
-- [ ] `addActivity`: создаёт Activity + первый SeriesDefinition
+- [x] Добавить тип `SeriesDefinition` в types/index.ts
+- [x] Убрать `seriesLength`, `reward`, `currency` из `Activity`
+- [x] Добавить таблицу `seriesDefinitions` в db.ts (миграция v1→v2)
+- [x] Миграция: перенос существующих параметров из Activity в SeriesDefinition
+- [x] `addActivity`: создаёт Activity + первый SeriesDefinition
 
 ### 2. Архивация активностей
 - [ ] Добавить `archived: boolean` в `Activity`

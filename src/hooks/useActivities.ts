@@ -44,7 +44,14 @@ export function useActivities() {
   }, []);
 
   const addActivity = async (name: string, seriesLength: number, reward: number, currency: string) => {
-    await db.activities.add({ name: name.trim(), createdAt: new Date(), seriesLength, reward, currency });
+    const id = await db.activities.add({ name: name.trim(), createdAt: new Date() });
+    await db.seriesDefinitions.add({
+      activityId: id as number,
+      seriesLength,
+      reward,
+      currency,
+      createdAt: new Date(),
+    });
   };
 
   const toggleDone = async (activityId: number) => {
