@@ -146,16 +146,14 @@ App
 │
 ├── [«Мониторинг»] MonitoringPage
 │   └── ActivityAccordion[]
-│       ├── Заголовок: название + RewardCounters
-│       ├── EditSeriesDefinition (кнопка → форма)
-│       ├── IssueRewardButton   («Начислить»)
-│       ├── Вкладка «История серий»
-│       │   └── SeriesWidget[]  (квадратики с кликами + даты старта/конца)
-│       └── Вкладка «История начислений»
-│           └── RewardIssueTable
-│               ├── RewardIssueRow[]
-│               │   └── InlineEdit (дата/сумма/валюта)
-│               └── Пагинация
+│       ├── Заголовок: activity.name + RewardCounters + «Начислить»
+│       ├── TabSwitcher («История серий» / «История начислений»)
+│       ├── [«История серий»] SeriesHistoryTab
+│       │   ├── SeriesWidget[]  (статус, квадратики с кликами, даты)
+│       │   └── Paginator
+│       └── [«История начислений»] ⏳
+│           └── ...
+│           └── Paginator
 │
 └── [«Архив»] ArchivePage
     └── ArchivedActivityRow[]

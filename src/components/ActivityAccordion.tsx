@@ -1,6 +1,8 @@
 import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
-import { SeriesWidget } from './SeriesWidget';
+import { RewardCounters } from './RewardCounters';
+import { TabSwitcher } from './TabSwitcher';
+import { SeriesHistoryTab } from './SeriesHistoryTab';
 import type { ActivityWithStreak } from '../types';
 
 type Tab = 'series' | 'rewards';
@@ -17,52 +19,31 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
 
   return (
     <div className={`accordion ${isOpen ? 'accordion--open' : ''}`}>
-      <button className="accordion__header" onClick={onToggle} type="button">
+      <div className="accordion__header" onClick={onToggle} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}>
         <span className="accordion__name">{activity.name}</span>
-        <span className="accordion__counters">
-          <span className="accordion__counter accordion__counter--earned" title={t.earned}>
-            {t.earned}: {activity.totalEarned}{activity.currency}
-          </span>
-          <span className="accordion__counter accordion__counter--issued" title={t.issued}>
-            {t.issued}: {activity.totalIssued}{activity.currency}
-          </span>
-          <span className="accordion__counter accordion__counter--unissued" title={t.unissued}>
-            {t.unissued}: {activity.totalUnissued}{activity.currency}
-          </span>
-        </span>
+        <RewardCounters
+          earned={activity.totalEarned}
+          issued={activity.totalIssued}
+          unissued={activity.totalUnissued}
+          currency={activity.currency}
+        />
         <button className="accordion__issue-btn" onClick={(e) => { e.stopPropagation(); }} type="button">
           {t.issueReward}
         </button>
         <span className={`accordion__arrow ${isOpen ? 'accordion__arrow--up' : ''}`}>▾</span>
-      </button>
+      </div>
       {isOpen && (
         <div className="accordion__body">
-          <div className="accordion__tabs">
-            <button
-              className={`accordion__tab ${tab === 'series' ? 'accordion__tab--active' : ''}`}
-              onClick={() => setTab('series')}
-              type="button"
-            >
-              {t.seriesHistoryTab}
-            </button>
-            <button
-              className={`accordion__tab ${tab === 'rewards' ? 'accordion__tab--active' : ''}`}
-              onClick={() => setTab('rewards')}
-              type="button"
-            >
-              {t.rewardHistoryTab}
-            </button>
-          </div>
+          <TabSwitcher
+            tabs={[
+              { key: 'series', label: t.seriesHistoryTab },
+              { key: 'rewards', label: t.rewardHistoryTab },
+            ]}
+            active={tab}
+            onSelect={(k) => setTab(k as Tab)}
+          />
           <div className="accordion__tab-content">
-            {tab === 'series' && (activity.series.length > 0 ? (
-              <div className="accordion__series-list">
-                {activity.series.map((s) => (
-                  <SeriesWidget key={s.number} series={s} activityId={activity.id} />
-                ))}
-              </div>
-            ) : (
-              <div className="accordion__placeholder">{t.noSeriesYet}</div>
-            ))}
+            {tab === 'series' && <SeriesHistoryTab activity={activity} />}
             {tab === 'rewards' && (
               <div className="accordion__placeholder">{t.rewardHistoryTab} (будет в 10c)</div>
             )}
