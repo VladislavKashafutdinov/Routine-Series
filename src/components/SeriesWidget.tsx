@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useLocale } from '../i18n/LocaleContext';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import { useActivities } from '../hooks/useActivities';
 import type { ComputedSeries } from '../types';
@@ -21,7 +22,16 @@ function datesFrom(start: string, count: number): string[] {
   return result;
 }
 
+function statusLabel(status: string, t: ReturnType<typeof import('../i18n/LocaleContext').useLocale>['t']): string {
+  switch (status) {
+    case 'completed': return t.statusCompleted;
+    case 'broken': return t.statusBroken;
+    default: return t.statusActive;
+  }
+}
+
 export const SeriesWidget = memo(function SeriesWidget({ series, activityId }: Props) {
+  const { t } = useLocale();
   const { virtualToday } = useVirtualToday();
   const { toggleDate } = useActivities();
   const todayStr = virtualToday;
@@ -47,12 +57,12 @@ export const SeriesWidget = memo(function SeriesWidget({ series, activityId }: P
   }
 
   const isClickable = (d: string): boolean => {
-    if (d > todayStr) return false; // future dates not clickable
+    if (d > todayStr) return false;
     return d === firstGray || d === lastGreen;
   };
 
   return (
-    <div className="swidget">
+    <div className={`swidget swidget--${series.status}`}>
       <span className="swidget__date swidget__date--start">{series.startDate}</span>
       <div className="swidget__squares">
         {dates.map((d) => {
@@ -69,6 +79,9 @@ export const SeriesWidget = memo(function SeriesWidget({ series, activityId }: P
         })}
       </div>
       <span className="swidget__date swidget__date--end">{dates[dates.length - 1]}</span>
+      <span className={`swidget__badge swidget__badge--${series.status}`}>
+        {statusLabel(series.status, t)}
+      </span>
     </div>
   );
 });
