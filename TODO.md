@@ -75,7 +75,7 @@ TimeTravel: должен управлять не смещением относи
   - [x] заменить все использования offset из TimeOffsetContext во всех компонентах на virtualToday из VirtualTodayContext
   - [x] если после предыдущих шагов TimeOffsetContext используется только в TimeTravel, то удалить TimeOffsetContext с соответствующей модификацией TimeTravel
   - [x] проверить использование функции today во всем коде. заменить на использование useVirtualToday
-  - [ ] заменить все использования реальной даты/времени во всех компонентах на virtualToday из VirtualTodayContext
+  - [x] заменить все использования реальной даты/времени во всех компонентах на virtualToday из VirtualTodayContext. Исключение - Activity.createdAt.
 
 #### 10c. Вкладка «История серий»
 - [x] `computeSeries` для активности → массив `ComputedSeries`

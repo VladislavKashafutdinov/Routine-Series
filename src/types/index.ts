@@ -4,6 +4,7 @@ export interface Activity {
   id?: number;
   name: string;
   archived: boolean;
+  /** Informational only — not used in business logic. For debugging/analytics. */
   createdAt: Date;
 }
 
