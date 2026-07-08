@@ -1,8 +1,9 @@
 import { memo, useState } from 'react';
-import { useLocale } from '../i18n/LocaleContext';
-import { SeriesWidget } from './SeriesWidget';
-import { Paginator } from './Paginator';
+
 import type { ActivityWithStreak } from '../types';
+import { Paginator } from './Paginator';
+import { SeriesWidget } from './SeriesWidget';
+import { useLocale } from '../i18n/LocaleContext';
 
 const PER_PAGE = 5;
 
