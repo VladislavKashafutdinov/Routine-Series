@@ -72,7 +72,7 @@
 TimeTravel: должен управлять не смещением относительно сегодня, а самим виртуальным «сегодня»
   - [x] добавить VirtualTodayContext (virtualToday, setVirtualToday)
   - [x] при изменении offset в TimeTravel должен изменяться virtualToday в VirtualTodayContext. TimeTravel одновременно работает с TimeOffsetContext и VirtualTodayContext
-  - [ ] заменить все использования offset из TimeOffsetContext во всех компонентах на virtualToday из VirtualTodayContext
+  - [x] заменить все использования offset из TimeOffsetContext во всех компонентах на virtualToday из VirtualTodayContext
   - [ ] если после предыдущих шагов TimeOffsetContext используется только в TimeTravel, то удалить TimeOffsetContext с соответствующей модификацией TimeTravel
   - [ ] заменить все использования реальной даты/времени во всех компонентах на virtualToday из VirtualTodayContext
 

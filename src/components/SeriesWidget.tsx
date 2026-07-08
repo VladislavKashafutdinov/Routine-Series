@@ -1,6 +1,5 @@
 import { memo } from 'react';
-import { today } from '../utils/date';
-import { useTimeOffset } from '../hooks/TimeOffsetContext';
+import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import { useActivities } from '../hooks/useActivities';
 import type { ComputedSeries } from '../types';
 
@@ -23,9 +22,9 @@ function datesFrom(start: string, count: number): string[] {
 }
 
 export const SeriesWidget = memo(function SeriesWidget({ series, activityId }: Props) {
-  const { offset } = useTimeOffset();
+  const { virtualToday } = useVirtualToday();
   const { toggleDate } = useActivities();
-  const todayStr = today(offset);
+  const todayStr = virtualToday;
   const dates = datesFrom(series.startDate, series.seriesLength);
   const doneSet = new Set(series.completions.map((c) => c.date));
 

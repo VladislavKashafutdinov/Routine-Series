@@ -1,6 +1,5 @@
 import { memo } from 'react';
-import { today } from '../utils/date';
-import { useTimeOffset } from '../hooks/TimeOffsetContext';
+import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import type { Completion } from '../types';
 
 interface Props {
@@ -22,9 +21,9 @@ function datesFrom(start: string, count: number): string[] {
 }
 
 export const SeriesProgress = memo(function SeriesProgress({ completions, seriesLength }: Props) {
-  const { offset } = useTimeOffset();
+  const { virtualToday } = useVirtualToday();
   const sorted = [...completions.map((c) => c.date)].sort();
-  const start = sorted.length > 0 ? sorted[0] : today(offset);
+  const start = sorted.length > 0 ? sorted[0] : virtualToday;
   const dates = datesFrom(start, seriesLength);
   const doneSet = new Set(completions.map((c) => c.date));
 

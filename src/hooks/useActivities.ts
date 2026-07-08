@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { liveQuery } from 'dexie';
 import { db } from '../db/db';
-import { today } from '../utils/date';
-import { useTimeOffset } from './TimeOffsetContext';
+import { useVirtualToday } from './VirtualTodayContext';
 import { computeSeries } from '../utils/series';
 import type { Activity, ActivityWithStreak, Completion, RewardIssue, SeriesDefinition } from '../types';
 
@@ -52,7 +51,7 @@ function build(
 export function useActivities() {
   const [activities, setActivities] = useState<ActivityWithStreak[]>([]);
   const [loading, setLoading] = useState(true);
-  const { offset } = useTimeOffset();
+  const { virtualToday } = useVirtualToday();
 
   useEffect(() => {
     const sub = liveQuery(async () => {
@@ -62,16 +61,15 @@ export function useActivities() {
         db.seriesDefinitions.toArray(),
         db.rewardIssues.toArray(),
       ]);
-      const todayStr = today(offset);
       return acts
         .filter((a) => !a.archived)
-        .map((a) => build(a, comps, defs, issues, todayStr));
+        .map((a) => build(a, comps, defs, issues, virtualToday));
     }).subscribe({
       next: (data) => { setActivities(data); setLoading(false); },
       error: (err) => { console.error(err); setLoading(false); },
     });
     return () => sub.unsubscribe();
-  }, [offset]);
+  }, [virtualToday]);
 
   const addActivity = async (name: string, seriesLength: number, reward: number, currency: string) => {
     const id = await db.activities.add({ name: name.trim(), archived: false, createdAt: new Date() });
@@ -89,14 +87,13 @@ export function useActivities() {
   };
 
   const toggleDone = async (activityId: number) => {
-    const dateStr = today(offset);
     const existing = await db.completions
-      .where({ activityId, date: dateStr })
+      .where({ activityId, date: virtualToday })
       .first();
     if (existing) {
       await db.completions.delete(existing.id!);
     } else {
-      await db.completions.add({ activityId, date: dateStr });
+      await db.completions.add({ activityId, date: virtualToday });
     }
   };
 
