@@ -73,7 +73,8 @@ TimeTravel: должен управлять не смещением относи
   - [x] добавить VirtualTodayContext (virtualToday, setVirtualToday)
   - [x] при изменении offset в TimeTravel должен изменяться virtualToday в VirtualTodayContext. TimeTravel одновременно работает с TimeOffsetContext и VirtualTodayContext
   - [x] заменить все использования offset из TimeOffsetContext во всех компонентах на virtualToday из VirtualTodayContext
-  - [ ] если после предыдущих шагов TimeOffsetContext используется только в TimeTravel, то удалить TimeOffsetContext с соответствующей модификацией TimeTravel
+  - [x] если после предыдущих шагов TimeOffsetContext используется только в TimeTravel, то удалить TimeOffsetContext с соответствующей модификацией TimeTravel
+  - [ ] проверить использование функции today во всем коде. заменить на использование useVirtualToday
   - [ ] заменить все использования реальной даты/времени во всех компонентах на virtualToday из VirtualTodayContext
 
 #### 10c. Вкладка «История серий»
@@ -81,6 +82,7 @@ TimeTravel: должен управлять не смещением относи
 - [x] Список `SeriesWidget` (уже создан в задаче 8)
 - [x] При наведении на квадратик в SeriesWidget — показывать дату (уже есть `title={d}`)
 - [x] Увеличить отступ между SeriesWidget когда несколько серий (квадратики налезают друг на друга)
+- [ ] Серии должны визуально отличаться друг от друга по своему `status`
 - [ ] Пагинация: по N серий на страницу, кнопки «Назад» / «Вперёд»
 - [ ] Если серий нет — заглушка «Серий пока нет»
 
