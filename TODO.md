@@ -74,7 +74,7 @@ TimeTravel: должен управлять не смещением относи
   - [x] при изменении offset в TimeTravel должен изменяться virtualToday в VirtualTodayContext. TimeTravel одновременно работает с TimeOffsetContext и VirtualTodayContext
   - [x] заменить все использования offset из TimeOffsetContext во всех компонентах на virtualToday из VirtualTodayContext
   - [x] если после предыдущих шагов TimeOffsetContext используется только в TimeTravel, то удалить TimeOffsetContext с соответствующей модификацией TimeTravel
-  - [ ] проверить использование функции today во всем коде. заменить на использование useVirtualToday
+  - [x] проверить использование функции today во всем коде. заменить на использование useVirtualToday
   - [ ] заменить все использования реальной даты/времени во всех компонентах на virtualToday из VirtualTodayContext
 
 #### 10c. Вкладка «История серий»

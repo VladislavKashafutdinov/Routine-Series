@@ -72,13 +72,17 @@ export function useActivities() {
   }, [virtualToday]);
 
   const addActivity = async (name: string, seriesLength: number, reward: number, currency: string) => {
-    const id = await db.activities.add({ name: name.trim(), archived: false, createdAt: new Date() });
+    const id = await db.activities.add({ 
+      name: name.trim(), 
+      archived: false, 
+      createdAt: new Date() 
+    });
     await db.seriesDefinitions.add({
       activityId: id as number,
       seriesLength,
       reward,
       currency,
-      createdAt: new Date(),
+      createdAt: new Date(virtualToday + 'T00:00:00'),
     });
   };
 
