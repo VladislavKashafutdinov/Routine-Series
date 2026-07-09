@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
-import { liveQuery } from 'dexie';
-import { db } from '../db/db';
-import { useVirtualToday } from './VirtualTodayContext';
-import { computeSeries } from '../utils/series';
 import type { Activity, ActivityWithStreak, Completion, RewardIssue, SeriesDefinition } from '../types';
+import { useEffect, useState } from 'react';
+
+import { computeSeries } from '../utils/series';
+import { db } from '../db/db';
+import { liveQuery } from 'dexie';
+import { useVirtualToday } from './VirtualTodayContext';
 
 function latestDef(defs: SeriesDefinition[], activityId: number): SeriesDefinition {
   const actDefs = defs.filter((d) => d.activityId === activityId);
@@ -138,6 +139,16 @@ export function useActivities() {
     }
   };
 
-  return { activities, loading, addActivity, updateName, toggleDone, toggleDate,
-    addRewardIssue, updateRewardIssue, deleteRewardIssue, deleteActivity };
+  return { 
+    activities, 
+    loading, 
+    addActivity, 
+    updateName, 
+    toggleDone, 
+    toggleDate,
+    addRewardIssue, 
+    updateRewardIssue, 
+    deleteRewardIssue, 
+    deleteActivity 
+  };
 }

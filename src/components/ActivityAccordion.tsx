@@ -4,6 +4,7 @@ import { RewardCounters } from './RewardCounters';
 import { TabSwitcher } from './TabSwitcher';
 import { SeriesHistoryTab } from './SeriesHistoryTab';
 import { RewardHistoryTab } from './RewardHistoryTab';
+import { IssueRewardModal } from './IssueRewardModal';
 import type { ActivityWithStreak } from '../types';
 import './ActivityAccordion.css';
 
@@ -18,6 +19,7 @@ interface Props {
 export const ActivityAccordion = memo(function ActivityAccordion({ activity, isOpen, onToggle }: Props) {
   const { t } = useLocale();
   const [tab, setTab] = useState<Tab>('series');
+  const [showIssue, setShowIssue] = useState(false);
 
   return (
     <div className={`accordion ${isOpen ? 'accordion--open' : ''}`}>
@@ -29,7 +31,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
           unissued={activity.totalUnissued}
           currency={activity.currency}
         />
-        <button className="accordion__issue-btn" onClick={(e) => { e.stopPropagation(); }} type="button">
+        <button className="accordion__issue-btn" onClick={(e) => { e.stopPropagation(); setShowIssue(true); }} type="button">
           {t.issueReward}
         </button>
         <span className={`accordion__arrow ${isOpen ? 'accordion__arrow--up' : ''}`}>▾</span>
@@ -50,6 +52,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
           </div>
         </div>
       )}
+      {showIssue && <IssueRewardModal activity={activity} onClose={() => setShowIssue(false)} />}
     </div>
   );
 });
