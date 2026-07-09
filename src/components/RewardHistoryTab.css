@@ -17,6 +17,28 @@
   border-bottom: 1px solid var(--border);
 }
 
+.rtable__cell {
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.rtable__cell:hover {
+  background: var(--hover, rgba(128,128,128,0.1));
+}
+
+.rtable__edit {
+  width: 100%;
+  padding: 2px 4px;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  outline: none;
+}
+
 .rtable__del-btn {
   background: none;
   border: none;
