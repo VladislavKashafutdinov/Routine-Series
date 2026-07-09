@@ -1,4 +1,5 @@
 import { useLocale } from '../i18n/LocaleContext';
+import './LangSwitcher.css';
 
 export function LangSwitcher() {
   const { lang, setLang } = useLocale();

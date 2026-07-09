@@ -2,6 +2,7 @@ import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
 import { useActivities } from '../hooks/useActivities';
 import { ActivityAccordion } from './ActivityAccordion';
+import './MonitoringPage.css';
 
 export const MonitoringPage = memo(function MonitoringPage() {
   const { t } = useLocale();

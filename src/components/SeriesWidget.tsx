@@ -3,6 +3,7 @@ import { useLocale } from '../i18n/LocaleContext';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import { useActivities } from '../hooks/useActivities';
 import type { ComputedSeries } from '../types';
+import './SeriesWidget.css';
 
 interface Props {
   series: ComputedSeries;

@@ -1,0 +1,12 @@
+.rcounters {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: var(--text-secondary, #888);
+}
+
+.rcounters__item--unissued {
+  color: var(--primary);
+  font-weight: 600;
+}

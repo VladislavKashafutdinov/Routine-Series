@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import './TabSwitcher.css';
 
 interface Tab {
   key: string;

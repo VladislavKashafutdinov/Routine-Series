@@ -4,6 +4,7 @@ import { RewardCounters } from './RewardCounters';
 import { TabSwitcher } from './TabSwitcher';
 import { SeriesHistoryTab } from './SeriesHistoryTab';
 import type { ActivityWithStreak } from '../types';
+import './ActivityAccordion.css';
 
 type Tab = 'series' | 'rewards';
 

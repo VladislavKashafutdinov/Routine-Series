@@ -1,0 +1,80 @@
+.accordion {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.accordion__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.accordion__header:hover {
+  background: var(--hover, rgba(128,128,128,0.1));
+}
+
+.accordion__name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.accordion__issue-btn {
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--primary);
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.accordion__issue-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.accordion__arrow {
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+
+.accordion__arrow--up {
+  transform: rotate(180deg);
+}
+
+.accordion__body {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.accordion__tab-content {
+  min-height: 40px;
+}
+
+.accordion__series-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.accordion__placeholder {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #888);
+  text-align: center;
+  padding: 16px;
+}

@@ -1,0 +1,9 @@
+.sprog { display: flex; gap: 3px; justify-content: center; }
+
+.sprog__dot {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  background: var(--border);
+}
+
+.sprog__dot--done { background: var(--primary); }

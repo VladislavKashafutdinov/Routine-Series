@@ -1,5 +1,4 @@
 import { memo, useState } from 'react';
-
 import type { ActivityWithStreak } from '../types';
 import { Paginator } from './Paginator';
 import { SeriesWidget } from './SeriesWidget';

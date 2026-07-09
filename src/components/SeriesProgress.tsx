@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import type { Completion } from '../types';
+import './SeriesProgress.css';
 
 interface Props {
   completions: Completion[];

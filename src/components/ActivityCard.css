@@ -1,0 +1,86 @@
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.card--done { border: 2px solid var(--primary); }
+
+.card__header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card__name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.card__name:hover { background: var(--bg); }
+
+.card__del {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0;
+}
+
+.card:hover .card__del { opacity: 1; }
+.card__del:hover { color: var(--danger); }
+
+.card__done {
+  width: 100%;
+  padding: 8px;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.card__done--no {
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--border);
+}
+
+.card__done--no:hover { border-color: var(--primary); color: var(--primary); }
+
+.card__done--yes {
+  background: var(--primary);
+  color: #fff;
+  border: 2px solid var(--primary);
+}
+
+.card__done--yes:hover { background: var(--primary-hover); }
+
+.card__name-input {
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 4px 8px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  width: 100%;
+}

@@ -2,6 +2,7 @@ import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
 import { useActivities } from '../hooks/useActivities';
 import { SeriesProgress } from './SeriesProgress';
+import './ActivityCard.css';
 import type { ActivityWithStreak } from '../types';
 
 interface Props {

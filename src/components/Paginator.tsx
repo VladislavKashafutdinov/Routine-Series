@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import './Paginator.css';
 
 interface Props {
   page: number;

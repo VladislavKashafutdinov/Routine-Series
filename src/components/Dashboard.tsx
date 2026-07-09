@@ -2,6 +2,7 @@ import { AddActivity } from './AddActivity';
 import { ActivityCard } from './ActivityCard';
 import { useLocale } from '../i18n/LocaleContext';
 import { useActivities } from '../hooks/useActivities';
+import './Dashboard.css';
 
 export function Dashboard() {
   const { t } = useLocale();

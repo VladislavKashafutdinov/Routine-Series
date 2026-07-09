@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
+import './RewardCounters.css';
 
 interface Props {
   earned: number;
