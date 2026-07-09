@@ -3,6 +3,7 @@ import { useLocale } from '../i18n/LocaleContext';
 import { RewardCounters } from './RewardCounters';
 import { TabSwitcher } from './TabSwitcher';
 import { SeriesHistoryTab } from './SeriesHistoryTab';
+import { RewardHistoryTab } from './RewardHistoryTab';
 import type { ActivityWithStreak } from '../types';
 import './ActivityAccordion.css';
 
@@ -45,9 +46,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
           />
           <div className="accordion__tab-content">
             {tab === 'series' && <SeriesHistoryTab activity={activity} />}
-            {tab === 'rewards' && (
-              <div className="accordion__placeholder">{t.rewardHistoryTab} (будет в 10c)</div>
-            )}
+            {tab === 'rewards' && <RewardHistoryTab activity={activity} />}
           </div>
         </div>
       )}

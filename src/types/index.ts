@@ -61,4 +61,5 @@ export interface ActivityWithStreak {
   isDoneToday: boolean;
   completions: Completion[];
   series: ComputedSeries[];
+  rewardIssues: RewardIssue[];
 }

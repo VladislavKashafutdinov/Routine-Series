@@ -45,6 +45,7 @@ function build(
     isDoneToday: actComps.some((c) => c.date === todayStr),
     completions: actComps,
     series,
+    rewardIssues: actRewardIssues,
   };
 }
 

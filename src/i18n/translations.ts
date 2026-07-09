@@ -47,6 +47,13 @@ export interface Strings {
   issued: string;
   unissued: string;
 
+  // RewardHistory
+  noRewardsYet: string;
+  rewardDate: string;
+  rewardAmount: string;
+  rewardCurrency: string;
+  rewardActions: string;
+
   // HistoryModal
   historyAria: (name: string) => string;
   currentStreak: string;
@@ -92,6 +99,12 @@ const en: Strings = {
   issued: 'Issued',
   unissued: 'To issue',
 
+  noRewardsYet: 'No rewards yet.',
+  rewardDate: 'Date',
+  rewardAmount: 'Amount',
+  rewardCurrency: 'Cur.',
+  rewardActions: 'Actions',
+
   historyAria: (name: string) => `History for ${name}`,
   currentStreak: 'Current streak:',
   daysSuffix: (n: number) => enPlural(n, 'day', 'days'),
@@ -135,6 +148,12 @@ const ru: Strings = {
   earned: 'Заработано',
   issued: 'Начислено',
   unissued: 'К начислению',
+
+  noRewardsYet: 'Начислений пока нет.',
+  rewardDate: 'Дата',
+  rewardAmount: 'Сумма',
+  rewardCurrency: 'Вал.',
+  rewardActions: 'Действия',
 
   historyAria: (name: string) => `История: ${name}`,
   currentStreak: 'Текущая серия:',
