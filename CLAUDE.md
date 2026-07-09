@@ -52,6 +52,7 @@ Current schema is described in [README.md § Структура данных](RE
 ## Workflow constraints
 
 - **Task-driven development** — code changes (add/modify/delete) are only allowed when there is a corresponding task in [TODO.md](TODO.md). Without a task, only documentation files may be edited: `CLAUDE.md`, `TODO.md`, `README.md`, `DONE.md`, `JOURNAL.md`.
+- **Per-component CSS** — each new component must have its own CSS file for styles that belong exclusively to that component (e.g. `ComponentName.css` in the same directory). Shared/global styles remain in `App.css` or `index.css`.
 - **Mark in-progress before starting** — when the next step is identified and the user explicitly says to begin work, mark the step as «в работе» in [TODO.md](TODO.md) before making any code changes.
 - **User verifies before done** — after implementation, the user reviews the result. Only mark a step as `[x]` done after the user's explicit confirmation.
 - **Bug workflow** — bugs are handled in a separate cycle:
