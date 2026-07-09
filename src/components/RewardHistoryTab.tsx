@@ -61,7 +61,7 @@ function EditableCell({
 
 export const RewardHistoryTab = memo(function RewardHistoryTab({ activity }: Props) {
   const { t } = useLocale();
-  const { updateRewardIssue } = useActivities();
+  const { updateRewardIssue, deleteRewardIssue } = useActivities();
   const [page, setPage] = useState(0);
   const [edit, setEdit] = useState<EditState | null>(null);
 
@@ -123,7 +123,11 @@ export const RewardHistoryTab = memo(function RewardHistoryTab({ activity }: Pro
                 onSave={(v) => handleSave(r, 'currency', v)}
               />
               <td>
-                <button className="rtable__del-btn" onClick={() => {/* TODO: 10d-iv */}} type="button">
+                <button className="rtable__del-btn" onClick={() => {
+                  if (confirm(t.deleteConfirm(String(r.amount) + r.currency))) {
+                    deleteRewardIssue(r.id!);
+                  }
+                }} type="button">
                   {t.deleteTitle}
                 </button>
               </td>
