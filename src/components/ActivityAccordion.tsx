@@ -5,6 +5,7 @@ import { TabSwitcher } from './TabSwitcher';
 import { SeriesHistoryTab } from './SeriesHistoryTab';
 import { RewardHistoryTab } from './RewardHistoryTab';
 import { IssueRewardModal } from './IssueRewardModal';
+import { EditSeriesDefinition } from './EditSeriesDefinition';
 import type { ActivityWithStreak } from '../types';
 import './ActivityAccordion.css';
 
@@ -38,6 +39,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
       </div>
       {isOpen && (
         <div className="accordion__body">
+          <EditSeriesDefinition activity={activity} />
           <TabSwitcher
             tabs={[
               { key: 'series', label: t.seriesHistoryTab },

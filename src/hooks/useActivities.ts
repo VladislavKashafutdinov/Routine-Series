@@ -126,6 +126,16 @@ export function useActivities() {
     await db.rewardIssues.delete(id);
   };
 
+  const addSeriesDefinition = async (activityId: number, seriesLength: number, reward: number, currency: string) => {
+    await db.seriesDefinitions.add({
+      activityId,
+      seriesLength,
+      reward,
+      currency,
+      createdAt: new Date(virtualToday + 'T00:00:00'),
+    });
+  };
+
   const deleteActivity = async (activityId: number) => {
     const hasCompletions = (await db.completions.where({ activityId }).count()) > 0;
     const hasRewardIssues = (await db.rewardIssues.where({ activityId }).count()) > 0;
@@ -146,9 +156,10 @@ export function useActivities() {
     updateName, 
     toggleDone, 
     toggleDate,
-    addRewardIssue, 
-    updateRewardIssue, 
-    deleteRewardIssue, 
-    deleteActivity 
+    addRewardIssue,
+    updateRewardIssue,
+    deleteRewardIssue,
+    addSeriesDefinition,
+    deleteActivity
   };
 }

@@ -54,6 +54,11 @@ export interface Strings {
   rewardCurrency: string;
   rewardActions: string;
 
+  // EditSeriesDefinition
+  editSeries: string;
+  editSeriesSave: string;
+  editSeriesCancel: string;
+
   // HistoryModal
   historyAria: (name: string) => string;
   currentStreak: string;
@@ -105,6 +110,10 @@ const en: Strings = {
   rewardCurrency: 'Cur.',
   rewardActions: 'Actions',
 
+  editSeries: 'Edit series',
+  editSeriesSave: 'Save',
+  editSeriesCancel: 'Cancel',
+
   historyAria: (name: string) => `History for ${name}`,
   currentStreak: 'Current streak:',
   daysSuffix: (n: number) => enPlural(n, 'day', 'days'),
@@ -154,6 +163,10 @@ const ru: Strings = {
   rewardAmount: 'Сумма',
   rewardCurrency: 'Вал.',
   rewardActions: 'Действия',
+
+  editSeries: 'Изменить серию',
+  editSeriesSave: 'Сохранить',
+  editSeriesCancel: 'Отмена',
 
   historyAria: (name: string) => `История: ${name}`,
   currentStreak: 'Текущая серия:',
