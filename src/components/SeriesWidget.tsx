@@ -64,22 +64,24 @@ export const SeriesWidget = memo(function SeriesWidget({ series, activityId }: P
 
   return (
     <div className={`swidget swidget--${series.status}`}>
-      <span className="swidget__date swidget__date--start">{series.startDate}</span>
-      <div className="swidget__squares">
-        {dates.map((d) => {
-          const done = doneSet.has(d);
-          const clickable = isClickable(d);
-          return (
-            <div
-              key={d}
-              className={`swidget__dot${done ? ' swidget__dot--done' : ''}${clickable ? ' swidget__dot--clickable' : ''}`}
-              title={d}
-              onClick={clickable ? () => { toggleDate(activityId, d); } : undefined}
-            />
-          );
-        })}
+      <div className="swidget__progress">
+        <span className="swidget__date swidget__date--start">{series.startDate}</span>
+        <div className="swidget__squares">
+          {dates.map((d) => {
+            const done = doneSet.has(d);
+            const clickable = isClickable(d);
+            return (
+              <div
+                key={d}
+                className={`swidget__dot${done ? ' swidget__dot--done' : ''}${clickable ? ' swidget__dot--clickable' : ''}`}
+                title={d}
+                onClick={clickable ? () => { toggleDate(activityId, d); } : undefined}
+              />
+            );
+          })}
+        </div>
+        <span className="swidget__date swidget__date--end">{dates[dates.length - 1]}</span>
       </div>
-      <span className="swidget__date swidget__date--end">{dates[dates.length - 1]}</span>
       <span className={`swidget__badge swidget__badge--${series.status}`}>
         {statusLabel(series.status, t)}
       </span>

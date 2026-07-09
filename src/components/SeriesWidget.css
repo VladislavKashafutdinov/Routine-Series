@@ -4,18 +4,27 @@
   gap: 6px;
 }
 
+.swidget__progress {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 6px;
+}
+
 .swidget__date {
   font-size: 0.75rem;
   color: var(--text-secondary, #888);
   white-space: nowrap;
-  min-width: 0;
 }
 
+.swidget__date--start { grid-column: 1; justify-self: end; margin-right: 6px; }
+.swidget__date--end { grid-column: 3; justify-self: start; margin-left: 6px; }
+
 .swidget__squares {
+  grid-column: 2;
   display: flex;
   gap: 3px;
   justify-content: center;
-  flex: 1;
 }
 
 .swidget__dot {
