@@ -10,6 +10,7 @@ import { SeriesDefinitionTab } from './SeriesDefinitionTab';
 import { SeriesHistoryTab } from './SeriesHistoryTab';
 import { SeriesWidget } from './SeriesWidget';
 import { TabSwitcher } from './TabSwitcher';
+import { UnissuedRow } from './UnissuedRow';
 import { useLocale } from '../i18n/LocaleContext';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import { latestDef } from '../hooks/useActivities';
@@ -31,8 +32,8 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
   const [showIssue, setShowIssue] = useState(false);
   const [issueInfo, setIssueInfo] = useState<{ currency: string; defaultAmount: number }>({ currency: '', defaultAmount: 0 });
 
-  const handleIssue = (c: string) => {
-    setIssueInfo({ currency: c, defaultAmount: unissuedByCurrency[c] });
+  const handleIssue = (currency: string, defaultAmount: number) => {
+    setIssueInfo({ currency, defaultAmount });
     setShowIssue(true);
   };
 
@@ -63,18 +64,12 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
         <span className="accordion__name">{activity.name}</span>
         <span className="accordion__unissued-list">
           {unissuedCurrencies.map((c) => (
-            <span key={c} className="accordion__unissued-row">
-              <span className="accordion__unissued">
-                {t.unissued}: {unissuedByCurrency[c]}{c}
-              </span>
-              <button
-                className="accordion__issue-btn"
-                onClick={(e) => { e.stopPropagation(); handleIssue(c); }}
-                type="button"
-              >
-                {t.issueReward}{c}
-              </button>
-            </span>
+            <UnissuedRow
+              key={c}
+              currency={c}
+              amount={unissuedByCurrency[c]}
+              onIssue={handleIssue}
+            />
           ))}
         </span>
         <span className={`accordion__arrow ${isOpen ? 'accordion__arrow--up' : ''}`}>▾</span>
