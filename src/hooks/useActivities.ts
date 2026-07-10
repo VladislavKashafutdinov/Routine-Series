@@ -136,6 +136,10 @@ export function useActivities() {
     });
   };
 
+  const unarchiveActivity = async (activityId: number) => {
+    await db.activities.update(activityId, { archived: false });
+  };
+
   const deleteActivity = async (activityId: number) => {
     const hasCompletions = (await db.completions.where({ activityId }).count()) > 0;
     const hasRewardIssues = (await db.rewardIssues.where({ activityId }).count()) > 0;
@@ -160,6 +164,7 @@ export function useActivities() {
     updateRewardIssue,
     deleteRewardIssue,
     addSeriesDefinition,
+    unarchiveActivity,
     deleteActivity
   };
 }
