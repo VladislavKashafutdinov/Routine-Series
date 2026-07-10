@@ -4,6 +4,7 @@ import { PageTabs } from './components/PageTabs';
 import { TimeTravel } from './components/TimeTravel';
 import { Dashboard } from './components/Dashboard';
 import { MonitoringPage } from './components/MonitoringPage';
+import { ArchivePage } from './components/ArchivePage';
 import type { Page } from './components/PageTabs';
 import './App.css';
 
@@ -21,7 +22,7 @@ export default function App() {
       <main className="app-main">
         {page === 'dashboard' && <Dashboard />}
         {page === 'monitoring' && <MonitoringPage />}
-        {page === 'archive' && <div className="app-placeholder">Архив (будет в задаче 11)</div>}
+        {page === 'archive' && <ArchivePage />}
       </main>
     </div>
   );

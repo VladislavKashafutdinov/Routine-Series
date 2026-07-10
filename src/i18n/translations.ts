@@ -59,6 +59,11 @@ export interface Strings {
   editSeriesSave: string;
   editSeriesCancel: string;
 
+  // Archive
+  archiveTitle: string;
+  archiveEmpty: string;
+  restore: string;
+
   // HistoryModal
   historyAria: (name: string) => string;
   currentStreak: string;
@@ -114,6 +119,10 @@ const en: Strings = {
   editSeriesSave: 'Save',
   editSeriesCancel: 'Cancel',
 
+  archiveTitle: 'Archive',
+  archiveEmpty: 'Archive is empty.',
+  restore: 'Restore',
+
   historyAria: (name: string) => `History for ${name}`,
   currentStreak: 'Current streak:',
   daysSuffix: (n: number) => enPlural(n, 'day', 'days'),
@@ -167,6 +176,10 @@ const ru: Strings = {
   editSeries: 'Изменить серию',
   editSeriesSave: 'Сохранить',
   editSeriesCancel: 'Отмена',
+
+  archiveTitle: 'Архив',
+  archiveEmpty: 'Архив пуст.',
+  restore: 'Восстановить',
 
   historyAria: (name: string) => `История: ${name}`,
   currentStreak: 'Текущая серия:',
