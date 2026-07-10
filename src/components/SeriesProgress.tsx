@@ -1,11 +1,11 @@
-import { memo } from 'react';
-import { useVirtualToday } from '../hooks/VirtualTodayContext';
-import type { Completion } from '../types';
 import './SeriesProgress.css';
 
+import { memo } from 'react';
+
 interface Props {
-  completions: Completion[];
+  startDate: string;
   seriesLength: number;
+  doneCount: number;
 }
 
 function datesFrom(start: string, count: number): string[] {
@@ -21,19 +21,15 @@ function datesFrom(start: string, count: number): string[] {
   return result;
 }
 
-export const SeriesProgress = memo(function SeriesProgress({ completions, seriesLength }: Props) {
-  const { virtualToday } = useVirtualToday();
-  const sorted = [...completions.map((c) => c.date)].sort();
-  const start = sorted.length > 0 ? sorted[0] : virtualToday;
-  const dates = datesFrom(start, seriesLength);
-  const doneSet = new Set(completions.map((c) => c.date));
+export const SeriesProgress = memo(function SeriesProgress({ startDate, seriesLength, doneCount }: Props) {
+  const dates = datesFrom(startDate, seriesLength);
 
   return (
     <div className="sprog">
-      {dates.map((d) => (
+      {dates.map((d, i) => (
         <div
-          key={d}
-          className={`sprog__dot ${doneSet.has(d) ? 'sprog__dot--done' : ''}`}
+          key={i}
+          className={`sprog__dot ${i < doneCount ? 'sprog__dot--done' : ''}`}
           title={d}
         />
       ))}

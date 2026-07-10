@@ -1,11 +1,13 @@
+import './ActivityCard.css';
+
+import { latestDef, useActivities } from '../hooks/useActivities';
 import { memo, useState } from 'react';
+
+import type { ActivityWithStreak } from '../types';
+import { SeriesProgress } from './SeriesProgress';
+import { computeSeries, findCurrentSeries } from '../utils/series';
 import { useLocale } from '../i18n/LocaleContext';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
-import { useActivities } from '../hooks/useActivities';
-import { computeSeries } from '../utils/series';
-import { SeriesProgress } from './SeriesProgress';
-import './ActivityCard.css';
-import type { ActivityWithStreak } from '../types';
 
 interface Props {
   activity: ActivityWithStreak;
@@ -18,14 +20,11 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
 
   // Find current series (window contains virtualToday)
   const series = computeSeries(activity.seriesDefinitions, activity.completions, virtualToday);
-  const currentSeries = series.find((s) => {
-    const d = new Date(s.startDate + 'T00:00:00');
-    d.setDate(d.getDate() + s.seriesLength - 1);
-    const end = d.toISOString().slice(0, 10);
-    return s.startDate <= virtualToday && virtualToday <= end;
-  });
+  const currentSeries = findCurrentSeries(series, virtualToday);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(activity.name);
+
+  const isDoneToday = activity.completions.some((c) => c.date === virtualToday);
 
   const save = () => {
     const trimmed = name.trim();
@@ -36,7 +35,7 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
   };
 
   return (
-    <div className={`card ${activity.isDoneToday ? 'card--done' : ''}`}>
+    <div className={`card ${isDoneToday ? 'card--done' : ''}`}>
       <div className="card__header">
         {editing ? (
           <input
@@ -66,15 +65,16 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
       </div>
       {activity.seriesDefinitions.length > 0 && (
         <SeriesProgress
-          completions={currentSeries ? currentSeries.completions : []}
-          seriesLength={currentSeries?.seriesLength ?? 7}
+          startDate={currentSeries ? currentSeries.startDate : virtualToday}
+          seriesLength={currentSeries ? currentSeries.seriesLength : latestDef(activity.seriesDefinitions, activity.id).seriesLength}
+          doneCount={currentSeries ? currentSeries.completions.length : 0}
         />
       )}
       <button
-        className={`card__done ${activity.isDoneToday ? 'card__done--yes' : 'card__done--no'}`}
+        className={`card__done ${isDoneToday ? 'card__done--yes' : 'card__done--no'}`}
         onClick={() => toggleDone(activity.id)}
       >
-        {activity.isDoneToday ? t.doneToday : t.markDone}
+        {isDoneToday ? t.doneToday : t.markDone}
       </button>
     </div>
   );

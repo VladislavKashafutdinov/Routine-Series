@@ -3,14 +3,16 @@ import { ActivityCard } from './ActivityCard';
 import { IssueBanner } from './IssueBanner';
 import { useLocale } from '../i18n/LocaleContext';
 import { useActivities } from '../hooks/useActivities';
+import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import './Dashboard.css';
 
 export function Dashboard() {
   const { t } = useLocale();
+  const { virtualToday } = useVirtualToday();
   const { activities, loading } = useActivities();
 
-  const pending = activities.filter((a) => !a.isDoneToday);
-  const done = activities.filter((a) => a.isDoneToday);
+  const pending = activities.filter((a) => !a.completions.some((c) => c.date === virtualToday));
+  const done = activities.filter((a) => a.completions.some((c) => c.date === virtualToday));
 
   return (
     <div className="dashboard">

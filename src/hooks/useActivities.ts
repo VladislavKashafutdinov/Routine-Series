@@ -15,7 +15,6 @@ function build(
   allCompletions: Completion[],
   allDefs: SeriesDefinition[],
   allRewardIssues: RewardIssue[],
-  todayStr: string
 ): ActivityWithStreak {
   const actDefs = allDefs.filter((d) => d.activityId === activity.id);
   const actComps = allCompletions.filter((c) => c.activityId === activity.id);
@@ -26,7 +25,6 @@ function build(
     name: activity.name,
     archived: activity.archived,
     createdAt: activity.createdAt,
-    isDoneToday: actComps.some((c) => c.date === todayStr),
     completions: actComps,
     rewardIssues: actRewardIssues,
     seriesDefinitions: actDefs,
@@ -48,8 +46,8 @@ export function useActivities() {
         db.rewardIssues.toArray(),
       ]);
       return {
-        active: acts.filter((a) => !a.archived).map((a) => build(a, comps, defs, issues, virtualToday)),
-        archived: acts.filter((a) => a.archived).map((a) => build(a, comps, defs, issues, virtualToday)),
+        active: acts.filter((a) => !a.archived).map((a) => build(a, comps, defs, issues)),
+        archived: acts.filter((a) => a.archived).map((a) => build(a, comps, defs, issues)),
       };
     }).subscribe({
       next: (data) => { setActivities(data.active); setArchivedActivities(data.archived); setLoading(false); },

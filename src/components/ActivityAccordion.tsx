@@ -15,7 +15,7 @@ import { useLocale } from '../i18n/LocaleContext';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import { latestDef } from '../hooks/useActivities';
 import { calcEarnedByCurrency, calcIssuedByCurrency, calcUnissuedByCurrency } from '../utils/rewards';
-import { computeSeries } from '../utils/series';
+import { computeSeries, findCurrentSeries } from '../utils/series';
 
 type Tab = 'defs' | 'series' | 'rewards' | 'completions';
 
@@ -56,20 +56,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
     .map(([c]) => c);
 
   // Current series — the one whose date window contains virtualToday
-  const currentSeries = series.find((s) => {
-    const windowEnd = datesEnd(s.startDate, s.seriesLength);
-    return s.startDate <= virtualToday && virtualToday <= windowEnd;
-  });
-
-  // Helper: last date of the series window
-  function datesEnd(start: string, count: number): string {
-    const d = new Date(start + 'T00:00:00');
-    d.setDate(d.getDate() + count - 1);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${dd}`;
-  }
+  const currentSeries = findCurrentSeries(series, virtualToday);
 
   return (
     <div className={`accordion ${isOpen ? 'accordion--open' : ''}`}>

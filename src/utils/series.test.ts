@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { computeSeries, isGapBreak } from './series';
-import type { Completion, SeriesDefinition } from '../types';
+import { computeSeries, findCurrentSeries, isGapBreak } from './series';
+import type { Completion, ComputedSeries, SeriesDefinition } from '../types';
 
 function def(overrides: Partial<SeriesDefinition> & { id: number }): SeriesDefinition {
   return {
@@ -151,5 +151,57 @@ describe('computeSeries', () => {
     expect(result).toHaveLength(2);
     expect(result[0].number).toBe(1);
     expect(result[1].number).toBe(2);
+  });
+});
+
+// ── findCurrentSeries ──
+
+function s(overrides: Partial<ComputedSeries> & { startDate: string }): ComputedSeries {
+  return {
+    number: 1,
+    status: 'active',
+    seriesLength: 7,
+    reward: 100,
+    currency: '₽',
+    completions: [],
+    definitionCreatedAt: new Date('2026-01-01'),
+    ...overrides,
+  };
+}
+
+describe('findCurrentSeries', () => {
+  it('returns series when virtualToday equals startDate', () => {
+    const series = [s({ startDate: '2026-07-10', seriesLength: 7 })];
+    expect(findCurrentSeries(series, '2026-07-10')).toBe(series[0]);
+  });
+
+  it('returns series when virtualToday equals end date', () => {
+    const series = [s({ startDate: '2026-07-10', seriesLength: 3 })];
+    expect(findCurrentSeries(series, '2026-07-12')).toBe(series[0]);
+  });
+
+  it('returns series when virtualToday is within window', () => {
+    const series = [s({ startDate: '2026-07-10', seriesLength: 7 })];
+    expect(findCurrentSeries(series, '2026-07-13')).toBe(series[0]);
+  });
+
+  it('returns undefined when virtualToday is before startDate', () => {
+    const series = [s({ startDate: '2026-07-10', seriesLength: 7 })];
+    expect(findCurrentSeries(series, '2026-07-09')).toBeUndefined();
+  });
+
+  it('returns undefined when virtualToday is after window', () => {
+    const series = [s({ startDate: '2026-07-10', seriesLength: 2 })];
+    expect(findCurrentSeries(series, '2026-07-12')).toBeUndefined();
+  });
+
+  it('returns undefined for empty array', () => {
+    expect(findCurrentSeries([], '2026-07-10')).toBeUndefined();
+  });
+
+  it('returns first matching when multiple series match', () => {
+    const a = s({ startDate: '2026-07-10', seriesLength: 5, number: 1 });
+    const b = s({ startDate: '2026-07-10', seriesLength: 5, number: 2 });
+    expect(findCurrentSeries([a, b], '2026-07-12')).toBe(a);
   });
 });

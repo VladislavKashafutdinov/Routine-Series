@@ -51,7 +51,6 @@ export interface ActivityWithStreak {
   name: string;
   archived: boolean;
   createdAt: Date;
-  isDoneToday: boolean;
   completions: Completion[];
   rewardIssues: RewardIssue[];
   seriesDefinitions: SeriesDefinition[];
