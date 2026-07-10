@@ -24,7 +24,8 @@
   grid-column: 2;
   display: flex;
   gap: 3px;
-  justify-content: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
 }
 
 .swidget__dot {
