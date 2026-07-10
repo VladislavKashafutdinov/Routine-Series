@@ -6,7 +6,7 @@ import { db } from '../db/db';
 import { liveQuery } from 'dexie';
 import { useVirtualToday } from './VirtualTodayContext';
 
-function latestDef(defs: SeriesDefinition[], activityId: number): SeriesDefinition {
+export function latestDef(defs: SeriesDefinition[], activityId: number): SeriesDefinition {
   const actDefs = defs.filter((d) => d.activityId === activityId);
   return actDefs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
 }
@@ -18,15 +18,12 @@ function build(
   allRewardIssues: RewardIssue[],
   todayStr: string
 ): ActivityWithStreak {
-  const def = latestDef(allDefs, activity.id!);
   const actDefs = allDefs.filter((d) => d.activityId === activity.id);
   const actComps = allCompletions.filter((c) => c.activityId === activity.id);
   const actRewardIssues = allRewardIssues.filter((r) => r.activityId === activity.id);
+
+  // Reward calculations still depend on computeSeries
   const series = computeSeries(actDefs, actComps, todayStr);
-
-  const activeSeries = series.find((s) => s.status === 'active');
-
-  // Per-currency breakdown
   const earnedByCurrency: Record<string, number> = {};
   const issuedByCurrency: Record<string, number> = {};
   for (const s of series.filter((s) => s.status === 'completed')) {
@@ -45,17 +42,11 @@ function build(
     name: activity.name,
     archived: activity.archived,
     createdAt: activity.createdAt,
-    seriesLength: def?.seriesLength ?? 7,
-    reward: def?.reward ?? 0,
-    currency: def?.currency ?? '₽',
-    currentStreak: activeSeries ? activeSeries.completions.length : 0,
-    longestStreak: series.reduce((max, s) => Math.max(max, s.completions.length), 0),
     earnedByCurrency,
     issuedByCurrency,
     unissuedByCurrency,
     isDoneToday: actComps.some((c) => c.date === todayStr),
     completions: actComps,
-    series,
     rewardIssues: actRewardIssues,
     seriesDefinitions: actDefs,
   };

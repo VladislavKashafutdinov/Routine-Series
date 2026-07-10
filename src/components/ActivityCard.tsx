@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
-import { useActivities } from '../hooks/useActivities';
+import { useActivities, latestDef } from '../hooks/useActivities';
 import { SeriesProgress } from './SeriesProgress';
 import './ActivityCard.css';
 import type { ActivityWithStreak } from '../types';
@@ -52,7 +52,7 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
           ×
         </button>
       </div>
-      <SeriesProgress completions={activity.completions} seriesLength={activity.seriesLength} />
+      <SeriesProgress completions={activity.completions} seriesLength={latestDef(activity.seriesDefinitions, activity.id).seriesLength} />
       <button
         className={`card__done ${activity.isDoneToday ? 'card__done--yes' : 'card__done--no'}`}
         onClick={() => toggleDone(activity.id)}

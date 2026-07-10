@@ -2,13 +2,13 @@ import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
 import { Paginator } from './Paginator';
 import { SeriesWidget } from './SeriesWidget';
-import type { ActivityWithStreak, ComputedSeries } from '../types';
+import type { ComputedSeries } from '../types';
 import './SeriesHistoryTab.css';
 
 const GROUPS_PER_PAGE = 5;
 
 interface Props {
-  activity: ActivityWithStreak;
+  series: ComputedSeries[];
 }
 
 interface Group {
@@ -20,13 +20,13 @@ interface Group {
   series: ComputedSeries[];
 }
 
-export const SeriesHistoryTab = memo(function SeriesHistoryTab({ activity }: Props) {
+export const SeriesHistoryTab = memo(function SeriesHistoryTab({ series }: Props) {
   const { t } = useLocale();
   const [page, setPage] = useState(0);
 
   // Group series by definitionCreatedAt
   const groups: Group[] = [];
-  for (const s of activity.series) {
+  for (const s of series) {
     const key = s.definitionCreatedAt.getTime().toString();
     const last = groups[groups.length - 1];
     if (last && last.key === key) {

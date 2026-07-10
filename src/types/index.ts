@@ -51,17 +51,11 @@ export interface ActivityWithStreak {
   name: string;
   archived: boolean;
   createdAt: Date;
-  seriesLength: number;
-  reward: number;
-  currency: string;
-  currentStreak: number;   // consecutive days up to today
-  longestStreak: number;    // best ever
   earnedByCurrency: Record<string, number>;
   issuedByCurrency: Record<string, number>;
   unissuedByCurrency: Record<string, number>;
   isDoneToday: boolean;
   completions: Completion[];
-  series: ComputedSeries[];
   rewardIssues: RewardIssue[];
   seriesDefinitions: SeriesDefinition[];
 }

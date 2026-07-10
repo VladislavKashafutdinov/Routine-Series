@@ -1,15 +1,19 @@
-import { memo, useState } from 'react';
+import './ActivityAccordion.css';
+
+import { memo, useMemo, useState } from 'react';
+
+import type { ActivityWithStreak } from '../types';
+import { CompletionsTab } from './CompletionsTab';
+import { IssueRewardModal } from './IssueRewardModal';
+import { RewardHistoryTab } from './RewardHistoryTab';
+import { SeriesDefinitionTab } from './SeriesDefinitionTab';
+import { SeriesHistoryTab } from './SeriesHistoryTab';
+import { SeriesWidget } from './SeriesWidget';
+import { TabSwitcher } from './TabSwitcher';
 import { useLocale } from '../i18n/LocaleContext';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
-import { TabSwitcher } from './TabSwitcher';
-import { SeriesHistoryTab } from './SeriesHistoryTab';
-import { RewardHistoryTab } from './RewardHistoryTab';
-import { IssueRewardModal } from './IssueRewardModal';
-import { SeriesDefinitionTab } from './SeriesDefinitionTab';
-import { CompletionsTab } from './CompletionsTab';
-import { SeriesWidget } from './SeriesWidget';
-import type { ActivityWithStreak } from '../types';
-import './ActivityAccordion.css';
+import { latestDef } from '../hooks/useActivities';
+import { computeSeries } from '../utils/series';
 
 type Tab = 'defs' | 'series' | 'rewards' | 'completions';
 
@@ -24,7 +28,13 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
   const { virtualToday } = useVirtualToday();
   const [tab, setTab] = useState<Tab>('series');
   const [showIssue, setShowIssue] = useState(false);
-  const [issueCurrency, setIssueCurrency] = useState(activity.currency);
+  const [issueCurrency, setIssueCurrency] = useState(latestDef(activity.seriesDefinitions, activity.id).currency);
+
+  // Compute series on the fly with current virtualToday
+  const series = useMemo(
+    () => computeSeries(activity.seriesDefinitions, activity.completions, virtualToday),
+    [activity.seriesDefinitions, activity.completions, virtualToday]
+  );
 
   // Currencies with unissued > 0
   const unissuedCurrencies = Object.entries(activity.unissuedByCurrency)
@@ -32,7 +42,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
     .map(([c]) => c);
 
   // Active series for display in header (fallback to empty widget)
-  const activeSeries = activity.series.find((s) => s.status === 'active');
+  const activeSeries = series.find((s) => s.status === 'active');
 
   return (
     <div className={`accordion ${isOpen ? 'accordion--open' : ''}`}>
@@ -59,7 +69,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
       <div className="accordion__active-series" onClick={(e) => e.stopPropagation()}>
         <SeriesWidget
           startDate={activeSeries ? activeSeries.startDate : virtualToday}
-          seriesLength={activeSeries ? activeSeries.seriesLength : activity.seriesLength}
+          seriesLength={activeSeries ? activeSeries.seriesLength : latestDef(activity.seriesDefinitions, activity.id).seriesLength}
           completions={activeSeries ? activeSeries.completions : []}
         />
       </div>
@@ -77,7 +87,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
           />
           <div className="accordion__tab-content">
             {tab === 'defs' && <SeriesDefinitionTab activity={activity} />}
-            {tab === 'series' && <SeriesHistoryTab activity={activity} />}
+            {tab === 'series' && <SeriesHistoryTab series={series} />}
             {tab === 'rewards' && <RewardHistoryTab activity={activity} />}
             {tab === 'completions' && <CompletionsTab activity={activity} />}
           </div>

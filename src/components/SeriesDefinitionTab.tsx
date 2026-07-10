@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
-import { useActivities } from '../hooks/useActivities';
+import { useActivities, latestDef } from '../hooks/useActivities';
 import type { ActivityWithStreak } from '../types';
 import './SeriesDefinitionTab.css';
 
@@ -16,10 +16,11 @@ export const SeriesDefinitionTab = memo(function SeriesDefinitionTab({ activity 
   const [page, setPage] = useState(0);
 
   // Show form for adding new definition
+  const def = latestDef(activity.seriesDefinitions, activity.id);
   const [showForm, setShowForm] = useState(false);
-  const [length, setLength] = useState(activity.seriesLength);
-  const [reward, setReward] = useState(activity.reward);
-  const [currency, setCurrency] = useState(activity.currency);
+  const [length, setLength] = useState(def.seriesLength);
+  const [reward, setReward] = useState(def.reward);
+  const [currency, setCurrency] = useState(def.currency);
 
   const defs = [...activity.seriesDefinitions].sort(
     (a, b) => b.createdAt.getTime() - a.createdAt.getTime()

@@ -17,7 +17,7 @@ User action
         → build() for each activity:
           - finds latest SeriesDefinition → seriesLength, reward, currency
           - calls computeSeries(defs, completions, virtualToday) → ComputedSeries[]
-          - derives currentStreak, longestStreak, totalEarned, totalIssued, totalUnissued
+          - derives earnedByCurrency, issuedByCurrency, unissuedByCurrency
           - checks today's completion → isDoneToday
         → ActivityWithStreak[] computed
           → Components re-render with updated data

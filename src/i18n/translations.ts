@@ -69,9 +69,7 @@ export interface Strings {
 
   // HistoryModal
   historyAria: (name: string) => string;
-  currentStreak: string;
   daysSuffix: (n: number) => string;
-  longestStreak: string;
   lastNDays: (n: number) => string;
   seriesHistory: string;
   noSeriesYet: string;
@@ -130,9 +128,7 @@ const en: Strings = {
   restoreConfirm: (name: string) => `Restore "${name}"?`,
 
   historyAria: (name: string) => `History for ${name}`,
-  currentStreak: 'Current streak:',
   daysSuffix: (n: number) => enPlural(n, 'day', 'days'),
-  longestStreak: 'Longest streak:',
   lastNDays: (n: number) => `Last ${n} days`,
   seriesHistory: 'Series history',
   noSeriesYet: 'No series yet.',
@@ -191,9 +187,7 @@ const ru: Strings = {
   restoreConfirm: (name: string) => `Восстановить «${name}»?`,
 
   historyAria: (name: string) => `История: ${name}`,
-  currentStreak: 'Текущая серия:',
   daysSuffix: (n: number) => ruPlural(n, 'день', 'дня', 'дней'),
-  longestStreak: 'Лучшая серия:',
   lastNDays: (n: number) => `Последние ${n} ${ruPlural(n, 'день', 'дня', 'дней')}`,
   seriesHistory: 'История серий',
   noSeriesYet: 'Серий пока нет.',

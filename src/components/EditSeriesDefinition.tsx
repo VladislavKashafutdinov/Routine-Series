@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
-import { useActivities } from '../hooks/useActivities';
+import { useActivities, latestDef } from '../hooks/useActivities';
 import type { ActivityWithStreak } from '../types';
 import './EditSeriesDefinition.css';
 
@@ -12,9 +12,10 @@ export const EditSeriesDefinition = memo(function EditSeriesDefinition({ activit
   const { t } = useLocale();
   const { addSeriesDefinition } = useActivities();
   const [open, setOpen] = useState(false);
-  const [length, setLength] = useState(activity.seriesLength);
-  const [reward, setReward] = useState(activity.reward);
-  const [currency, setCurrency] = useState(activity.currency);
+  const def = latestDef(activity.seriesDefinitions, activity.id);
+  const [length, setLength] = useState(def.seriesLength);
+  const [reward, setReward] = useState(def.reward);
+  const [currency, setCurrency] = useState(def.currency);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
