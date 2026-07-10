@@ -6,10 +6,11 @@ import { SeriesHistoryTab } from './SeriesHistoryTab';
 import { RewardHistoryTab } from './RewardHistoryTab';
 import { IssueRewardModal } from './IssueRewardModal';
 import { SeriesDefinitionTab } from './SeriesDefinitionTab';
+import { CompletionsTab } from './CompletionsTab';
 import type { ActivityWithStreak } from '../types';
 import './ActivityAccordion.css';
 
-type Tab = 'defs' | 'series' | 'rewards';
+type Tab = 'defs' | 'series' | 'rewards' | 'completions';
 
 interface Props {
   activity: ActivityWithStreak;
@@ -44,6 +45,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
               { key: 'defs', label: t.defsTab },
               { key: 'series', label: t.seriesHistoryTab },
               { key: 'rewards', label: t.rewardHistoryTab },
+              { key: 'completions', label: t.completionsTab },
             ]}
             active={tab}
             onSelect={(k) => setTab(k as Tab)}
@@ -52,6 +54,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
             {tab === 'defs' && <SeriesDefinitionTab activity={activity} />}
             {tab === 'series' && <SeriesHistoryTab activity={activity} />}
             {tab === 'rewards' && <RewardHistoryTab activity={activity} />}
+            {tab === 'completions' && <CompletionsTab activity={activity} />}
           </div>
         </div>
       )}
