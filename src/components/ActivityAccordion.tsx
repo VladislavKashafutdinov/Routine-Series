@@ -6,6 +6,7 @@ import { RewardHistoryTab } from './RewardHistoryTab';
 import { IssueRewardModal } from './IssueRewardModal';
 import { SeriesDefinitionTab } from './SeriesDefinitionTab';
 import { CompletionsTab } from './CompletionsTab';
+import { SeriesWidget } from './SeriesWidget';
 import type { ActivityWithStreak } from '../types';
 import './ActivityAccordion.css';
 
@@ -27,6 +28,9 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
   const unissuedCurrencies = Object.entries(activity.unissuedByCurrency)
     .filter(([, v]) => v > 0)
     .map(([c]) => c);
+
+  // Active series for display in header
+  const activeSeries = activity.series.find((s) => s.status === 'active');
 
   return (
     <div className={`accordion ${isOpen ? 'accordion--open' : ''}`}>
@@ -50,6 +54,11 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
         </span>
         <span className={`accordion__arrow ${isOpen ? 'accordion__arrow--up' : ''}`}>▾</span>
       </div>
+      {activeSeries && (
+        <div className="accordion__active-series" onClick={(e) => e.stopPropagation()}>
+          <SeriesWidget series={activeSeries} activityId={activity.id} />
+        </div>
+      )}
       {isOpen && (
         <div className="accordion__body">
           <TabSwitcher

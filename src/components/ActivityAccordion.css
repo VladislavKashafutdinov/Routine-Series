@@ -93,6 +93,11 @@
   gap: 14px;
 }
 
+.accordion__active-series {
+  padding: 6px 12px 10px;
+  border-top: 1px solid var(--border);
+}
+
 .accordion__placeholder {
   font-size: 0.85rem;
   color: var(--text-secondary, #888);
