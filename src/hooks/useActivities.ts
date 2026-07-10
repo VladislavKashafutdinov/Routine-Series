@@ -1,7 +1,6 @@
 import type { Activity, ActivityWithStreak, Completion, RewardIssue, SeriesDefinition } from '../types';
 import { useEffect, useState } from 'react';
 
-import { computeSeries } from '../utils/series';
 import { db } from '../db/db';
 import { liveQuery } from 'dexie';
 import { useVirtualToday } from './VirtualTodayContext';
@@ -22,29 +21,11 @@ function build(
   const actComps = allCompletions.filter((c) => c.activityId === activity.id);
   const actRewardIssues = allRewardIssues.filter((r) => r.activityId === activity.id);
 
-  // Reward calculations still depend on computeSeries
-  const series = computeSeries(actDefs, actComps, todayStr);
-  const earnedByCurrency: Record<string, number> = {};
-  const issuedByCurrency: Record<string, number> = {};
-  for (const s of series.filter((s) => s.status === 'completed')) {
-    earnedByCurrency[s.currency] = (earnedByCurrency[s.currency] || 0) + s.reward;
-  }
-  for (const r of actRewardIssues) {
-    issuedByCurrency[r.currency] = (issuedByCurrency[r.currency] || 0) + r.amount;
-  }
-  const unissuedByCurrency: Record<string, number> = {};
-  for (const c of new Set([...Object.keys(earnedByCurrency), ...Object.keys(issuedByCurrency)])) {
-    unissuedByCurrency[c] = (earnedByCurrency[c] || 0) - (issuedByCurrency[c] || 0);
-  }
-
   return {
     id: activity.id!,
     name: activity.name,
     archived: activity.archived,
     createdAt: activity.createdAt,
-    earnedByCurrency,
-    issuedByCurrency,
-    unissuedByCurrency,
     isDoneToday: actComps.some((c) => c.date === todayStr),
     completions: actComps,
     rewardIssues: actRewardIssues,

@@ -1,24 +1,21 @@
 import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
-import { useActivities, latestDef } from '../hooks/useActivities';
+import { useActivities } from '../hooks/useActivities';
 import type { ActivityWithStreak } from '../types';
 import './IssueRewardModal.css';
 
 interface Props {
   activity: ActivityWithStreak;
   onClose: () => void;
-  currencyOverride?: string;
+  initialCurrency: string;
+  defaultAmount: number;
 }
 
-export const IssueRewardModal = memo(function IssueRewardModal({ activity, onClose, currencyOverride }: Props) {
+export const IssueRewardModal = memo(function IssueRewardModal({ activity, onClose, initialCurrency, defaultAmount }: Props) {
   const { t, lang } = useLocale();
   const { virtualToday } = useVirtualToday();
   const { addRewardIssue } = useActivities();
-
-  const def = latestDef(activity.seriesDefinitions, activity.id);
-  const initialCurrency = currencyOverride || def.currency;
-  const defaultAmount = activity.unissuedByCurrency[initialCurrency] || def.reward;
 
   const [date, setDate] = useState(virtualToday);
   const [amount, setAmount] = useState(String(defaultAmount));

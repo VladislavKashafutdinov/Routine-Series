@@ -13,6 +13,7 @@ import { TabSwitcher } from './TabSwitcher';
 import { useLocale } from '../i18n/LocaleContext';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import { latestDef } from '../hooks/useActivities';
+import { calcEarnedByCurrency, calcIssuedByCurrency, calcUnissuedByCurrency } from '../utils/rewards';
 import { computeSeries } from '../utils/series';
 
 type Tab = 'defs' | 'series' | 'rewards' | 'completions';
@@ -28,7 +29,12 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
   const { virtualToday } = useVirtualToday();
   const [tab, setTab] = useState<Tab>('series');
   const [showIssue, setShowIssue] = useState(false);
-  const [issueCurrency, setIssueCurrency] = useState(latestDef(activity.seriesDefinitions, activity.id).currency);
+  const [issueInfo, setIssueInfo] = useState<{ currency: string; defaultAmount: number }>({ currency: '', defaultAmount: 0 });
+
+  const handleIssue = (c: string) => {
+    setIssueInfo({ currency: c, defaultAmount: unissuedByCurrency[c] });
+    setShowIssue(true);
+  };
 
   // Compute series on the fly with current virtualToday
   const series = useMemo(
@@ -36,8 +42,15 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
     [activity.seriesDefinitions, activity.completions, virtualToday]
   );
 
+  // Compute per-currency unissued from series + rewardIssues
+  const unissuedByCurrency = useMemo(() => {
+    const earned = calcEarnedByCurrency(series);
+    const issued = calcIssuedByCurrency(activity.rewardIssues);
+    return calcUnissuedByCurrency(earned, issued);
+  }, [series, activity.rewardIssues]);
+
   // Currencies with unissued > 0
-  const unissuedCurrencies = Object.entries(activity.unissuedByCurrency)
+  const unissuedCurrencies = Object.entries(unissuedByCurrency)
     .filter(([, v]) => v > 0)
     .map(([c]) => c);
 
@@ -52,11 +65,11 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
           {unissuedCurrencies.map((c) => (
             <span key={c} className="accordion__unissued-row">
               <span className="accordion__unissued">
-                {t.unissued}: {activity.unissuedByCurrency[c]}{c}
+                {t.unissued}: {unissuedByCurrency[c]}{c}
               </span>
               <button
                 className="accordion__issue-btn"
-                onClick={(e) => { e.stopPropagation(); setIssueCurrency(c); setShowIssue(true); }}
+                onClick={(e) => { e.stopPropagation(); handleIssue(c); }}
                 type="button"
               >
                 {t.issueReward}{c}
@@ -97,7 +110,8 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
         <IssueRewardModal
           activity={activity}
           onClose={() => setShowIssue(false)}
-          currencyOverride={issueCurrency}
+          initialCurrency={issueInfo.currency}
+          defaultAmount={issueInfo.defaultAmount}
         />
       )}
     </div>

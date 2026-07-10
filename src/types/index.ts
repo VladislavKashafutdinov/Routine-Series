@@ -51,9 +51,6 @@ export interface ActivityWithStreak {
   name: string;
   archived: boolean;
   createdAt: Date;
-  earnedByCurrency: Record<string, number>;
-  issuedByCurrency: Record<string, number>;
-  unissuedByCurrency: Record<string, number>;
   isDoneToday: boolean;
   completions: Completion[];
   rewardIssues: RewardIssue[];
