@@ -25,10 +25,20 @@ function build(
   const series = computeSeries(actDefs, actComps, todayStr);
 
   const activeSeries = series.find((s) => s.status === 'active');
-  const totalEarned = series
-    .filter((s) => s.status === 'completed')
-    .reduce((sum, s) => sum + s.reward, 0);
-  const totalIssued = actRewardIssues.reduce((sum, r) => sum + r.amount, 0);
+
+  // Per-currency breakdown
+  const earnedByCurrency: Record<string, number> = {};
+  const issuedByCurrency: Record<string, number> = {};
+  for (const s of series.filter((s) => s.status === 'completed')) {
+    earnedByCurrency[s.currency] = (earnedByCurrency[s.currency] || 0) + s.reward;
+  }
+  for (const r of actRewardIssues) {
+    issuedByCurrency[r.currency] = (issuedByCurrency[r.currency] || 0) + r.amount;
+  }
+  const unissuedByCurrency: Record<string, number> = {};
+  for (const c of new Set([...Object.keys(earnedByCurrency), ...Object.keys(issuedByCurrency)])) {
+    unissuedByCurrency[c] = (earnedByCurrency[c] || 0) - (issuedByCurrency[c] || 0);
+  }
 
   return {
     id: activity.id!,
@@ -40,9 +50,9 @@ function build(
     currency: def?.currency ?? '₽',
     currentStreak: activeSeries ? activeSeries.completions.length : 0,
     longestStreak: series.reduce((max, s) => Math.max(max, s.completions.length), 0),
-    totalEarned,
-    totalIssued,
-    totalUnissued: totalEarned - totalIssued,
+    earnedByCurrency,
+    issuedByCurrency,
+    unissuedByCurrency,
     isDoneToday: actComps.some((c) => c.date === todayStr),
     completions: actComps,
     series,

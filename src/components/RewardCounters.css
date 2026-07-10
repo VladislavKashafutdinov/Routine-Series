@@ -6,6 +6,16 @@
   color: var(--text-secondary, #888);
 }
 
+.rcounters__currency-group {
+  display: flex;
+  gap: 6px;
+}
+
+.rcounters__currency-group + .rcounters__currency-group {
+  border-left: 1px solid var(--border);
+  padding-left: 10px;
+}
+
 .rcounters__item--unissued {
   color: var(--primary);
   font-weight: 600;

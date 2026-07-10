@@ -28,10 +28,8 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
       <div className="accordion__header" onClick={onToggle} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}>
         <span className="accordion__name">{activity.name}</span>
         <RewardCounters
-          earned={activity.totalEarned}
-          issued={activity.totalIssued}
-          unissued={activity.totalUnissued}
-          currency={activity.currency}
+          earnedByCurrency={activity.earnedByCurrency}
+          issuedByCurrency={activity.issuedByCurrency}
         />
         <button className="accordion__issue-btn" onClick={(e) => { e.stopPropagation(); setShowIssue(true); }} type="button">
           {t.issueReward}

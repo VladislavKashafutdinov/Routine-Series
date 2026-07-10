@@ -15,7 +15,7 @@ export const IssueRewardModal = memo(function IssueRewardModal({ activity, onClo
   const { virtualToday } = useVirtualToday();
   const { addRewardIssue } = useActivities();
 
-  const defaultAmount = activity.totalUnissued > 0 ? activity.totalUnissued : activity.reward;
+  const defaultAmount = activity.unissuedByCurrency[activity.currency] || activity.reward;
 
   const [date, setDate] = useState(virtualToday);
   const [amount, setAmount] = useState(String(defaultAmount));

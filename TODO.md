@@ -17,8 +17,14 @@
 - [x] Заголовок группы: длина / награда / валюта / дата создания SeriesDefinition
 
 ### 16. Мультивалютные счётчики наград
-- [ ] RewardCounters: показывать earned/issued/unissued по каждой валюте отдельно
-- [ ] Расчёт наград по каждой валюте согласно VISION.md § «Как считается награда»
+- [x] Добавить `earnedByCurrency`, `issuedByCurrency`, `unissuedByCurrency` в модель
+- [x] `RewardCounters`: показывать earned/issued/unissued по каждой валюте отдельно
+- [x] `IssueRewardModal` — сумма по умолчанию: unissuedByCurrency для валюты текущего SeriesDefinition
+- [x] `RewardCounters` — убрать fallback на total-поля, показывать всегда через ByCurrency
+- [x] Заменить все использования `totalEarned/Issued/Unissued` на ByCurrency-поля
+- [x] Удалить `totalEarned`, `totalIssued`, `totalUnissued` из `ActivityWithStreak`
+- [x] Расчёт наград по каждой валюте согласно VISION.md § «Как считается награда»
+- [ ] Счетчики по каждой валюте в `RewardCounters` должны находиться на отдельных строках
 
 ### 17. Экспорт / Импорт
 - [ ] Экспорт: все таблицы БД → JSON-файл, скачивание

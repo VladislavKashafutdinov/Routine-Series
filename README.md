@@ -62,7 +62,7 @@ App
 │
 ├── [«Мониторинг»] MonitoringPage
 │   └── ActivityAccordion[]     (один открыт одновременно)
-│       ├── Header: activity.name + RewardCounters + «Начислить»
+│       ├── Header: activity.name + RewardCounters (per-currency) + «Начислить»
 │       ├── IssueRewardModal    (оверлей: дата/сумма/валюта → addRewardIssue)
 │       ├── TabSwitcher         («Параметры» / «История серий» / «История начислений» / «Календарь»)
 │       ├── [defs] SeriesDefinitionTab

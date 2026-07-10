@@ -56,9 +56,9 @@ export interface ActivityWithStreak {
   currency: string;
   currentStreak: number;   // consecutive days up to today
   longestStreak: number;    // best ever
-  totalEarned: number;      // sum of rewards for completed series
-  totalIssued: number;      // sum of RewardIssue amounts
-  totalUnissued: number;    // earned − issued
+  earnedByCurrency: Record<string, number>;
+  issuedByCurrency: Record<string, number>;
+  unissuedByCurrency: Record<string, number>;
   isDoneToday: boolean;
   completions: Completion[];
   series: ComputedSeries[];
