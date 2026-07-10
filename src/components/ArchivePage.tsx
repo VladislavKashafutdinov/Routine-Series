@@ -5,7 +5,7 @@ import './ArchivePage.css';
 
 export const ArchivePage = memo(function ArchivePage() {
   const { t } = useLocale();
-  const { archivedActivities, loading } = useActivities();
+  const { archivedActivities, loading, unarchiveActivity } = useActivities();
 
   if (loading) return <p className="app-placeholder">{t.loading}</p>;
 
@@ -20,7 +20,11 @@ export const ArchivePage = memo(function ArchivePage() {
             <div key={a.id} className="archive__row">
               <span className="archive__name">{a.name}</span>
               <span className="archive__comps">{a.completions.length} {t.daysSuffix(a.completions.length)}</span>
-              <button className="archive__restore" onClick={() => {/* TODO: restore */}} type="button">
+              <button className="archive__restore" onClick={() => {
+                if (confirm(t.restoreConfirm(a.name))) {
+                  unarchiveActivity(a.id);
+                }
+              }} type="button">
                 {t.restore}
               </button>
             </div>

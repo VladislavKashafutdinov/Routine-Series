@@ -63,6 +63,7 @@ export interface Strings {
   archiveTitle: string;
   archiveEmpty: string;
   restore: string;
+  restoreConfirm: (name: string) => string;
 
   // HistoryModal
   historyAria: (name: string) => string;
@@ -122,6 +123,7 @@ const en: Strings = {
   archiveTitle: 'Archive',
   archiveEmpty: 'Archive is empty.',
   restore: 'Restore',
+  restoreConfirm: (name: string) => `Restore "${name}"?`,
 
   historyAria: (name: string) => `History for ${name}`,
   currentStreak: 'Current streak:',
@@ -180,6 +182,7 @@ const ru: Strings = {
   archiveTitle: 'Архив',
   archiveEmpty: 'Архив пуст.',
   restore: 'Восстановить',
+  restoreConfirm: (name: string) => `Восстановить «${name}»?`,
 
   historyAria: (name: string) => `История: ${name}`,
   currentStreak: 'Текущая серия:',

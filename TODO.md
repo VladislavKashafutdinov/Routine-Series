@@ -137,12 +137,11 @@ TimeTravel: должен управлять не смещением относи
 #### 12c. `ArchivedActivityRow` — строка
 - [x] Название активности (нередактируемое)
 - [x] Количество completions (информационно)
-- [ ] Кнопка «Восстановить» с подтверждением
-- [ ] После восстановления — активность появляется в дашборде
+- [x] Кнопка «Восстановить»: подтверждение + `unarchiveActivity` → активность возвращается в дашборд
 
 #### 12d. i18n и стили
-- [ ] Строки: archiveTitle, archiveEmpty, restore, restoreConfirm (en/ru)
-- [ ] CSS: ArchivePage.css, ArchivedActivityRow.css (или один общий)
+- [x] Строки: archiveTitle, archiveEmpty, restore, restoreConfirm (en/ru)
+- [x] CSS: ArchivePage.css, ArchivedActivityRow.css (или один общий)
 
 ### 13. Экспорт / Импорт
 - [ ] Экспорт: все таблицы БД → JSON-файл, скачивание
