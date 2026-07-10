@@ -9,6 +9,8 @@ App
 │
 ├── [«Выполнение»] Dashboard
 │   ├── AddActivity             (название + длина/награда/валюта)
+│   ├── Список предложений к начислению ⏳
+│   │   └── По каждой активности: unissued > 0 по валютам → кнопка «Начислить»
 │   ├── Section «Не выполнено»
 │   │   └── ActivityCard[]
 │   │       ├── EditableName
@@ -24,12 +26,13 @@ App
 │
 ├── [«Мониторинг»] MonitoringPage
 │   └── ActivityAccordion[]
-│       ├── Заголовок: activity.name + RewardCounters + «Начислить»
+│       ├── Заголовок: activity.name + unissued counter per-currency (только если >0) + кнопка «Начислить» per-currency + отображение активной серии
 │       ├── IssueRewardModal    (дата/сумма/валюта → addRewardIssue)
 │       ├── TabSwitcher («SeriesDefinition» / «История начислений» / «История серий» / «Completions»)
-│       ├── [«SeriesDefinition»] SeriesDefinitionTab ⏳
+│       ├── [«SeriesDefinition»] SeriesDefinitionTab
 │       │   └── Список всех SeriesDefinition + добавление новой (длина / награда / валюта)
 │       ├── [«История начислений»] RewardHistoryTab
+│       │   ├── RewardCounters  (счётчики по каждой валюте)
 │       │   ├── Таблица RewardIssue (дата | сумма | валюта | действия)
 │       │   ├── EditableCell    (inline-редактирование)
 │       │   ├── DeleteButton    (с подтверждением)
@@ -38,7 +41,7 @@ App
 │       │   ├── Группы по SeriesDefinition
 │       │   │   └── SeriesWidget[]  (статус, квадратики с кликами, даты)
 │       │   └── Paginator
-│       └── [«Completions»] CompletionsTab ⏳
+│       └── [«Completions»] CompletionsTab
 │           └── Календарь по месяцам (по 3 месяца, пагинация)
 │               └── Клик по дню → тоггл completion
 │
