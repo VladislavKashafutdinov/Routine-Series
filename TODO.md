@@ -3,9 +3,9 @@
 ## Взять в работу
 
 ### 13. SeriesDefinitionTab — вкладка в ActivityAccordion
-- [ ] Заменить `EditSeriesDefinition` (кнопка в теле аккордеона) на вкладку
-- [ ] Список всех SeriesDefinition для активности (длина / награда / валюта / дата создания)
-- [ ] Кнопка/форма добавления нового SeriesDefinition внутри вкладки
+- [x] Заменить `EditSeriesDefinition` (кнопка в теле аккордеона) на вкладку
+- [x] Список всех SeriesDefinition для активности (длина / награда / валюта / дата создания)
+- [x] Кнопка/форма добавления нового SeriesDefinition внутри вкладки
 
 ### 14. CompletionsTab — вкладка в ActivityAccordion
 - [ ] Календарь completions по месяцам (по 3 месяца на экране)

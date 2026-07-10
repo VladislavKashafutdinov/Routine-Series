@@ -58,6 +58,7 @@ export interface Strings {
   editSeries: string;
   editSeriesSave: string;
   editSeriesCancel: string;
+  defsTab: string;
 
   // Archive
   archiveTitle: string;
@@ -119,6 +120,7 @@ const en: Strings = {
   editSeries: 'Edit series',
   editSeriesSave: 'Save',
   editSeriesCancel: 'Cancel',
+  defsTab: 'Defs',
 
   archiveTitle: 'Archive',
   archiveEmpty: 'Archive is empty.',
@@ -178,6 +180,7 @@ const ru: Strings = {
   editSeries: 'Изменить серию',
   editSeriesSave: 'Сохранить',
   editSeriesCancel: 'Отмена',
+  defsTab: 'Параметры',
 
   archiveTitle: 'Архив',
   archiveEmpty: 'Архив пуст.',

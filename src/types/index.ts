@@ -62,4 +62,5 @@ export interface ActivityWithStreak {
   completions: Completion[];
   series: ComputedSeries[];
   rewardIssues: RewardIssue[];
+  seriesDefinitions: SeriesDefinition[];
 }

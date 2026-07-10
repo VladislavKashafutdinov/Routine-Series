@@ -1,0 +1,128 @@
+.sdef-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sdef-tab__add {
+  align-self: flex-start;
+  padding: 4px 14px;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--primary);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sdef-tab__add:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.sdef-tab__form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+
+.sdef-tab__field {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.sdef-tab__num {
+  width: 64px;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  text-align: center;
+  outline: none;
+}
+
+.sdef-tab__num:focus {
+  border-color: var(--primary);
+}
+
+.sdef-tab__save {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--primary);
+  color: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sdef-tab__save:hover { background: var(--primary-hover); }
+
+.sdef-tab__cancel {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.sdef-tab__cancel:hover { border-color: var(--primary); color: var(--primary); }
+
+.sdef-tab__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.sdef-tab__table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary, #888);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sdef-tab__table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sdef-tab__empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 16px;
+  font-size: 0.85rem;
+}
+
+.sdef-tab__pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sdef-tab__pager button {
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.sdef-tab__pager button:disabled { opacity: 0.35; cursor: default; }
+.sdef-tab__pager button:not(:disabled):hover { border-color: var(--primary); color: var(--primary); }

@@ -5,11 +5,11 @@ import { TabSwitcher } from './TabSwitcher';
 import { SeriesHistoryTab } from './SeriesHistoryTab';
 import { RewardHistoryTab } from './RewardHistoryTab';
 import { IssueRewardModal } from './IssueRewardModal';
-import { EditSeriesDefinition } from './EditSeriesDefinition';
+import { SeriesDefinitionTab } from './SeriesDefinitionTab';
 import type { ActivityWithStreak } from '../types';
 import './ActivityAccordion.css';
 
-type Tab = 'series' | 'rewards';
+type Tab = 'defs' | 'series' | 'rewards';
 
 interface Props {
   activity: ActivityWithStreak;
@@ -39,9 +39,9 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
       </div>
       {isOpen && (
         <div className="accordion__body">
-          <EditSeriesDefinition activity={activity} />
           <TabSwitcher
             tabs={[
+              { key: 'defs', label: t.defsTab },
               { key: 'series', label: t.seriesHistoryTab },
               { key: 'rewards', label: t.rewardHistoryTab },
             ]}
@@ -49,6 +49,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
             onSelect={(k) => setTab(k as Tab)}
           />
           <div className="accordion__tab-content">
+            {tab === 'defs' && <SeriesDefinitionTab activity={activity} />}
             {tab === 'series' && <SeriesHistoryTab activity={activity} />}
             {tab === 'rewards' && <RewardHistoryTab activity={activity} />}
           </div>

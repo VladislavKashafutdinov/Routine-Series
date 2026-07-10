@@ -47,6 +47,7 @@ function build(
     completions: actComps,
     series,
     rewardIssues: actRewardIssues,
+    seriesDefinitions: actDefs,
   };
 }
 
@@ -86,7 +87,7 @@ export function useActivities() {
       seriesLength,
       reward,
       currency,
-      createdAt: new Date(virtualToday + 'T00:00:00'),
+      createdAt: new Date(virtualToday + 'T' + new Date().toISOString().slice(11, 19)),
     });
   };
 
@@ -134,7 +135,7 @@ export function useActivities() {
       seriesLength,
       reward,
       currency,
-      createdAt: new Date(virtualToday + 'T00:00:00'),
+      createdAt: new Date(virtualToday + 'T' + new Date().toISOString().slice(11, 19)),
     });
   };
 
