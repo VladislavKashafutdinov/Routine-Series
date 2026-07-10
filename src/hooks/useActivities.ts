@@ -52,6 +52,7 @@ function build(
 
 export function useActivities() {
   const [activities, setActivities] = useState<ActivityWithStreak[]>([]);
+  const [archivedActivities, setArchivedActivities] = useState<ActivityWithStreak[]>([]);
   const [loading, setLoading] = useState(true);
   const { virtualToday } = useVirtualToday();
 
@@ -63,11 +64,12 @@ export function useActivities() {
         db.seriesDefinitions.toArray(),
         db.rewardIssues.toArray(),
       ]);
-      return acts
-        .filter((a) => !a.archived)
-        .map((a) => build(a, comps, defs, issues, virtualToday));
+      return {
+        active: acts.filter((a) => !a.archived).map((a) => build(a, comps, defs, issues, virtualToday)),
+        archived: acts.filter((a) => a.archived).map((a) => build(a, comps, defs, issues, virtualToday)),
+      };
     }).subscribe({
-      next: (data) => { setActivities(data); setLoading(false); },
+      next: (data) => { setActivities(data.active); setArchivedActivities(data.archived); setLoading(false); },
       error: (err) => { console.error(err); setLoading(false); },
     });
     return () => sub.unsubscribe();
@@ -153,10 +155,11 @@ export function useActivities() {
     }
   };
 
-  return { 
-    activities, 
-    loading, 
-    addActivity, 
+  return {
+    activities,
+    archivedActivities,
+    loading,
+    addActivity,
     updateName, 
     toggleDone, 
     toggleDate,
