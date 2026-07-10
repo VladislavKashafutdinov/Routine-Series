@@ -34,14 +34,17 @@
 ### Доработка виджета серии
 
 #### 1. Виджет только для отображения
-- [ ] Убрать кликабельность квадратиков (отметка/отмена теперь в CompletionsTab)
-- [ ] Убрать `useActivities` и `toggleDate` из `SeriesWidget`
-- [ ] Убрать импорт и использование `useVirtualToday`
+- [x] Убрать кликабельность квадратиков (отметка/отмена теперь в CompletionsTab)
+- [x] Убрать `useActivities` и `toggleDate` из `SeriesWidget`
+- [x] Убрать импорт и использование `useVirtualToday`
 
 #### 2. Изменить входные параметры
-- [ ] Принимать `startDate`, `seriesLength`, `completions` вместо `ComputedSeries`
-- [ ] Рассчитывать статус самостоятельно (active / completed / broken) на основе переданных данных
-- [ ] Рассчитывать даты окна серии от `startDate` до `startDate + seriesLength - 1`
+- [x] Принимать `startDate`, `seriesLength`, `completions` вместо `ComputedSeries`
+- [x] Рассчитывать статус самостоятельно (active / completed / broken) на основе переданных данных
+- [x] Рассчитывать даты окна серии от `startDate` до `startDate + seriesLength - 1`
+
+### Доработка аккордиона Страница «Мониторинг»
+- [x] Если нет активных серий, то в хэдере все равно должен отображаться SeriesWidget с пустой серией, с началом в текущей дате и длиной из текущего `SeriesDefinition`
 
 ### 18. RewardCounters в RewardHistoryTab
 - [ ] Добавить `RewardCounters` в тело вкладки «История начислений» над таблицей

@@ -60,7 +60,7 @@ export const SeriesHistoryTab = memo(function SeriesHistoryTab({ activity }: Pro
               {g.length} {t.streakDays(g.length)} · {g.reward}{g.currency} · {g.createdAt.toISOString().slice(0, 10)}
             </div>
             {g.series.map((s) => (
-              <SeriesWidget key={s.number} series={s} activityId={activity.id} />
+              <SeriesWidget key={s.number} startDate={s.startDate} seriesLength={s.seriesLength} completions={s.completions} />
             ))}
           </div>
         ))}

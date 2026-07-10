@@ -1,5 +1,6 @@
 import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
+import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import { TabSwitcher } from './TabSwitcher';
 import { SeriesHistoryTab } from './SeriesHistoryTab';
 import { RewardHistoryTab } from './RewardHistoryTab';
@@ -20,6 +21,7 @@ interface Props {
 
 export const ActivityAccordion = memo(function ActivityAccordion({ activity, isOpen, onToggle }: Props) {
   const { t } = useLocale();
+  const { virtualToday } = useVirtualToday();
   const [tab, setTab] = useState<Tab>('series');
   const [showIssue, setShowIssue] = useState(false);
   const [issueCurrency, setIssueCurrency] = useState(activity.currency);
@@ -29,7 +31,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
     .filter(([, v]) => v > 0)
     .map(([c]) => c);
 
-  // Active series for display in header
+  // Active series for display in header (fallback to empty widget)
   const activeSeries = activity.series.find((s) => s.status === 'active');
 
   return (
@@ -54,11 +56,13 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
         </span>
         <span className={`accordion__arrow ${isOpen ? 'accordion__arrow--up' : ''}`}>▾</span>
       </div>
-      {activeSeries && (
-        <div className="accordion__active-series" onClick={(e) => e.stopPropagation()}>
-          <SeriesWidget series={activeSeries} activityId={activity.id} />
-        </div>
-      )}
+      <div className="accordion__active-series" onClick={(e) => e.stopPropagation()}>
+        <SeriesWidget
+          startDate={activeSeries ? activeSeries.startDate : virtualToday}
+          seriesLength={activeSeries ? activeSeries.seriesLength : activity.seriesLength}
+          completions={activeSeries ? activeSeries.completions : []}
+        />
+      </div>
       {isOpen && (
         <div className="accordion__body">
           <TabSwitcher

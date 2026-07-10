@@ -1,14 +1,17 @@
 import { memo } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
-import { useActivities } from '../hooks/useActivities';
-import type { ComputedSeries } from '../types';
+import { dayDiff } from '../utils/date';
+import type { Completion } from '../types';
 import './SeriesWidget.css';
 
 interface Props {
-  series: ComputedSeries;
-  activityId: number;
+  startDate: string;
+  seriesLength: number;
+  completions: Completion[];
 }
+
+type Status = 'active' | 'completed' | 'broken';
 
 function datesFrom(start: string, count: number): string[] {
   const result: string[] = [];
@@ -23,7 +26,15 @@ function datesFrom(start: string, count: number): string[] {
   return result;
 }
 
-function statusLabel(status: string, t: ReturnType<typeof import('../i18n/LocaleContext').useLocale>['t']): string {
+function calcStatus(completions: Completion[], seriesLength: number, todayStr: string): Status {
+  if (completions.length === 0) return 'broken';
+  if (completions.length >= seriesLength) return 'completed';
+  const lastDate = completions[completions.length - 1].date;
+  if (dayDiff(lastDate, todayStr) <= 1) return 'active';
+  return 'broken';
+}
+
+function statusLabel(status: Status, t: ReturnType<typeof import('../i18n/LocaleContext').useLocale>['t']): string {
   switch (status) {
     case 'completed': return t.statusCompleted;
     case 'broken': return t.statusBroken;
@@ -31,59 +42,35 @@ function statusLabel(status: string, t: ReturnType<typeof import('../i18n/Locale
   }
 }
 
-export const SeriesWidget = memo(function SeriesWidget({ series, activityId }: Props) {
+export const SeriesWidget = memo(function SeriesWidget({ startDate, seriesLength, completions }: Props) {
   const { t } = useLocale();
   const { virtualToday } = useVirtualToday();
-  const { toggleDate } = useActivities();
-  const todayStr = virtualToday;
-  const dates = datesFrom(series.startDate, series.seriesLength);
-  const doneSet = new Set(series.completions.map((c) => c.date));
 
-  // First unfilled day (click to mark done)
-  let firstGray: string | null = null;
-  for (const d of dates) {
-    if (!doneSet.has(d)) {
-      firstGray = d;
-      break;
-    }
-  }
-
-  // Last filled day (click to undo)
-  let lastGreen: string | null = null;
-  for (let i = dates.length - 1; i >= 0; i--) {
-    if (doneSet.has(dates[i])) {
-      lastGreen = dates[i];
-      break;
-    }
-  }
-
-  const isClickable = (d: string): boolean => {
-    if (d > todayStr) return false;
-    return d === firstGray || d === lastGreen;
-  };
+  const status = calcStatus(completions, seriesLength, virtualToday);
+  const dates = datesFrom(startDate, seriesLength);
+  const doneSet = new Set(completions.map((c) => c.date));
+  const endDate = dates[dates.length - 1];
 
   return (
-    <div className={`swidget swidget--${series.status}`}>
+    <div className={`swidget swidget--${status}`}>
       <div className="swidget__progress">
-        <span className="swidget__date swidget__date--start">{series.startDate}</span>
+        <span className="swidget__date swidget__date--start">{startDate}</span>
         <div className="swidget__squares">
           {dates.map((d) => {
             const done = doneSet.has(d);
-            const clickable = isClickable(d);
             return (
               <div
                 key={d}
-                className={`swidget__dot${done ? ' swidget__dot--done' : ''}${clickable ? ' swidget__dot--clickable' : ''}`}
+                className={`swidget__dot${done ? ' swidget__dot--done' : ''}`}
                 title={d}
-                onClick={clickable ? () => { toggleDate(activityId, d); } : undefined}
               />
             );
           })}
         </div>
-        <span className="swidget__date swidget__date--end">{dates[dates.length - 1]}</span>
+        <span className="swidget__date swidget__date--end">{endDate}</span>
       </div>
-      <span className={`swidget__badge swidget__badge--${series.status}`}>
-        {statusLabel(series.status, t)}
+      <span className={`swidget__badge swidget__badge--${status}`}>
+        {statusLabel(status, t)}
       </span>
     </div>
   );
