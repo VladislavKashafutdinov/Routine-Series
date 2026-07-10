@@ -2,6 +2,7 @@ import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
 import { useActivities } from '../hooks/useActivities';
 import { Paginator } from './Paginator';
+import { RewardCounters } from './RewardCounters';
 import type { ActivityWithStreak, RewardIssue } from '../types';
 import './RewardHistoryTab.css';
 
@@ -84,11 +85,25 @@ export const RewardHistoryTab = memo(function RewardHistoryTab({ activity }: Pro
   };
 
   if (total === 0) {
-    return <div className="accordion__placeholder">{t.noRewardsYet}</div>;
+    return (
+      <>
+        <RewardCounters
+          completions={activity.completions}
+          rewardIssues={activity.rewardIssues}
+          seriesDefinitions={activity.seriesDefinitions}
+        />
+        <div className="accordion__placeholder">{t.noRewardsYet}</div>
+      </>
+    );
   }
 
   return (
     <>
+      <RewardCounters
+        completions={activity.completions}
+        rewardIssues={activity.rewardIssues}
+        seriesDefinitions={activity.seriesDefinitions}
+      />
       <table className="rtable">
         <thead>
           <tr>

@@ -75,6 +75,7 @@ App
 │       │   │   └── SeriesWidget[]  (swidget__progress: даты + квадратики; swidget__badge: статус)
 │       │   └── Paginator       (◀ N/M ▶)
 │       ├── [rewards] RewardHistoryTab
+│       │   ├── RewardCounters  (earned / issued / unissued по валютам)
 │       │   ├── Таблица (дата | сумма | валюта | действия)
 │       │   ├── EditableCell    (клик → input, Enter/blur → updateRewardIssue, Esc → отмена)
 │       │   ├── DeleteButton    (confirm → deleteRewardIssue)
