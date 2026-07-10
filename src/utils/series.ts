@@ -66,6 +66,7 @@ function splitIntoSeries(
       startDate: group[0].date,
       endDate: status !== 'active' ? group[group.length - 1].date : undefined,
       completions: group,
+      definitionCreatedAt: def.createdAt,
     };
   });
 }

@@ -69,7 +69,8 @@ App
 │       │   ├── Таблица всех SeriesDefinition (длина / награда / валюта / дата)
 │       │   └── Форма добавления нового (длина / награда / валюта)
 │       ├── [series] SeriesHistoryTab
-│       │   ├── SeriesWidget[]  (swidget__progress: даты + квадратики; swidget__badge: статус)
+│       │   ├── Группы по SeriesDefinition (заголовок: длина · награда · дата)
+│       │   │   └── SeriesWidget[]  (swidget__progress: даты + квадратики; swidget__badge: статус)
 │       │   └── Paginator       (◀ N/M ▶)
 │       ├── [rewards] RewardHistoryTab
 │       │   ├── Таблица (дата | сумма | валюта | действия)

@@ -43,6 +43,7 @@ export interface ComputedSeries {
   startDate: string;          // first completion date
   endDate?: string;           // last completion date (completed/broken)
   completions: Completion[];
+  definitionCreatedAt: Date;  // createdAt of the SeriesDefinition this series belongs to
 }
 
 export interface ActivityWithStreak {
