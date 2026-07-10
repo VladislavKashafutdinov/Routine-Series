@@ -64,16 +64,22 @@ App
 │   └── ActivityAccordion[]     (один открыт одновременно)
 │       ├── Header: activity.name + RewardCounters + «Начислить»
 │       ├── IssueRewardModal    (оверлей: дата/сумма/валюта → addRewardIssue)
-│       ├── EditSeriesDefinition (кнопка → inline-форма, создаёт новый SeriesDefinition)
-│       ├── TabSwitcher         («История серий» / «История начислений»)
+│       ├── TabSwitcher         («Параметры» / «История серий» / «История начислений» / «Календарь»)
+│       ├── [defs] SeriesDefinitionTab
+│       │   ├── Таблица всех SeriesDefinition (длина / награда / валюта / дата)
+│       │   └── Форма добавления нового (длина / награда / валюта)
 │       ├── [series] SeriesHistoryTab
 │       │   ├── SeriesWidget[]  (swidget__progress: даты + квадратики; swidget__badge: статус)
 │       │   └── Paginator       (◀ N/M ▶)
-│       └── [rewards] RewardHistoryTab
-│           ├── Таблица (дата | сумма | валюта | действия)
-│           ├── EditableCell    (клик → input, Enter/blur → updateRewardIssue, Esc → отмена)
-│           ├── DeleteButton    (confirm → deleteRewardIssue)
-│           └── Paginator       (◀ N/M ▶)
+│       ├── [rewards] RewardHistoryTab
+│       │   ├── Таблица (дата | сумма | валюта | действия)
+│       │   ├── EditableCell    (клик → input, Enter/blur → updateRewardIssue, Esc → отмена)
+│       │   ├── DeleteButton    (confirm → deleteRewardIssue)
+│       │   └── Paginator       (◀ N/M ▶)
+│       └── [completions] CompletionsTab
+│           ├── Календарь по месяцам (по 3 месяца, сетка)
+│           ├── Клик по дню → тоггл completion
+│           └── Пагинация (◀ ▶ по блокам)
 │
 └── [«Архив»] ArchivePage
     └── ArchivedActivityRow[]
