@@ -4,6 +4,10 @@
 
 ---
 
+### 2026-07-10 — Баг: пропадала форма SeriesDefinition
+
+- Убран флаг `expanded` в AddActivity, форма параметров всегда видна
+
 ### 2026-07-10 — Баг: пустой seriesDefinitions при добавлении активности
 
 - Добавлены проверки на пустоту seriesDefinitions в ActivityCard, ActivityAccordion, EditSeriesDefinition, SeriesDefinitionTab
