@@ -1,6 +1,5 @@
 import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
-import { RewardCounters } from './RewardCounters';
 import { TabSwitcher } from './TabSwitcher';
 import { SeriesHistoryTab } from './SeriesHistoryTab';
 import { RewardHistoryTab } from './RewardHistoryTab';
@@ -22,18 +21,33 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
   const { t } = useLocale();
   const [tab, setTab] = useState<Tab>('series');
   const [showIssue, setShowIssue] = useState(false);
+  const [issueCurrency, setIssueCurrency] = useState(activity.currency);
+
+  // Currencies with unissued > 0
+  const unissuedCurrencies = Object.entries(activity.unissuedByCurrency)
+    .filter(([, v]) => v > 0)
+    .map(([c]) => c);
 
   return (
     <div className={`accordion ${isOpen ? 'accordion--open' : ''}`}>
       <div className="accordion__header" onClick={onToggle} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}>
         <span className="accordion__name">{activity.name}</span>
-        <RewardCounters
-          earnedByCurrency={activity.earnedByCurrency}
-          issuedByCurrency={activity.issuedByCurrency}
-        />
-        <button className="accordion__issue-btn" onClick={(e) => { e.stopPropagation(); setShowIssue(true); }} type="button">
-          {t.issueReward}
-        </button>
+        <span className="accordion__unissued-list">
+          {unissuedCurrencies.map((c) => (
+            <span key={c} className="accordion__unissued-row">
+              <span className="accordion__unissued">
+                {t.unissued}: {activity.unissuedByCurrency[c]}{c}
+              </span>
+              <button
+                className="accordion__issue-btn"
+                onClick={(e) => { e.stopPropagation(); setIssueCurrency(c); setShowIssue(true); }}
+                type="button"
+              >
+                {t.issueReward}{c}
+              </button>
+            </span>
+          ))}
+        </span>
         <span className={`accordion__arrow ${isOpen ? 'accordion__arrow--up' : ''}`}>▾</span>
       </div>
       {isOpen && (
@@ -56,7 +70,13 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
           </div>
         </div>
       )}
-      {showIssue && <IssueRewardModal activity={activity} onClose={() => setShowIssue(false)} />}
+      {showIssue && (
+        <IssueRewardModal
+          activity={activity}
+          onClose={() => setShowIssue(false)}
+          currencyOverride={issueCurrency}
+        />
+      )}
     </div>
   );
 });

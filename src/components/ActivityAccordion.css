@@ -31,6 +31,27 @@
   min-width: 0;
 }
 
+.accordion__unissued-list {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.accordion__unissued-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.accordion__unissued {
+  font-size: 0.82rem;
+  color: var(--primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .accordion__issue-btn {
   padding: 4px 10px;
   border-radius: var(--radius);

@@ -8,18 +8,20 @@ import './IssueRewardModal.css';
 interface Props {
   activity: ActivityWithStreak;
   onClose: () => void;
+  currencyOverride?: string;
 }
 
-export const IssueRewardModal = memo(function IssueRewardModal({ activity, onClose }: Props) {
+export const IssueRewardModal = memo(function IssueRewardModal({ activity, onClose, currencyOverride }: Props) {
   const { t, lang } = useLocale();
   const { virtualToday } = useVirtualToday();
   const { addRewardIssue } = useActivities();
 
-  const defaultAmount = activity.unissuedByCurrency[activity.currency] || activity.reward;
+  const initialCurrency = currencyOverride || activity.currency;
+  const defaultAmount = activity.unissuedByCurrency[initialCurrency] || activity.reward;
 
   const [date, setDate] = useState(virtualToday);
   const [amount, setAmount] = useState(String(defaultAmount));
-  const [currency, setCurrency] = useState(activity.currency);
+  const [currency, setCurrency] = useState(initialCurrency);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
