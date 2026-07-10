@@ -4,6 +4,10 @@
 
 ---
 
+### 2026-07-11 — Баг: разрывы в SeriesProgress при перемотке времени
+
+- SeriesProgress теперь получает completions текущей серии (по virtualToday), а не все
+
 ### 2026-07-10 — Баг: пропадала форма SeriesDefinition
 
 - Убран флаг `expanded` в AddActivity, форма параметров всегда видна
