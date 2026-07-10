@@ -4,6 +4,24 @@
 
 ---
 
+### 2026-07-08 — Страница мониторинга (MonitoringPage)
+
+- **10a. MonitoringPage + ActivityAccordion** — раскрывающиеся блоки, один открыт одновременно
+- **10b. VirtualTodayContext** — замена TimeOffsetContext на виртуальное «сегодня»
+- **10c. SeriesHistoryTab** — список SeriesWidget с пагинацией, визуальное различие по статусам
+- **10d. IssueRewardModal** — модалка выдачи награды (дата/сумма/валюта)
+- **10e. RewardHistoryTab** — таблица RewardIssue с inline-редактированием, удалением, пагинацией
+- Извлечены 4 переиспользуемых компонента: RewardCounters, TabSwitcher, Paginator, EditableCell
+- CSS разбит на 14 per-component файлов
+
+### 2026-07-09 — Архив + SeriesDefinition + Node.js
+
+- **11. EditSeriesDefinition** — inline-форма изменения параметров серии, версионирование
+- **12. ArchivePage** — список архивных активностей, кнопка восстановления
+- **9. Node.js** — апгрейд с v16 до v24 (ESLint заработал)
+- README.md: актуализирован data flow, структура данных, индексы БД
+- VISION.md + TARGET_SCHEMA.md: разделение фактического и целевого состояния
+
 ### 2026-07-03 — Сетка дней по размеру серии
 
 - ActivityGroup: ряд квадратиков равен seriesLength (вместо фиксированного числа)
