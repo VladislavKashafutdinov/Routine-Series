@@ -10,20 +10,22 @@
 
 ```
 User action
-  (add / toggle done / update name / delete / change offset)
-  → useActivities / TimeOffsetContext
+  (add / toggle done / update name / delete / change virtual date)
+  → useActivities / VirtualTodayContext
     → Dexie CRUD on IndexedDB tables
-      → liveQuery subscription fires (re-subscribes on offset change)
+      → liveQuery subscription fires (re-subscribes on virtualToday change)
         → build() for each activity:
           - finds latest SeriesDefinition → seriesLength, reward, currency
-          - filters completions → computeCurrentStreak(), computeLongestStreak()
+          - calls computeSeries(defs, completions, virtualToday) → ComputedSeries[]
+          - derives currentStreak, longestStreak, totalEarned, totalIssued, totalUnissued
           - checks today's completion → isDoneToday
         → ActivityWithStreak[] computed
-          → Dashboard re-renders with updated cards
+          → Components re-render with updated data
 ```
 
 Все мутации данных проходят через `useActivities()` — компоненты никогда не обращаются к `db` напрямую.
-Смещение виртуальной даты из `TimeOffsetContext` передаётся в `today(offset)` — в `liveQuery` и в `toggleDone`.
+Виртуальная дата `virtualToday` из `VirtualTodayContext` используется в `liveQuery` (для `computeSeries` и `isDoneToday`), в `toggleDone`, `addSeriesDefinition` и `IssueRewardModal`.
+`TimeTravel` управляет `virtualToday` через `setVirtualToday`, вычисляя offset от реального `today()` только для отображения.
 
 ## Технологии
 
@@ -76,11 +78,9 @@ User action
   - Активности, помеченные как архивные, не должны отображаться
 
 ##### Виджет серии 
-- Дата старта и конца (если это прерванная или завершенная серия)
+- Дата старта и конца
 - Визуальное отображение в виде последовательных квадратиков
   - Квадратики отличаются друг от друга в зависимости, была ли выполнена активность в день, которому соответствует квадратик
-  - Возможность нажать на квадратик, который соответствует первому дню с невыполненной активностью - выполнение активности засчитывается в этот день
-  - Возможность нажать на квадратик, который соответствует последнему дню с выполненной активностью - запись о выполнении активности аннулируется
 - Инфо о `SeriesDefinition`: длина серий, размер награды и валюта
 
 ##### Как формируются серии
@@ -120,13 +120,19 @@ User action
 - Список активностей, помеченные, как архивные
   - Возможность вернуть активность из архива
 
-## Схема вложенности компонентов
+### Вкладка всех completions
+Цель: отображение и редактирование всех `completion` по активностям
+- Отображать в календаре по месяцам.
+- Показывать по 3 месяца с пагинацией
+- Клик на день в календаре - срабатывает тоггл выполнения (добавить/удалить `completion` для этого дня)
+
+## Целевая схема вложенности компонентов
 
 ```
 App
 ├── AppHeader
 │   ├── LangSwitcher
-│   ├── PageTabs                («Выполнение» | «Мониторинг» | «Архив»)
+│   ├── PageTabs                («Выполнение» | «Мониторинг» | «Архив» | «Completions»)
 │   └── TimeTravel              (◀ YYYY-MM-DD ▶ «Сегодня»)
 │
 ├── [«Выполнение»] Dashboard
@@ -147,18 +153,29 @@ App
 ├── [«Мониторинг»] MonitoringPage
 │   └── ActivityAccordion[]
 │       ├── Заголовок: activity.name + RewardCounters + «Начислить»
+│       ├── EditSeriesDefinition (длина/награда/валюта, создаёт новую версию)
 │       ├── TabSwitcher («История серий» / «История начислений»)
+│       ├── IssueRewardModal    (дата/сумма/валюта → addRewardIssue)
 │       ├── [«История серий»] SeriesHistoryTab
 │       │   ├── SeriesWidget[]  (статус, квадратики с кликами, даты)
 │       │   └── Paginator
-│       └── [«История начислений»] ⏳
-│           └── ...
+│       └── [«История начислений»] RewardHistoryTab
+│           ├── Таблица RewardIssue (дата | сумма | валюта | действия)
+│           ├── EditableCell    (inline-редактирование)
+│           ├── DeleteButton    (с подтверждением)
 │           └── Paginator
+│
+├── [«Completions»] CompletionsPage ⏳
+│   └── Календарь по месяцам (по 3 месяца, пагинация)
+│       └── Клик по дню → тоггл completion
 │
 └── [«Архив»] ArchivePage
     └── ArchivedActivityRow[]
-        └── RestoreButton
+        ├── Название + количество completions (информационно)
+        └── RestoreButton (с подтверждением)
 ```
+
+Реализованная схема вложенности компонентов вынесена в [COMPONENTS.md](COMPONENTS.md).
 
 ## Структура данных
 
@@ -208,8 +225,9 @@ RewardIssue {
 | `activities` | `++id` (auto) | `name`, `createdAt` |
 | `seriesDefinitions` | `++id` (auto) | `activityId`, `createdAt` |
 | `completions` | `++id` (auto) | `activityId`, `date`, `[activityId+date]` (compound) |
+| `rewardIssues` | `++id` (auto) | `activityId`, `date` |
 
-Составной индекс `[activityId+date]` обеспечивает эффективную проверку «была ли эта активность выполнена в эту дату» — одна операция `.where({activityId, date})` вместо перебора.
+Составной индекс `[activityId+date]` в `completions` обеспечивает эффективную проверку «была ли эта активность выполнена в эту дату» — одна операция `.where({activityId, date})` вместо перебора.
 
 **Миграция v1 → v2:** при обновлении для каждой существующей активности создаётся `SeriesDefinition` с копией её старых параметров (`seriesLength`, `reward`, `currency`) и датой создания, равной дате создания активности.
 
