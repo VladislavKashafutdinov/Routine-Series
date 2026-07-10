@@ -4,6 +4,11 @@
 
 ---
 
+### 2026-07-11 — Баг: длинные серии выходят за пределы карточки
+
+- SeriesProgress и SeriesWidget: flex-wrap для квадратиков
+- Выравнивание по левому краю (flex-start)
+
 ### 2026-07-11 — Алгоритм computeSeries: фильтрация будущих дат
 
 - computeSeries теперь исключает completions и seriesDefinitions с датой > virtualToday
