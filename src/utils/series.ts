@@ -1,5 +1,6 @@
+import type { Completion, ComputedSeries, SeriesDefinition } from '../types';
+
 import { dayDiff } from './date';
-import type { Completion, SeriesDefinition, ComputedSeries } from '../types';
 
 /** Check if a gap between two dates breaks a series (gap > 1 day) */
 export function isGapBreak(prevDate: string, nextDate: string): boolean {

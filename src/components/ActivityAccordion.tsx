@@ -55,8 +55,21 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
     .filter(([, v]) => v > 0)
     .map(([c]) => c);
 
-  // Active series for display in header (fallback to empty widget)
-  const activeSeries = series.find((s) => s.status === 'active');
+  // Current series — the one whose date window contains virtualToday
+  const currentSeries = series.find((s) => {
+    const windowEnd = datesEnd(s.startDate, s.seriesLength);
+    return s.startDate <= virtualToday && virtualToday <= windowEnd;
+  });
+
+  // Helper: last date of the series window
+  function datesEnd(start: string, count: number): string {
+    const d = new Date(start + 'T00:00:00');
+    d.setDate(d.getDate() + count - 1);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+  }
 
   return (
     <div className={`accordion ${isOpen ? 'accordion--open' : ''}`}>
@@ -76,9 +89,9 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
       </div>
       <div className="accordion__active-series" onClick={(e) => e.stopPropagation()}>
         <SeriesWidget
-          startDate={activeSeries ? activeSeries.startDate : virtualToday}
-          seriesLength={activeSeries ? activeSeries.seriesLength : latestDef(activity.seriesDefinitions, activity.id).seriesLength}
-          completions={activeSeries ? activeSeries.completions : []}
+          startDate={currentSeries ? currentSeries.startDate : virtualToday}
+          seriesLength={currentSeries ? currentSeries.seriesLength : latestDef(activity.seriesDefinitions, activity.id).seriesLength}
+          completions={currentSeries ? currentSeries.completions : []}
         />
       </div>
       {isOpen && (
