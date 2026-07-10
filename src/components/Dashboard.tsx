@@ -1,5 +1,6 @@
 import { AddActivity } from './AddActivity';
 import { ActivityCard } from './ActivityCard';
+import { IssueBanner } from './IssueBanner';
 import { useLocale } from '../i18n/LocaleContext';
 import { useActivities } from '../hooks/useActivities';
 import './Dashboard.css';
@@ -14,6 +15,8 @@ export function Dashboard() {
   return (
     <div className="dashboard">
       <AddActivity />
+
+      {!loading && <IssueBanner activities={activities} />}
 
       {loading && <div className="dash-msg">{t.loading}</div>}
 

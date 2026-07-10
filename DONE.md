@@ -4,6 +4,23 @@
 
 ---
 
+### 2026-07-10 — Список предложений к начислению + рефакторинг
+
+- 19. IssueBanner: баннер на дашборде с unissued > 0, кнопки «Начислить»
+- 18. RewardCounters в RewardHistoryTab с inline-кнопками «Начислить»
+- 17. Хедер аккордеона: unissued per-currency, UnissuedRow
+- Баг: исправлена перемотка времени (computeSeries в компоненте, текущая серия)
+- Модель ActivityWithStreak очищена от dead fields
+- Расчёт наград вынесен в utils/rewards.ts (calcEarnedByCurrency, calcIssuedByCurrency, calcUnissuedByCurrency, getCurrencies)
+- SeriesWidget: только отображение, входные параметры — сырые данные
+
+### 2026-07-09 — SeriesDefinitionTab, CompletionsTab, группировка
+
+- 13. SeriesDefinitionTab: вкладка с историей SeriesDefinition + добавление
+- 14. CompletionsTab: календарь completions по месяцам с тогглом
+- 15. Группировка серий по SeriesDefinition в истории
+- 16. Мультивалютные счётчики наград
+
 ### 2026-07-08 — Страница мониторинга (MonitoringPage)
 
 - **10a. MonitoringPage + ActivityAccordion** — раскрывающиеся блоки, один открыт одновременно

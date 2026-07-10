@@ -38,6 +38,21 @@
 - Документация: VISION.md (целевое состояние), TARGET_SCHEMA.md (целевая схема)
 - Актуализированы структура данных и индексы БД в README
 
+## 2026-07-10 (продолжение)
+
+- 13. SeriesDefinitionTab: вкладка с историей SeriesDefinition + добавление
+- 14. CompletionsTab: календарь completions по месяцам, клик-тоггл
+- 15. Группировка серий по SeriesDefinition в истории
+- 16. Мультивалютные счётчики наград (earnedByCurrency и т.д.)
+- 17. Хедер аккордеона переработан под VISION (UnissuedRow, per-currency)
+- 18. RewardCounters в RewardHistoryTab с inline-кнопками «Начислить»
+- 19. IssueBanner на Dashboard: список предложений к начислению
+- Доработка SeriesWidget: display-only, сырые входные параметры
+- Исправлен баг перемотки времени: computeSeries в компонентах, текущая серия
+- Модель ActivityWithStreak очищена от dead fields (6 полей удалено)
+- Расчёт наград вынесен в utils/rewards.ts
+- Актуализированы README, CLAUDE.md, DONE.md, JOURNAL.md
+
 ## 2026-07-10
 
 - Синхронизированы VISION.md и TARGET_SCHEMA.md (устранены все несостыковки)
