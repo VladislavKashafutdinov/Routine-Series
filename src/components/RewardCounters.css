@@ -1,6 +1,7 @@
 .rcounters {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 2px;
   margin-left: auto;
   font-size: 0.82rem;
   color: var(--text-secondary, #888);
@@ -9,11 +10,6 @@
 .rcounters__currency-group {
   display: flex;
   gap: 6px;
-}
-
-.rcounters__currency-group + .rcounters__currency-group {
-  border-left: 1px solid var(--border);
-  padding-left: 10px;
 }
 
 .rcounters__item--unissued {
