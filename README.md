@@ -15,16 +15,17 @@ User action
     → Dexie CRUD on IndexedDB tables
       → liveQuery subscription fires (re-subscribes on virtualToday change)
         → build() for each activity:
-          - finds latest SeriesDefinition → seriesLength, reward, currency
-          - calls computeSeries(defs, completions, virtualToday) → ComputedSeries[]
-          - derives earnedByCurrency, issuedByCurrency, unissuedByCurrency
+          - collects completions, rewardIssues, seriesDefinitions per activity
           - checks today's completion → isDoneToday
-        → ActivityWithStreak[] computed
+        → ActivityWithStreak[] computed (raw data, no derived fields)
+          → Components call computeSeries() + calcEarnedByCurrency() etc.
+            using current virtualToday from context
           → Components re-render with updated data
 ```
 
 Все мутации данных проходят через `useActivities()` — компоненты никогда не обращаются к `db` напрямую.
-Виртуальная дата `virtualToday` из `VirtualTodayContext` используется в `liveQuery` (для `computeSeries` и `isDoneToday`), в `toggleDone`, `addSeriesDefinition` и `IssueRewardModal`.
+`computeSeries` вызывается в компонентах (ActivityAccordion, RewardCounters) с актуальным `virtualToday` из контекста — гарантирует консистентность при перемотке времени.
+Расчёт наград (`calcEarnedByCurrency`, `calcIssuedByCurrency`, `calcUnissuedByCurrency`) — в `utils/rewards.ts`.
 `TimeTravel` управляет `virtualToday` через `setVirtualToday`, вычисляя offset от реального `today()` только для отображения.
 
 ## Технологии
@@ -61,9 +62,10 @@ App
 │           └── DeleteButton
 │
 ├── [«Мониторинг»] MonitoringPage
-│   └── ActivityAccordion[]     (один открыт одновременно)
-│       ├── Header: activity.name + RewardCounters (per-currency) + «Начислить»
-│       ├── IssueRewardModal    (оверлей: дата/сумма/валюта → addRewardIssue)
+│   └── ActivityAccordion[]     (один открыт одновременно, computeSeries на месте)
+│       ├── Header: activity.name + UnissuedRow[] (unissued > 0 per-currency) + текущая серия (SeriesWidget)
+│       ├── UnissuedRow          (currency, amount, кнопка → IssueRewardModal)
+│       ├── IssueRewardModal     (оверлей, initialCurrency + defaultAmount из пропсов)
 │       ├── TabSwitcher         («Параметры» / «История серий» / «История начислений» / «Календарь»)
 │       ├── [defs] SeriesDefinitionTab
 │       │   ├── Таблица всех SeriesDefinition (длина / награда / валюта / дата)
