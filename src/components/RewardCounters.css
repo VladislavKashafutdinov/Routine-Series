@@ -16,3 +16,20 @@
   color: var(--primary);
   font-weight: 600;
 }
+
+.rcounters__issue-btn {
+  padding: 2px 8px;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--primary);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rcounters__issue-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}

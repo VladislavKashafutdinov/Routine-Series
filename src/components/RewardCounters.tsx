@@ -10,9 +10,10 @@ interface Props {
   completions: Completion[];
   rewardIssues: RewardIssue[];
   seriesDefinitions: SeriesDefinition[];
+  onIssue: (currency: string, amount: number) => void;
 }
 
-export const RewardCounters = memo(function RewardCounters({ completions, rewardIssues, seriesDefinitions }: Props) {
+export const RewardCounters = memo(function RewardCounters({ completions, rewardIssues, seriesDefinitions, onIssue }: Props) {
   const { t } = useLocale();
   const { virtualToday } = useVirtualToday();
 
@@ -37,9 +38,18 @@ export const RewardCounters = memo(function RewardCounters({ completions, reward
               {t.issued}: {issuedByCurrency[c] || 0}{c}
             </span>
             {unissued > 0 && (
-              <span className="rcounters__item rcounters__item--unissued" title={`${t.unissued} (${c})`}>
-                {t.unissued}: {unissued}{c}
-              </span>
+              <>
+                <span className="rcounters__item rcounters__item--unissued" title={`${t.unissued} (${c})`}>
+                  {t.unissued}: {unissued}{c}
+                </span>
+                <button
+                  className="rcounters__issue-btn"
+                  onClick={() => onIssue(c, unissued)}
+                  type="button"
+                >
+                  {t.issueReward}{c}
+                </button>
+              </>
             )}
           </span>
         );

@@ -10,6 +10,7 @@ const PER_PAGE = 50;
 
 interface Props {
   activity: ActivityWithStreak;
+  onIssue: (currency: string, amount: number) => void;
 }
 
 interface EditState {
@@ -60,7 +61,7 @@ function EditableCell({
   );
 }
 
-export const RewardHistoryTab = memo(function RewardHistoryTab({ activity }: Props) {
+export const RewardHistoryTab = memo(function RewardHistoryTab({ activity, onIssue }: Props) {
   const { t } = useLocale();
   const { updateRewardIssue, deleteRewardIssue } = useActivities();
   const [page, setPage] = useState(0);
@@ -91,6 +92,7 @@ export const RewardHistoryTab = memo(function RewardHistoryTab({ activity }: Pro
           completions={activity.completions}
           rewardIssues={activity.rewardIssues}
           seriesDefinitions={activity.seriesDefinitions}
+          onIssue={onIssue}
         />
         <div className="accordion__placeholder">{t.noRewardsYet}</div>
       </>
@@ -103,6 +105,7 @@ export const RewardHistoryTab = memo(function RewardHistoryTab({ activity }: Pro
         completions={activity.completions}
         rewardIssues={activity.rewardIssues}
         seriesDefinitions={activity.seriesDefinitions}
+        onIssue={onIssue}
       />
       <table className="rtable">
         <thead>

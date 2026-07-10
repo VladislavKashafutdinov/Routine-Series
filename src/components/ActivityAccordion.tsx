@@ -109,7 +109,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
           <div className="accordion__tab-content">
             {tab === 'defs' && <SeriesDefinitionTab activity={activity} />}
             {tab === 'series' && <SeriesHistoryTab series={series} />}
-            {tab === 'rewards' && <RewardHistoryTab activity={activity} />}
+            {tab === 'rewards' && <RewardHistoryTab activity={activity} onIssue={handleIssue} />}
             {tab === 'completions' && <CompletionsTab activity={activity} />}
           </div>
         </div>
