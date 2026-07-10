@@ -83,8 +83,13 @@ export function computeSeries(
 ): ComputedSeries[] {
   if (defs.length === 0) return [];
 
+  // Filter out future data (date > virtualToday)
+  const validComps = completions.filter((c) => c.date <= todayStr);
+  const validDefs = defs.filter((d) => d.createdAt.toISOString().slice(0, 10) <= todayStr);
+  if (validDefs.length === 0) return [];
+
   // Step 0: sort definitions by createdAt
-  const sortedDefs = [...defs].sort(
+  const sortedDefs = [...validDefs].sort(
     (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
   );
 
@@ -97,7 +102,7 @@ export function computeSeries(
     const nextDef = sortedDefs[i + 1];
 
     // Filter completions for this definition
-    const defComps = completions.filter((c) => {
+    const defComps = validComps.filter((c) => {
       const afterStart = c.date >= def.createdAt.toISOString().slice(0, 10);
       if (!nextDef) return afterStart;
       const beforeNext = c.date < nextDef.createdAt.toISOString().slice(0, 10);

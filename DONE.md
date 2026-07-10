@@ -4,6 +4,13 @@
 
 ---
 
+### 2026-07-11 — Алгоритм computeSeries: фильтрация будущих дат
+
+- computeSeries теперь исключает completions и seriesDefinitions с датой > virtualToday
+- findCurrentSeries вынесена в utils/series.ts + 7 тестов
+- SeriesProgress: startDate/seriesLength/doneCount вместо сырых completions
+- isDoneToday убран из ActivityWithStreak, вычисляется локально
+
 ### 2026-07-11 — Баг: разрывы в SeriesProgress при перемотке времени
 
 - SeriesProgress теперь получает completions текущей серии (по virtualToday), а не все

@@ -205,3 +205,37 @@ describe('findCurrentSeries', () => {
     expect(findCurrentSeries([a, b], '2026-07-12')).toBe(a);
   });
 });
+
+// ── computeSeries: future filtering ──
+
+describe('computeSeries future filtering', () => {
+  it('excludes completions with date > virtualToday', () => {
+    const defs = [def({ id: 1, seriesLength: 7 })];
+    const comps = [
+      comp('2026-07-09'),
+      comp('2026-07-12'), // future
+    ];
+    const result = computeSeries(defs, comps, '2026-07-10');
+    expect(result[0].completions).toHaveLength(1);
+    expect(result[0].completions[0].date).toBe('2026-07-09');
+  });
+
+  it('excludes seriesDefinitions with createdAt > virtualToday', () => {
+    const defs = [
+      def({ id: 1, createdAt: new Date('2026-07-05'), seriesLength: 2, reward: 10 }),
+      def({ id: 2, createdAt: new Date('2026-07-12'), seriesLength: 2, reward: 20 }), // future def
+    ];
+    const comps = [
+      comp('2026-07-06'), comp('2026-07-07'), // belongs to def 1
+    ];
+    const result = computeSeries(defs, comps, '2026-07-10');
+    expect(result).toHaveLength(1);
+    expect(result[0].reward).toBe(10); // only def 1 used
+  });
+
+  it('returns empty if all defs are in the future', () => {
+    const defs = [def({ id: 1, createdAt: new Date('2026-07-15'), seriesLength: 7 })];
+    const comps = [comp('2026-07-16')];
+    expect(computeSeries(defs, comps, '2026-07-10')).toEqual([]);
+  });
+});

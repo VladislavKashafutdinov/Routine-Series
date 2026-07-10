@@ -92,6 +92,7 @@
 
 #### Как формируются серии
 Серии вычисляются на основании записей в completion и seriesdefinition: 
+В алгоритме используются только те completion и seriesDefinition, дата которых <= virtualToday
 0. seriesdefinition сортируются в связанный список по дате создания
 1. для каждой seriesdefinition делается выборка множества completion, у которых 
 	- если это последняя `SeriesDefinition` в списке, то условие попадания completion в выборку: date >= даты создания seriesdefinition
