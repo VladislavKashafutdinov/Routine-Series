@@ -5,6 +5,7 @@ import { TimeTravel } from './components/TimeTravel';
 import { Dashboard } from './components/Dashboard';
 import { MonitoringPage } from './components/MonitoringPage';
 import { ArchivePage } from './components/ArchivePage';
+import { DataActions } from './components/DataActions';
 import type { Page } from './components/PageTabs';
 import './App.css';
 
@@ -17,6 +18,7 @@ export default function App() {
         <h1>Routine Series</h1>
         <LangSwitcher />
         <TimeTravel />
+        <DataActions />
         <PageTabs page={page} onChange={setPage} />
       </header>
       <main className="app-main">
