@@ -12,6 +12,7 @@ export const EditSeriesDefinition = memo(function EditSeriesDefinition({ activit
   const { t } = useLocale();
   const { addSeriesDefinition } = useActivities();
   const [open, setOpen] = useState(false);
+  if (activity.seriesDefinitions.length === 0) return null;
   const def = latestDef(activity.seriesDefinitions, activity.id);
   const [length, setLength] = useState(def.seriesLength);
   const [reward, setReward] = useState(def.reward);

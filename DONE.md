@@ -4,6 +4,11 @@
 
 ---
 
+### 2026-07-10 — Баг: пустой seriesDefinitions при добавлении активности
+
+- Добавлены проверки на пустоту seriesDefinitions в ActivityCard, ActivityAccordion, EditSeriesDefinition, SeriesDefinitionTab
+- При пустом списке показывается плейсхолдер вместо краша
+
 ### 2026-07-10 — Экспорт/Импорт
 
 - 20. DataActions: экспорт всех таблиц БД в JSON, импорт с валидацией и подтверждением

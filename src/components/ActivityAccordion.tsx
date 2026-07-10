@@ -87,14 +87,21 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
         </span>
         <span className={`accordion__arrow ${isOpen ? 'accordion__arrow--up' : ''}`}>▾</span>
       </div>
-      <div className="accordion__active-series" onClick={(e) => e.stopPropagation()}>
-        <SeriesWidget
-          startDate={currentSeries ? currentSeries.startDate : virtualToday}
-          seriesLength={currentSeries ? currentSeries.seriesLength : latestDef(activity.seriesDefinitions, activity.id).seriesLength}
-          completions={currentSeries ? currentSeries.completions : []}
-        />
-      </div>
-      {isOpen && (
+      {activity.seriesDefinitions.length > 0 && (
+        <div className="accordion__active-series" onClick={(e) => e.stopPropagation()}>
+          <SeriesWidget
+            startDate={currentSeries ? currentSeries.startDate : virtualToday}
+            seriesLength={currentSeries ? currentSeries.seriesLength : latestDef(activity.seriesDefinitions, activity.id).seriesLength}
+            completions={currentSeries ? currentSeries.completions : []}
+          />
+        </div>
+      )}
+      {isOpen && activity.seriesDefinitions.length === 0 && (
+        <div className="accordion__body">
+          <div className="accordion__placeholder">{t.loading}</div>
+        </div>
+      )}
+      {isOpen && activity.seriesDefinitions.length > 0 && (
         <div className="accordion__body">
           <TabSwitcher
             tabs={[

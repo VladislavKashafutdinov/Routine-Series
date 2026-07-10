@@ -52,7 +52,9 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
           ×
         </button>
       </div>
-      <SeriesProgress completions={activity.completions} seriesLength={latestDef(activity.seriesDefinitions, activity.id).seriesLength} />
+      {activity.seriesDefinitions.length > 0 && (
+        <SeriesProgress completions={activity.completions} seriesLength={latestDef(activity.seriesDefinitions, activity.id).seriesLength} />
+      )}
       <button
         className={`card__done ${activity.isDoneToday ? 'card__done--yes' : 'card__done--no'}`}
         onClick={() => toggleDone(activity.id)}

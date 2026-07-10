@@ -16,6 +16,9 @@ export const SeriesDefinitionTab = memo(function SeriesDefinitionTab({ activity 
   const [page, setPage] = useState(0);
 
   // Show form for adding new definition
+  if (activity.seriesDefinitions.length === 0) {
+    return <div className="accordion__placeholder">{t.loading}</div>;
+  }
   const def = latestDef(activity.seriesDefinitions, activity.id);
   const [showForm, setShowForm] = useState(false);
   const [length, setLength] = useState(def.seriesLength);
