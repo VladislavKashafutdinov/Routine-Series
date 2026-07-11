@@ -120,6 +120,7 @@ export function computeSeries(
 /** Find the series whose date window contains virtualToday, or undefined */
 export function findCurrentSeries(series: ComputedSeries[], virtualToday: string): ComputedSeries | undefined {
   return series.find((s) => {
+    if (s.status === 'broken') return false;
     // Compute end date using local date math (avoids UTC shift from toISOString)
     const d = new Date(s.startDate + 'T00:00:00');
     d.setDate(d.getDate() + s.seriesLength - 1);

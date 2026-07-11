@@ -204,6 +204,16 @@ describe('findCurrentSeries', () => {
     const b = s({ startDate: '2026-07-10', seriesLength: 5, number: 2 });
     expect(findCurrentSeries([a, b], '2026-07-12')).toBe(a);
   });
+
+  it('ignores broken series even if window contains virtualToday', () => {
+    const broken = s({ startDate: '2026-07-10', seriesLength: 7, status: 'broken' });
+    expect(findCurrentSeries([broken], '2026-07-12')).toBeUndefined();
+  });
+
+  it('finds completed series if window contains virtualToday', () => {
+    const completed = s({ startDate: '2026-07-10', seriesLength: 3, status: 'completed' });
+    expect(findCurrentSeries([completed], '2026-07-11')).toBe(completed);
+  });
 });
 
 // ── computeSeries: future filtering ──

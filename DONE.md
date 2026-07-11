@@ -4,6 +4,12 @@
 
 ---
 
+### 2026-07-11 — SeriesContext + findCurrentSeries fix
+
+- SeriesContext: централизованное вычисление серий, useSeries/useAllSeries
+- findCurrentSeries: исключает broken, находит active и completed по virtualToday
+- computeSeries: фильтрация future дат, правильное соотнесение completion↔seriesDefinition
+
 ### 2026-07-11 — Баг: длинные серии выходят за пределы карточки
 
 - SeriesProgress и SeriesWidget: flex-wrap для квадратиков
