@@ -5,7 +5,8 @@ import { memo, useState } from 'react';
 
 import type { ActivityWithStreak } from '../types';
 import { SeriesProgress } from './SeriesProgress';
-import { computeSeries, findCurrentSeries } from '../utils/series';
+import { useSeries } from '../hooks/SeriesContext';
+import { findCurrentSeries } from '../utils/series';
 import { useLocale } from '../i18n/LocaleContext';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
 
@@ -19,7 +20,7 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
   const { updateName, toggleDone, deleteActivity } = useActivities();
 
   // Find current series (window contains virtualToday)
-  const series = computeSeries(activity.seriesDefinitions, activity.completions, virtualToday);
+  const series = useSeries(activity.id);
   const currentSeries = findCurrentSeries(series, virtualToday);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(activity.name);

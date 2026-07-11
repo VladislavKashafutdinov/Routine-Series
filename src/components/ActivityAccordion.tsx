@@ -15,7 +15,8 @@ import { useLocale } from '../i18n/LocaleContext';
 import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import { latestDef } from '../hooks/useActivities';
 import { calcEarnedByCurrency, calcIssuedByCurrency, calcUnissuedByCurrency } from '../utils/rewards';
-import { computeSeries, findCurrentSeries } from '../utils/series';
+import { useSeries } from '../hooks/SeriesContext';
+import { findCurrentSeries } from '../utils/series';
 
 type Tab = 'defs' | 'series' | 'rewards' | 'completions';
 
@@ -37,11 +38,7 @@ export const ActivityAccordion = memo(function ActivityAccordion({ activity, isO
     setShowIssue(true);
   };
 
-  // Compute series on the fly with current virtualToday
-  const series = useMemo(
-    () => computeSeries(activity.seriesDefinitions, activity.completions, virtualToday),
-    [activity.seriesDefinitions, activity.completions, virtualToday]
-  );
+  const series = useSeries(activity.id);
 
   // Compute per-currency unissued from series + rewardIssues
   const unissuedByCurrency = useMemo(() => {

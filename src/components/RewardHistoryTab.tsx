@@ -88,12 +88,7 @@ export const RewardHistoryTab = memo(function RewardHistoryTab({ activity, onIss
   if (total === 0) {
     return (
       <>
-        <RewardCounters
-          completions={activity.completions}
-          rewardIssues={activity.rewardIssues}
-          seriesDefinitions={activity.seriesDefinitions}
-          onIssue={onIssue}
-        />
+        <RewardCounters activity={activity} onIssue={onIssue} />
         <div className="accordion__placeholder">{t.noRewardsYet}</div>
       </>
     );
@@ -101,12 +96,7 @@ export const RewardHistoryTab = memo(function RewardHistoryTab({ activity, onIss
 
   return (
     <>
-      <RewardCounters
-        completions={activity.completions}
-        rewardIssues={activity.rewardIssues}
-        seriesDefinitions={activity.seriesDefinitions}
-        onIssue={onIssue}
-      />
+      <RewardCounters activity={activity} onIssue={onIssue} />
       <table className="rtable">
         <thead>
           <tr>

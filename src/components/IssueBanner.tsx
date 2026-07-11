@@ -1,7 +1,6 @@
 import { memo, useMemo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
-import { useVirtualToday } from '../hooks/VirtualTodayContext';
-import { computeSeries } from '../utils/series';
+import { useAllSeries } from '../hooks/SeriesContext';
 import { calcEarnedByCurrency, calcIssuedByCurrency, calcUnissuedByCurrency } from '../utils/rewards';
 import { IssueRewardModal } from './IssueRewardModal';
 import type { ActivityWithStreak } from '../types';
@@ -19,7 +18,6 @@ interface IssueEntry {
 
 export const IssueBanner = memo(function IssueBanner({ activities }: Props) {
   const { t } = useLocale();
-  const { virtualToday } = useVirtualToday();
   const [showIssue, setShowIssue] = useState(false);
   const [issueInfo, setIssueInfo] = useState<{
     activity: ActivityWithStreak;
@@ -27,11 +25,13 @@ export const IssueBanner = memo(function IssueBanner({ activities }: Props) {
     amount: number;
   } | null>(null);
 
+  const seriesMap = useAllSeries();
+
   // Compute unissued per activity per currency
   const entries: IssueEntry[] = useMemo(() => {
     const result: IssueEntry[] = [];
     for (const a of activities) {
-      const series = computeSeries(a.seriesDefinitions, a.completions, virtualToday);
+      const series = seriesMap.get(a.id) || [];
       const earned = calcEarnedByCurrency(series);
       const issued = calcIssuedByCurrency(a.rewardIssues);
       const unissued = calcUnissuedByCurrency(earned, issued);
@@ -40,7 +40,7 @@ export const IssueBanner = memo(function IssueBanner({ activities }: Props) {
       }
     }
     return result;
-  }, [activities, virtualToday]);
+  }, [activities, seriesMap]);
 
   if (entries.length === 0) return null;
 

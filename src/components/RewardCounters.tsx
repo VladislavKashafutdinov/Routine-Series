@@ -1,27 +1,23 @@
 import { memo } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
-import { useVirtualToday } from '../hooks/VirtualTodayContext';
-import { computeSeries } from '../utils/series';
+import { useSeries } from '../hooks/SeriesContext';
 import { calcEarnedByCurrency, calcIssuedByCurrency, getCurrencies } from '../utils/rewards';
-import type { Completion, RewardIssue, SeriesDefinition } from '../types';
+import type { ActivityWithStreak } from '../types';
 import './RewardCounters.css';
 
 interface Props {
-  completions: Completion[];
-  rewardIssues: RewardIssue[];
-  seriesDefinitions: SeriesDefinition[];
+  activity: ActivityWithStreak;
   onIssue: (currency: string, amount: number) => void;
 }
 
-export const RewardCounters = memo(function RewardCounters({ completions, rewardIssues, seriesDefinitions, onIssue }: Props) {
+export const RewardCounters = memo(function RewardCounters({ activity, onIssue }: Props) {
   const { t } = useLocale();
-  const { virtualToday } = useVirtualToday();
 
-  const series = computeSeries(seriesDefinitions, completions, virtualToday);
+  const series = useSeries(activity.id);
   const earnedByCurrency = calcEarnedByCurrency(series);
-  const issuedByCurrency = calcIssuedByCurrency(rewardIssues);
+  const issuedByCurrency = calcIssuedByCurrency(activity.rewardIssues);
 
-  const currencies = getCurrencies(seriesDefinitions, rewardIssues);
+  const currencies = getCurrencies(activity.seriesDefinitions, activity.rewardIssues);
 
   if (currencies.length === 0) return null;
 
