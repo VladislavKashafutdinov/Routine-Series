@@ -26,11 +26,11 @@ App
 │
 ├── [«Мониторинг»] MonitoringPage
 │   └── ActivityAccordion[]
-│       ├── Заголовок: activity.name + unissued counter per-currency (только если >0) + кнопка «Начислить» per-currency + отображение активной серии
+│       ├── Заголовок: activity.name + unissued counter per-currency (только если >0) + кнопка «Начислить» per-currency + отображение текущей серии (findCurrentSeries)
 │       ├── IssueRewardModal    (дата/сумма/валюта → addRewardIssue)
 │       ├── TabSwitcher («SeriesDefinition» / «История начислений» / «История серий» / «Completions»)
 │       ├── [«SeriesDefinition»] SeriesDefinitionTab
-│       │   └── Список всех SeriesDefinition + добавление новой (длина / награда / валюта)
+│       │   └── Список всех SeriesDefinition + добавление + удаление (createdAt >= virtualToday, не единственная)
 │       ├── [«История начислений»] RewardHistoryTab
 │       │   ├── RewardCounters  (счётчики по каждой валюте)
 │       │   ├── Таблица RewardIssue (дата | сумма | валюта | действия)

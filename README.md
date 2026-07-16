@@ -68,7 +68,7 @@ App
 │       ├── IssueRewardModal     (оверлей, initialCurrency + defaultAmount из пропсов)
 │       ├── TabSwitcher         («Параметры» / «История серий» / «История начислений» / «Календарь»)
 │       ├── [defs] SeriesDefinitionTab
-│       │   ├── Таблица всех SeriesDefinition (длина / награда / валюта / дата)
+│       │   ├── Таблица всех SeriesDefinition (длина / награда / валюта / дата / удалить)
 │       │   └── Форма добавления нового (длина / награда / валюта)
 │       ├── [series] SeriesHistoryTab
 │       │   ├── Группы по SeriesDefinition (заголовок: длина · награда · дата)

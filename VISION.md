@@ -95,6 +95,7 @@
 В алгоритме используются только те completion и seriesDefinition, дата которых <= virtualToday
 0. seriesdefinition сортируются в связанный список по дате создания
 1. для каждой seriesdefinition делается выборка множества completion, у которых 
+	- если это первая `SeriesDefinition` в списке: попадают все completion с датой < даты создания следующей seriesdefinition (включая те, что до даты создания первой)
 	- если это последняя `SeriesDefinition` в списке, то условие попадания completion в выборку: date >= даты создания seriesdefinition
 	- иначе, условие попадания completion в выборку: date >= даты создания seriesdefinition, но < даты создания следующей в списке seriesdefinition. 
 	
