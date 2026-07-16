@@ -40,6 +40,7 @@
 
 ## 2026-07-16
 
+- Удаление seriesDefinition (createdAt >= virtualToday, не единственная)
 - Исправлен баг: completions до createdAt первого SeriesDefinition не попадали в серию
 - Написан тест на этот сценарий (26/26)
 

@@ -109,6 +109,10 @@ export function useActivities() {
     await db.rewardIssues.delete(id);
   };
 
+  const deleteSeriesDefinition = async (id: number) => {
+    await db.seriesDefinitions.delete(id);
+  };
+
   const addSeriesDefinition = async (activityId: number, seriesLength: number, reward: number, currency: string) => {
     await db.seriesDefinitions.add({
       activityId,
@@ -148,6 +152,7 @@ export function useActivities() {
     updateRewardIssue,
     deleteRewardIssue,
     addSeriesDefinition,
+    deleteSeriesDefinition,
     unarchiveActivity,
     deleteActivity
   };

@@ -1,6 +1,7 @@
 import { memo, useState } from 'react';
 import { useLocale } from '../i18n/LocaleContext';
 import { useActivities, latestDef } from '../hooks/useActivities';
+import { useVirtualToday } from '../hooks/VirtualTodayContext';
 import type { ActivityWithStreak } from '../types';
 import './SeriesDefinitionTab.css';
 
@@ -12,7 +13,8 @@ interface Props {
 
 export const SeriesDefinitionTab = memo(function SeriesDefinitionTab({ activity }: Props) {
   const { t } = useLocale();
-  const { addSeriesDefinition } = useActivities();
+  const { addSeriesDefinition, deleteSeriesDefinition } = useActivities();
+  const { virtualToday } = useVirtualToday();
   const [page, setPage] = useState(0);
 
   // Show form for adding new definition
@@ -75,6 +77,7 @@ export const SeriesDefinitionTab = memo(function SeriesDefinitionTab({ activity 
               <th>{t.rewardLabel}</th>
               <th>{t.rewardCurrency}</th>
               <th>{t.rewardDate}</th>
+              <th>{t.rewardActions}</th>
             </tr>
           </thead>
           <tbody>
@@ -84,6 +87,21 @@ export const SeriesDefinitionTab = memo(function SeriesDefinitionTab({ activity 
                 <td>{d.reward}</td>
                 <td>{d.currency}</td>
                 <td>{d.createdAt.toISOString().slice(0, 10)}</td>
+                <td>
+                  {d.createdAt.toISOString().slice(0, 10) >= virtualToday && defs.length > 1 && (
+                    <button
+                      className="sdef-tab__del"
+                      onClick={() => {
+                        if (confirm(t.deleteConfirm(t.seriesLengthLabel))) {
+                          deleteSeriesDefinition(d.id!);
+                        }
+                      }}
+                      type="button"
+                    >
+                      {t.deleteTitle}
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
