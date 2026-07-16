@@ -54,7 +54,7 @@ export interface Strings {
   rewardCurrency: string;
   rewardActions: string;
 
-  // EditSeriesDefinition
+  // SeriesDefinitionTab
   editSeries: string;
   editSeriesSave: string;
   editSeriesCancel: string;

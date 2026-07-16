@@ -38,8 +38,8 @@ See [README.md § Data flow](README.md#data-flow) for the full diagram.
 | `src/db/db.ts` | Dexie instance, schema v2 (activities, seriesDefinitions, completions, rewardIssues) |
 | `src/hooks/useActivities.ts` | Single data hook: `liveQuery`, mutations, `latestDef()` |
 | `src/hooks/VirtualTodayContext.tsx` | Virtual today — provider + `useVirtualToday` |
-| `src/utils/date.ts` | `today()`, `dayDiff()`, `getDateRange()` |
-| `src/utils/series.ts` | `computeSeries()`, `isGapBreak()` |
+| `src/utils/date.ts` | `today()`, `dayDiff()` |
+| `src/utils/series.ts` | `computeSeries()`, `isGapBreak()`, `findCurrentSeries()` |
 | `src/utils/rewards.ts` | `calcEarnedByCurrency()`, `calcIssuedByCurrency()`, `calcUnissuedByCurrency()`, `getCurrencies()` |
 | `src/i18n/` | `LocaleContext` + translations (en/ru) |
 | `src/App.tsx` | Root: page switching (`dashboard` / `monitoring` / `archive`) |
