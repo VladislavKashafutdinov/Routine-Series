@@ -4,6 +4,11 @@
 
 ---
 
+### 2026-07-16 — Баг: completions до createdAt первого SeriesDefinition не попадали в серию
+
+- Исправлен computeSeries: для первого def включать completions с date < defCreatedDate
+- Добавлен тест на этот сценарий (26/26)
+
 ### 2026-07-11 — SeriesContext + findCurrentSeries fix
 
 - SeriesContext: централизованное вычисление серий, useSeries/useAllSeries

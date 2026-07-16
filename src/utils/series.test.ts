@@ -248,4 +248,22 @@ describe('computeSeries future filtering', () => {
     const comps = [comp('2026-07-16')];
     expect(computeSeries(defs, comps, '2026-07-10')).toEqual([]);
   });
+
+  it('includes completions before the first def createdAt (bug: series calc)', () => {
+    // Activity created today (def createdAt = today), but completions were
+    // marked on days before via time travel
+    const defs = [def({ id: 1, createdAt: new Date('2026-07-16'), seriesLength: 10 })];
+    const comps = [
+      comp('2026-07-06'), comp('2026-07-07'), comp('2026-07-08'),
+      comp('2026-07-09'), comp('2026-07-10'), comp('2026-07-11'),
+      // gap on 12th
+      comp('2026-07-13'), comp('2026-07-14'), comp('2026-07-15'),
+      // 16th (today) — not done
+    ];
+    const result = computeSeries(defs, comps, '2026-07-16');
+    expect(result).toHaveLength(2); // broken (6-11) + active (13-15, last = yesterday)
+    expect(result[0].completions).toHaveLength(6);
+    expect(result[1].completions).toHaveLength(3);
+    expect(result[1].status).toBe('active');
+  });
 });

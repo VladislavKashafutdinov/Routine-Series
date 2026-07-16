@@ -99,11 +99,13 @@ export function computeSeries(
   // Step 1-3: for each definition, select completions and split
   for (let i = 0; i < sortedDefs.length; i++) {
     const def = sortedDefs[i];
+    const defCreatedDate = def.createdAt.toISOString().slice(0, 10);
     const nextDef = sortedDefs[i + 1];
-
+    
     // Filter completions for this definition
     const defComps = validComps.filter((c) => {
-      const afterStart = c.date >= def.createdAt.toISOString().slice(0, 10);
+      if (i === 0 && c.date < defCreatedDate) return true;
+      const afterStart = c.date >= defCreatedDate;
       if (!nextDef) return afterStart;
       const beforeNext = c.date < nextDef.createdAt.toISOString().slice(0, 10);
       return afterStart && beforeNext;
