@@ -1,14 +1,14 @@
 import './ActivityCard.css';
 
-import { latestDef, useActivities } from '../hooks/useActivities';
+import { latestDef, useActivities } from '../../hooks/useActivities';
 import { memo, useState } from 'react';
 
-import type { ActivityWithStreak } from '../types';
-import { SeriesProgress } from './SeriesProgress';
-import { useSeries } from '../hooks/SeriesContext';
-import { findCurrentSeries } from '../utils/series';
-import { useLocale } from '../i18n/LocaleContext';
-import { useVirtualToday } from '../hooks/VirtualTodayContext';
+import type { ActivityWithStreak } from '../../types';
+import { SeriesProgress } from '../SeriesProgress/SeriesProgress';
+import { findCurrentSeries } from '../../utils/series';
+import { useLocale } from '../../i18n/LocaleContext';
+import { useSeries } from '../../hooks/SeriesContext';
+import { useVirtualToday } from '../../hooks/VirtualTodayContext';
 
 interface Props {
   activity: ActivityWithStreak;

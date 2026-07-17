@@ -1,10 +1,12 @@
-import { memo, useState } from 'react';
-import { useLocale } from '../i18n/LocaleContext';
-import { useActivities } from '../hooks/useActivities';
-import { Paginator } from './Paginator';
-import { RewardCounters } from './RewardCounters';
-import type { ActivityWithStreak, RewardIssue } from '../types';
 import './RewardHistoryTab.css';
+
+import type { ActivityWithStreak, RewardIssue } from '../../types';
+import { memo, useState } from 'react';
+
+import { Paginator } from '../Paginator/Paginator';
+import { RewardCounters } from '../RewardCounters/RewardCounters';
+import { useActivities } from '../../hooks/useActivities';
+import { useLocale } from '../../i18n/LocaleContext';
 
 const PER_PAGE = 50;
 

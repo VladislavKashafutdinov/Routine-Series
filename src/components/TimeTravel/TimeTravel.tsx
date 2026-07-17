@@ -1,6 +1,6 @@
-import { useLocale } from '../i18n/LocaleContext';
-import { useVirtualToday } from '../hooks/VirtualTodayContext';
-import { today, dayDiff } from '../utils/date';
+import { useLocale } from '../../i18n/LocaleContext';
+import { useVirtualToday } from '../../hooks/VirtualTodayContext';
+import { today, dayDiff } from '../../utils/date';
 import './TimeTravel.css';
 
 function addDays(dateStr: string, n: number): string {

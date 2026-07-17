@@ -1,4 +1,4 @@
-import { useLocale } from '../i18n/LocaleContext';
+import { useLocale } from '../../i18n/LocaleContext';
 import './PageTabs.css';
 
 export type Page = 'dashboard' | 'monitoring' | 'archive';

@@ -1,8 +1,8 @@
 import { memo, useState } from 'react';
-import { useLocale } from '../i18n/LocaleContext';
-import { useVirtualToday } from '../hooks/VirtualTodayContext';
-import { useActivities } from '../hooks/useActivities';
-import type { ActivityWithStreak } from '../types';
+import { useLocale } from '../../i18n/LocaleContext';
+import { useVirtualToday } from '../../hooks/VirtualTodayContext';
+import { useActivities } from '../../hooks/useActivities';
+import type { ActivityWithStreak } from '../../types';
 import './IssueRewardModal.css';
 
 interface Props {

@@ -1,22 +1,22 @@
 import './ActivityAccordion.css';
 
+import { calcEarnedByCurrency, calcIssuedByCurrency, calcUnissuedByCurrency } from '../../utils/rewards';
 import { memo, useMemo, useState } from 'react';
 
-import type { ActivityWithStreak } from '../types';
-import { CompletionsTab } from './CompletionsTab';
-import { IssueRewardModal } from './IssueRewardModal';
-import { RewardHistoryTab } from './RewardHistoryTab';
-import { SeriesDefinitionTab } from './SeriesDefinitionTab';
-import { SeriesHistoryTab } from './SeriesHistoryTab';
-import { SeriesWidget } from './SeriesWidget';
-import { TabSwitcher } from './TabSwitcher';
-import { UnissuedRow } from './UnissuedRow';
-import { useLocale } from '../i18n/LocaleContext';
-import { useVirtualToday } from '../hooks/VirtualTodayContext';
-import { latestDef } from '../hooks/useActivities';
-import { calcEarnedByCurrency, calcIssuedByCurrency, calcUnissuedByCurrency } from '../utils/rewards';
-import { useSeries } from '../hooks/SeriesContext';
-import { findCurrentSeries } from '../utils/series';
+import type { ActivityWithStreak } from '../../types';
+import { CompletionsTab } from '../CompletionsTab/CompletionsTab';
+import { IssueRewardModal } from '../IssueRewardModal/IssueRewardModal';
+import { RewardHistoryTab } from '../RewardHistoryTab/RewardHistoryTab';
+import { SeriesDefinitionTab } from '../SeriesDefinitionTab/SeriesDefinitionTab';
+import { SeriesHistoryTab } from '../SeriesHistoryTab/SeriesHistoryTab';
+import { SeriesWidget } from '../SeriesWidget/SeriesWidget';
+import { TabSwitcher } from '../TabSwitcher/TabSwitcher';
+import { UnissuedRow } from '../UnissuedRow';
+import { findCurrentSeries } from '../../utils/series';
+import { latestDef } from '../../hooks/useActivities';
+import { useLocale } from '../../i18n/LocaleContext';
+import { useSeries } from '../../hooks/SeriesContext';
+import { useVirtualToday } from '../../hooks/VirtualTodayContext';
 
 type Tab = 'defs' | 'series' | 'rewards' | 'completions';
 

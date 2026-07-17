@@ -4,6 +4,11 @@
 
 ---
 
+### 2026-07-17 — Техдолг: чистка кода и структура папок
+
+- Удалён мёртвый код: EditSeriesDefinition, streak.ts, getDateRange
+- Компоненты размещены по папкам (каждый со своим CSS)
+
 ### 2026-07-16 — Удаление seriesDefinition
 
 - Кнопка удаления в SeriesDefinitionTab для def с createdAt >= virtualToday

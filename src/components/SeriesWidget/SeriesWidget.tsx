@@ -1,9 +1,10 @@
-import { memo } from 'react';
-import { useLocale } from '../i18n/LocaleContext';
-import { useVirtualToday } from '../hooks/VirtualTodayContext';
-import { dayDiff } from '../utils/date';
-import type { Completion } from '../types';
 import './SeriesWidget.css';
+
+import type { Completion } from '../../types';
+import { dayDiff } from '../../utils/date';
+import { memo } from 'react';
+import { useLocale } from '../../i18n/LocaleContext';
+import { useVirtualToday } from '../../hooks/VirtualTodayContext';
 
 interface Props {
   startDate: string;
@@ -34,7 +35,7 @@ function calcStatus(completions: Completion[], seriesLength: number, todayStr: s
   return 'broken';
 }
 
-function statusLabel(status: Status, t: ReturnType<typeof import('../i18n/LocaleContext').useLocale>['t']): string {
+function statusLabel(status: Status, t: ReturnType<typeof import('../../i18n/LocaleContext').useLocale>['t']): string {
   switch (status) {
     case 'completed': return t.statusCompleted;
     case 'broken': return t.statusBroken;

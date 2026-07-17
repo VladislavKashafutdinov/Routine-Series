@@ -1,8 +1,10 @@
-import { memo, useState } from 'react';
-import { useLocale } from '../i18n/LocaleContext';
-import { useActivities } from '../hooks/useActivities';
-import { ActivityAccordion } from './ActivityAccordion';
 import './MonitoringPage.css';
+
+import { memo, useState } from 'react';
+
+import { ActivityAccordion } from '../ActivityAccordion/ActivityAccordion';
+import { useActivities } from '../../hooks/useActivities';
+import { useLocale } from '../../i18n/LocaleContext';
 
 export const MonitoringPage = memo(function MonitoringPage() {
   const { t } = useLocale();

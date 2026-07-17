@@ -1,6 +1,6 @@
 import { useRef } from 'react';
-import { useLocale } from '../i18n/LocaleContext';
-import { db } from '../db/db';
+import { useLocale } from '../../i18n/LocaleContext';
+import { db } from '../../db/db';
 import './DataActions.css';
 
 export function DataActions() {

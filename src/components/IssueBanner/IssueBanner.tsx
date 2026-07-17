@@ -1,10 +1,12 @@
-import { memo, useMemo, useState } from 'react';
-import { useLocale } from '../i18n/LocaleContext';
-import { useAllSeries } from '../hooks/SeriesContext';
-import { calcEarnedByCurrency, calcIssuedByCurrency, calcUnissuedByCurrency } from '../utils/rewards';
-import { IssueRewardModal } from './IssueRewardModal';
-import type { ActivityWithStreak } from '../types';
 import './IssueBanner.css';
+
+import { calcEarnedByCurrency, calcIssuedByCurrency, calcUnissuedByCurrency } from '../../utils/rewards';
+import { memo, useMemo, useState } from 'react';
+
+import type { ActivityWithStreak } from '../../types';
+import { IssueRewardModal } from '../IssueRewardModal/IssueRewardModal';
+import { useAllSeries } from '../../hooks/SeriesContext';
+import { useLocale } from '../../i18n/LocaleContext';
 
 interface Props {
   activities: ActivityWithStreak[];

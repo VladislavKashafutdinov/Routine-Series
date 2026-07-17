@@ -1,6 +1,6 @@
 import { memo } from 'react';
-import { useLocale } from '../i18n/LocaleContext';
-import { useActivities } from '../hooks/useActivities';
+import { useLocale } from '../../i18n/LocaleContext';
+import { useActivities } from '../../hooks/useActivities';
 import './ArchivePage.css';
 
 export const ArchivePage = memo(function ArchivePage() {
