@@ -93,6 +93,8 @@
 #### Как формируются серии
 Серии вычисляются на основании записей в completion и seriesdefinition: 
 В алгоритме используются только те completion и seriesDefinition, дата которых <= virtualToday
+
+##### Старая версия алгоритма
 0. seriesdefinition сортируются в связанный список по дате создания
 1. для каждой seriesdefinition делается выборка множества completion, у которых 
 	- если это первая `SeriesDefinition` в списке: попадают все completion с датой < даты создания следующей seriesdefinition (включая те, что до даты создания первой)
@@ -115,6 +117,42 @@
 		- если размер последней серии равно N, то в series попадает новая серия
 		- добавить completion в последнюю серию из series
 
+##### Версия алгоритма 2
+
+0. Определить 
+	- firstSeriesDefinition: самая минимальная seriesDefinition по creationDate
+	- lastSeriesDefinition: самая максимальная seriesDefinition по creationDate
+	- virtualYesterday: virtualToday минус 1 день
+1. Отсортировать список всех completion по дате выполнения. Получаем sortedCompletions.
+2. Разбить sortedCompletions по разрывам дат. Получаем список списков completion - superSeriesList. Каждый элемент внутри superSeriesList должен быть списком completion, отсортированным по completion.date
+3. Цикл: для каждой superSeries из superSeriesList: разбиение superSeries на серии и формирование результирующего списка из computedSeries: 
+	0. Завести переменную processingSeries - пустой список completion 
+	1. Цикл для каждого completion с индексом completionIndex внутри superSeries 
+		0. определить completionSeriesDefinition: ассоциация completion с seriesDefinition по следующему условию: 
+			- ЕСЛИ completion.date < firstSeriesDefinition.creationDate: firstSeriesDefinition
+			- ИНАЧЕ: seriesDefinition минимальная по seriesDefinition.creationDate среди всех seriesDefinition, у которой seriesDefinition.creationDate <= completion.date
+		1. добавить completion в processingSeries
+		2. ЕСЛИ processingSeries.length == completionSeriesDefinition.seriesLength (признак завершенной серии):
+			1. добавить в результирующий список серий новую серию (computedSeries):
+				- с набором completion из processingSeries
+				- параметрами из completionSeriesDefinition
+				- статус серии: завершенная 
+			2. обнулить processingSeries (начинаем набор новой серии)
+		2. ИНАЧЕ ЕСЛИ completionIndex == (superSeries.length - 1) (это последний день в супер-серии)
+			1. ЕСЛИ completion.date >= virtualYesterday (признак активной серии):
+				1. добавить в результирующий список серий новую серию (computedSeries):
+					- с набором completion из processingSeries
+					- параметрами из lastSeriesDefinition
+					- статус серии: активная
+				2. обнулить processingSeries (начинаем набор новой серии)
+			2. ИНАЧЕ (это последний день супер-серии в прошлом, супер-серия в прошлом заканчивается либо завершенной серией, либо прерванной):
+				1. добавить в результирующий список серий новую серию (computedSeries):
+					- с набором completion из processingSeries
+					- параметрами из completionSeriesDefinition
+					- статус серии: прерванная
+				2. обнулить processingSeries (начинаем набор новой серии)
+
+##### Триггеры пересчета серий
 Серии должны пересчитываться, если:
 - было добавлено completion
 - было удалено completion
