@@ -57,6 +57,7 @@ Current schema is described in [README.md § Структура данных](RE
 - **Mark in-progress before starting** — when the next step is identified and the user explicitly says to begin work, mark the step as «в работе» in [TODO.md](TODO.md) before making any code changes.
 - **User verifies before done** — after implementation, the user reviews the result. Only mark a step as `[x]` done after the user's explicit confirmation.
 - **Update component schema** — after completing a TODO item that changes the component tree (new components, new nesting, removed components), update the implemented component hierarchy in [README.md](README.md) § «Реализованная схема вложенности компонентов».
+- **Failing test = stop** — if any test fails, do NOT proceed with a fix without the user's explicit command. Only offer a suggested solution and wait for approval.
 - **Bug workflow** — bugs are handled in a separate cycle:
   1. User describes the bug
   2. Find the root cause (investigation)

@@ -267,3 +267,35 @@ describe('computeSeries future filtering', () => {
     expect(result[1].status).toBe('active');
   });
 });
+
+// ── multiple active series bug ──
+
+describe('single active series rule', () => {
+  it('should not have more than one active series', () => {
+    const defs = [
+      def({ id: 1, createdAt: new Date('2026-07-16'), seriesLength: 7 }),
+      def({ id: 2, createdAt: new Date('2026-07-18'), seriesLength: 10 }),
+    ];
+    const comps = [
+      comp('2026-07-13'),
+      comp('2026-07-14'),
+      // gap on 15th
+      comp('2026-07-16'),
+      comp('2026-07-17'),
+      comp('2026-07-18'),
+    ];
+    const result = computeSeries(defs, comps, '2026-07-18');
+
+    // Only one active series allowed
+    const activeSeries = result.filter((s) => s.status === 'active');
+    expect(activeSeries).toHaveLength(1);
+
+    // Expected: [13,14] broken (2 of 7, last=14, gap to today=4)
+    expect(result[0].status).toBe('broken');
+    expect(result[0].completions.map((c) => c.date)).toEqual(['2026-07-13', '2026-07-14']);
+
+    // Expected: [16,17,18] active (3 of 10, last=18 = today)
+    expect(result[1].status).toBe('active');
+    expect(result[1].completions.map((c) => c.date)).toEqual(['2026-07-16', '2026-07-17', '2026-07-18']);
+  });
+});
