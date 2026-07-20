@@ -7,74 +7,22 @@ export function isGapBreak(prevDate: string, nextDate: string): boolean {
   return dayDiff(prevDate, nextDate) > 1;
 }
 
-/**
- * Split completions into series per the README algorithm.
- * Step 3 of «Как формируются серии».
- */
-function splitIntoSeries(
-  comps: Completion[],
-  def: SeriesDefinition,
-  todayStr: string,
-  startNumber: number
-): ComputedSeries[] {
-  if (comps.length === 0) return [];
+function addDays(dateStr: string, n: number): string {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dd}`;
+}
 
-  const sorted = [...comps].sort((a, b) => a.date.localeCompare(b.date));
-  const N = def.seriesLength;
-
-  // Build linked list of series groups
-  const groups: Completion[][] = [];
-
-  for (const c of sorted) {
-    if (groups.length === 0) {
-      // First completion → new series
-      groups.push([c]);
-    } else {
-      const lastGroup = groups[groups.length - 1];
-      const lastComp = lastGroup[lastGroup.length - 1];
-
-      if (isGapBreak(lastComp.date, c.date)) {
-        // Gap > 1 day → new series (broken condition)
-        groups.push([c]);
-      } else if (lastGroup.length >= N) {
-        // Current series reached target length → new series (completed)
-        groups.push([c]);
-      } else {
-        // Continue current series
-        lastGroup.push(c);
-      }
-    }
-  }
-
-  // Assign status and number to each group
-  return groups.map((group, i) => {
-    const status: ComputedSeries['status'] =
-      group.length >= N
-        ? 'completed'
-        : (() => {
-            const lastDate = group[group.length - 1].date;
-            const diffFromToday = dayDiff(lastDate, todayStr);
-            if (diffFromToday <= 1) return 'active';    // yesterday or today
-            return 'broken';                              // gap > 1 from today
-          })();
-
-    return {
-      number: startNumber + i,
-      status,
-      seriesLength: N,
-      reward: def.reward,
-      currency: def.currency,
-      startDate: group[0].date,
-      endDate: status !== 'active' ? group[group.length - 1].date : undefined,
-      completions: group,
-      definitionCreatedAt: def.createdAt,
-    };
-  });
+function defDate(d: SeriesDefinition): string {
+  return d.createdAt.toISOString().slice(0, 10);
 }
 
 /**
- * Full algorithm from README «Как формируются серии».
- * Steps 0-3: sort definitions, group completions, split into series.
+ * VISION algorithm v2 — super-series based series computation.
+ * Splits completions by gaps first, then assigns definitions per completion.
  */
 export function computeSeries(
   defs: SeriesDefinition[],
@@ -83,37 +31,107 @@ export function computeSeries(
 ): ComputedSeries[] {
   if (defs.length === 0) return [];
 
-  // Filter out future data (date > virtualToday)
+  // Filter out future data
   const validComps = completions.filter((c) => c.date <= todayStr);
-  const validDefs = defs.filter((d) => d.createdAt.toISOString().slice(0, 10) <= todayStr);
+  const validDefs = defs.filter((d) => defDate(d) <= todayStr);
   if (validDefs.length === 0) return [];
 
-  // Step 0: sort definitions by createdAt
-  const sortedDefs = [...validDefs].sort(
-    (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
-  );
+  // 0. Define key dates
+  const sortedDefs = [...validDefs].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  const firstDef = sortedDefs[0];
+  const lastDef = sortedDefs[sortedDefs.length - 1];
+  const virtualYesterday = addDays(todayStr, -1);
 
+  // 1. Sort completions by date
+  const sortedComps = [...validComps].sort((a, b) => a.date.localeCompare(b.date));
+  if (sortedComps.length === 0) return [];
+
+  // 2. Split into super series by gaps
+  const superSeriesList: Completion[][] = [];
+  for (const c of sortedComps) {
+    if (superSeriesList.length === 0) {
+      superSeriesList.push([c]);
+    } else {
+      const lastGroup = superSeriesList[superSeriesList.length - 1];
+      const lastComp = lastGroup[lastGroup.length - 1];
+      if (isGapBreak(lastComp.date, c.date)) {
+        superSeriesList.push([c]);
+      } else {
+        lastGroup.push(c);
+      }
+    }
+  }
+
+  // 3. Process each super series
   const result: ComputedSeries[] = [];
   let seriesCounter = 0;
 
-  // Step 1-3: for each definition, select completions and split
-  for (let i = 0; i < sortedDefs.length; i++) {
-    const def = sortedDefs[i];
-    const defCreatedDate = def.createdAt.toISOString().slice(0, 10);
-    const nextDef = sortedDefs[i + 1];
-    
-    // Filter completions for this definition
-    const defComps = validComps.filter((c) => {
-      if (i === 0 && c.date < defCreatedDate) return true;
-      const afterStart = c.date >= defCreatedDate;
-      if (!nextDef) return afterStart;
-      const beforeNext = c.date < nextDef.createdAt.toISOString().slice(0, 10);
-      return afterStart && beforeNext;
-    });
+  for (const superSeries of superSeriesList) {
+    const processingSeries: Completion[] = [];
 
-    const series = splitIntoSeries(defComps, def, todayStr, seriesCounter + 1);
-    result.push(...series);
-    seriesCounter += series.length;
+    for (let compIndex = 0; compIndex < superSeries.length; compIndex++) {
+      const c = superSeries[compIndex];
+
+      // Determine definition for this completion
+      let def: SeriesDefinition;
+      if (c.date < defDate(firstDef)) {
+        def = firstDef;
+      } else {
+        // Latest def with creationDate <= completion.date
+        const matching = sortedDefs.filter((d) => defDate(d) <= c.date);
+        def = matching[matching.length - 1];
+      }
+
+      processingSeries.push(c);
+
+      if (processingSeries.length === def.seriesLength) {
+        // Completed series
+        seriesCounter++;
+        result.push({
+          number: seriesCounter,
+          status: 'completed',
+          seriesLength: def.seriesLength,
+          reward: def.reward,
+          currency: def.currency,
+          startDate: processingSeries[0].date,
+          endDate: processingSeries[processingSeries.length - 1].date,
+          completions: [...processingSeries],
+          definitionCreatedAt: def.createdAt,
+        });
+        processingSeries.length = 0;
+      } else if (compIndex === superSeries.length - 1) {
+        // Last completion of super series
+        seriesCounter++;
+        if (c.date >= virtualYesterday) {
+          // Active — uses lastSeriesDefinition params
+          result.push({
+            number: seriesCounter,
+            status: 'active',
+            seriesLength: lastDef.seriesLength,
+            reward: lastDef.reward,
+            currency: lastDef.currency,
+            startDate: processingSeries[0].date,
+            endDate: undefined,
+            completions: [...processingSeries],
+            definitionCreatedAt: lastDef.createdAt,
+          });
+        } else {
+          // Broken
+          result.push({
+            number: seriesCounter,
+            status: 'broken',
+            seriesLength: def.seriesLength,
+            reward: def.reward,
+            currency: def.currency,
+            startDate: processingSeries[0].date,
+            endDate: processingSeries[processingSeries.length - 1].date,
+            completions: [...processingSeries],
+            definitionCreatedAt: def.createdAt,
+          });
+        }
+        processingSeries.length = 0;
+      }
+    }
   }
 
   return result;

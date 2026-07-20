@@ -130,7 +130,7 @@
 	1. Цикл для каждого completion с индексом completionIndex внутри superSeries 
 		0. определить completionSeriesDefinition: ассоциация completion с seriesDefinition по следующему условию: 
 			- ЕСЛИ completion.date < firstSeriesDefinition.creationDate: firstSeriesDefinition
-			- ИНАЧЕ: seriesDefinition минимальная по seriesDefinition.creationDate среди всех seriesDefinition, у которой seriesDefinition.creationDate <= completion.date
+			- ИНАЧЕ: seriesDefinition максимальная по seriesDefinition.creationDate среди всех seriesDefinition, у которой seriesDefinition.creationDate <= completion.date
 		1. добавить completion в processingSeries
 		2. ЕСЛИ processingSeries.length == completionSeriesDefinition.seriesLength (признак завершенной серии):
 			1. добавить в результирующий список серий новую серию (computedSeries):
