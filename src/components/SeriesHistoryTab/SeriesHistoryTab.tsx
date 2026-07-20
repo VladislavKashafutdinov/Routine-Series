@@ -2,10 +2,10 @@ import './SeriesHistoryTab.css';
 
 import { memo, useState } from 'react';
 
-import type { ComputedSeries } from '../../types';
-import { Paginator } from '../Paginator/Paginator';
-import { SeriesWidget } from '../SeriesWidget/SeriesWidget';
-import { useLocale } from '../../i18n/LocaleContext';
+import type { ComputedSeries } from '@/types';
+import { Paginator } from '@components/Paginator/Paginator';
+import { SeriesWidget } from '@components/SeriesWidget/SeriesWidget';
+import { useLocale } from '@/i18n/LocaleContext';
 
 const GROUPS_PER_PAGE = 5;
 

@@ -1,10 +1,10 @@
 import './SeriesWidget.css';
 
-import type { Completion } from '../../types';
-import { dayDiff } from '../../utils/date';
+import type { Completion } from '@/types';
+import { dayDiff } from '@/utils/date';
 import { memo } from 'react';
-import { useLocale } from '../../i18n/LocaleContext';
-import { useVirtualToday } from '../../hooks/VirtualTodayContext';
+import { useLocale } from '@/i18n/LocaleContext';
+import { useVirtualToday } from '@/hooks/VirtualTodayContext';
 
 interface Props {
   startDate: string;

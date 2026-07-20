@@ -1,22 +1,22 @@
 import './ActivityAccordion.css';
 
-import { calcEarnedByCurrency, calcIssuedByCurrency, calcUnissuedByCurrency } from '../../utils/rewards';
+import { calcEarnedByCurrency, calcIssuedByCurrency, calcUnissuedByCurrency } from '@/utils/rewards';
 import { memo, useMemo, useState } from 'react';
 
-import type { ActivityWithStreak } from '../../types';
-import { CompletionsTab } from '../CompletionsTab/CompletionsTab';
-import { IssueRewardModal } from '../IssueRewardModal/IssueRewardModal';
-import { RewardHistoryTab } from '../RewardHistoryTab/RewardHistoryTab';
-import { SeriesDefinitionTab } from '../SeriesDefinitionTab/SeriesDefinitionTab';
-import { SeriesHistoryTab } from '../SeriesHistoryTab/SeriesHistoryTab';
-import { SeriesWidget } from '../SeriesWidget/SeriesWidget';
-import { TabSwitcher } from '../TabSwitcher/TabSwitcher';
-import { UnissuedRow } from '../UnissuedRow';
-import { findCurrentSeries } from '../../utils/series';
-import { latestDef } from '../../hooks/useActivities';
-import { useLocale } from '../../i18n/LocaleContext';
-import { useSeries } from '../../hooks/SeriesContext';
-import { useVirtualToday } from '../../hooks/VirtualTodayContext';
+import type { ActivityWithStreak } from '@/types';
+import { CompletionsTab } from '@components/CompletionsTab/CompletionsTab';
+import { IssueRewardModal } from '@components/IssueRewardModal/IssueRewardModal';
+import { RewardHistoryTab } from '@components/RewardHistoryTab/RewardHistoryTab';
+import { SeriesDefinitionTab } from '@components/SeriesDefinitionTab/SeriesDefinitionTab';
+import { SeriesHistoryTab } from '@components/SeriesHistoryTab/SeriesHistoryTab';
+import { SeriesWidget } from '@components/SeriesWidget/SeriesWidget';
+import { TabSwitcher } from '@components/TabSwitcher/TabSwitcher';
+import { UnissuedRow } from '@components/UnissuedRow';
+import { findCurrentSeries } from '@/utils/series';
+import { latestDef } from '@/hooks/useActivities';
+import { useLocale } from '@/i18n/LocaleContext';
+import { useSeries } from '@/hooks/SeriesContext';
+import { useVirtualToday } from '@/hooks/VirtualTodayContext';
 
 type Tab = 'defs' | 'series' | 'rewards' | 'completions';
 

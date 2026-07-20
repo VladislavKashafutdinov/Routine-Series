@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { Activity, SeriesDefinition, Completion, RewardIssue } from '../types';
+import type { Activity, SeriesDefinition, Completion, RewardIssue } from '@/types';
 
 export class RoutineDB extends Dexie {
   activities!: Table<Activity, number>;

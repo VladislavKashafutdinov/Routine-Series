@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useLocale } from '../../i18n/LocaleContext';
-import { useActivities } from '../../hooks/useActivities';
+import { useLocale } from '@/i18n/LocaleContext';
+import { useActivities } from '@/hooks/useActivities';
 import './AddActivity.css';
 
 const DEFAULTS = { length: 7, reward: 0, currency: '₽' };

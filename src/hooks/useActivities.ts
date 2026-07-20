@@ -1,7 +1,7 @@
-import type { Activity, ActivityWithStreak, Completion, RewardIssue, SeriesDefinition } from '../types';
+import type { Activity, ActivityWithStreak, Completion, RewardIssue, SeriesDefinition } from '@/types';
 import { useEffect, useState } from 'react';
 
-import { db } from '../db/db';
+import { db } from '@/db/db';
 import { liveQuery } from 'dexie';
 import { useVirtualToday } from './VirtualTodayContext';
 

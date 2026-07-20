@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import { today } from '../utils/date';
+import { today } from '@/utils/date';
 
 interface VirtualTodayValue {
   virtualToday: string;

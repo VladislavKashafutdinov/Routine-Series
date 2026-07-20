@@ -1,8 +1,8 @@
 import { memo, useState } from 'react';
-import { useLocale } from '../../i18n/LocaleContext';
-import { useActivities, latestDef } from '../../hooks/useActivities';
-import { useVirtualToday } from '../../hooks/VirtualTodayContext';
-import type { ActivityWithStreak } from '../../types';
+import { useLocale } from '@/i18n/LocaleContext';
+import { useActivities, latestDef } from '@/hooks/useActivities';
+import { useVirtualToday } from '@/hooks/VirtualTodayContext';
+import type { ActivityWithStreak } from '@/types';
 import './SeriesDefinitionTab.css';
 
 const PER_PAGE = 10;

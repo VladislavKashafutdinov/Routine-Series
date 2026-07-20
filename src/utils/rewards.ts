@@ -1,4 +1,4 @@
-import type { ComputedSeries, RewardIssue, SeriesDefinition } from '../types';
+import type { ComputedSeries, RewardIssue, SeriesDefinition } from '@/types';
 
 export function calcEarnedByCurrency(series: ComputedSeries[]): Record<string, number> {
   const result: Record<string, number> = {};

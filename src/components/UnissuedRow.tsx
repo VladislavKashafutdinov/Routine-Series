@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { useLocale } from '../i18n/LocaleContext';
+import { useLocale } from '@/i18n/LocaleContext';
 
 interface Props {
   currency: string;

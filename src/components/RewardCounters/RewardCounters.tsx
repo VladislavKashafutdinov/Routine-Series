@@ -1,8 +1,8 @@
 import { memo } from 'react';
-import { useLocale } from '../../i18n/LocaleContext';
-import { useSeries } from '../../hooks/SeriesContext';
-import { calcEarnedByCurrency, calcIssuedByCurrency, getCurrencies } from '../../utils/rewards';
-import type { ActivityWithStreak } from '../../types';
+import { useLocale } from '@/i18n/LocaleContext';
+import { useSeries } from '@/hooks/SeriesContext';
+import { calcEarnedByCurrency, calcIssuedByCurrency, getCurrencies } from '@/utils/rewards';
+import type { ActivityWithStreak } from '@/types';
 import './RewardCounters.css';
 
 interface Props {

@@ -1,8 +1,8 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useActivities } from './useActivities';
 import { useVirtualToday } from './VirtualTodayContext';
-import { computeSeries } from '../utils/series';
-import type { ComputedSeries } from '../types';
+import { computeSeries } from '@/utils/series';
+import type { ComputedSeries } from '@/types';
 
 interface SeriesValue {
   getSeries: (activityId: number) => ComputedSeries[];

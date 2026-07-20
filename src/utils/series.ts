@@ -1,4 +1,4 @@
-import type { Completion, ComputedSeries, SeriesDefinition } from '../types';
+import type { Completion, ComputedSeries, SeriesDefinition } from '@/types';
 
 import { dayDiff } from './date';
 

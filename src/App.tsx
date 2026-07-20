@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { LangSwitcher } from './components/LangSwitcher/LangSwitcher';
-import { PageTabs } from './components/PageTabs/PageTabs';
-import { TimeTravel } from './components/TimeTravel/TimeTravel';
-import { Dashboard } from './components/Dashboard/Dashboard';
-import { MonitoringPage } from './components/MonitoringPage/MonitoringPage';
-import { ArchivePage } from './components/ArchivePage/ArchivePage';
-import { DataActions } from './components/DataActions/DataActions';
-import type { Page } from './components/PageTabs/PageTabs';
+import { LangSwitcher } from '@components/LangSwitcher/LangSwitcher';
+import { PageTabs } from '@components/PageTabs/PageTabs';
+import { TimeTravel } from '@components/TimeTravel/TimeTravel';
+import { Dashboard } from '@components/Dashboard/Dashboard';
+import { MonitoringPage } from '@components/MonitoringPage/MonitoringPage';
+import { ArchivePage } from '@components/ArchivePage/ArchivePage';
+import { DataActions } from '@components/DataActions/DataActions';
+import type { Page } from '@components/PageTabs/PageTabs';
 import './App.css';
 
 export default function App() {

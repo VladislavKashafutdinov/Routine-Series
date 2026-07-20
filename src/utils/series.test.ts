@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { computeSeries, findCurrentSeries, isGapBreak } from './series';
-import type { Completion, ComputedSeries, SeriesDefinition } from '../types';
+import type { Completion, ComputedSeries, SeriesDefinition } from '@/types';
 
 function def(overrides: Partial<SeriesDefinition> & { id: number }): SeriesDefinition {
   return {

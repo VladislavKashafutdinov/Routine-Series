@@ -1,11 +1,11 @@
 import './Dashboard.css';
 
-import { ActivityCard } from '../ActivityCard/ActivityCard';
-import { AddActivity } from '../AddActivity/AddActivity';
-import { IssueBanner } from '../IssueBanner/IssueBanner';
-import { useActivities } from '../../hooks/useActivities';
-import { useLocale } from '../../i18n/LocaleContext';
-import { useVirtualToday } from '../../hooks/VirtualTodayContext';
+import { ActivityCard } from '@components/ActivityCard/ActivityCard';
+import { AddActivity } from '@components/AddActivity/AddActivity';
+import { IssueBanner } from '@components/IssueBanner/IssueBanner';
+import { useActivities } from '@/hooks/useActivities';
+import { useLocale } from '@/i18n/LocaleContext';
+import { useVirtualToday } from '@/hooks/VirtualTodayContext';
 
 export function Dashboard() {
   const { t } = useLocale();
