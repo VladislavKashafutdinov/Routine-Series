@@ -65,11 +65,16 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
         </button>
       </div>
       {activity.seriesDefinitions.length > 0 && (
-        <SeriesProgress
-          startDate={currentSeries ? currentSeries.startDate : virtualToday}
-          seriesLength={currentSeries ? currentSeries.seriesLength : latestDef(activity.seriesDefinitions, activity.id).seriesLength}
-          doneCount={currentSeries ? currentSeries.completions.length : 0}
-        />
+        <>
+          <SeriesProgress
+            startDate={currentSeries ? currentSeries.startDate : virtualToday}
+            seriesLength={currentSeries ? currentSeries.seriesLength : latestDef(activity.seriesDefinitions, activity.id).seriesLength}
+            doneCount={currentSeries ? currentSeries.completions.length : 0}
+          />
+          <span className="card__reward">
+            {latestDef(activity.seriesDefinitions, activity.id).reward}{latestDef(activity.seriesDefinitions, activity.id).currency}
+          </span>
+        </>
       )}
       <button
         className={`card__done ${isDoneToday ? 'card__done--yes' : 'card__done--no'}`}

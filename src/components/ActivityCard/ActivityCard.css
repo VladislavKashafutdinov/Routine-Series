@@ -47,6 +47,12 @@
 .card:hover .card__del { opacity: 1; }
 .card__del:hover { color: var(--danger); }
 
+.card__reward {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
 .card__done {
   width: 100%;
   padding: 8px;
