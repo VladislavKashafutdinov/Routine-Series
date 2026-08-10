@@ -10,6 +10,9 @@ npm run build     # Type-check (tsc -b) then production build
 npm run preview   # Serve production build locally
 npm run lint      # ESLint
 npm run test      # Vitest (unit tests)
+
+# GitHub Pages deploy status (run on user request)
+gh run list --workflow=deploy.yml --limit=1 --json status,conclusion,displayTitle,updatedAt,url
 ```
 
 ## Tech constraints
