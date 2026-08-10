@@ -54,6 +54,10 @@ Current schema is described in [README.md § Структура данных](RE
 
 - **Task-driven development** — code changes (add/modify/delete) are only allowed when there is a corresponding task in [TODO.md](TODO.md). Without a task, only documentation files may be edited: `CLAUDE.md`, `TODO.md`, `README.md`, `DONE.md`, `JOURNAL.md`.
 - **Per-component CSS** — each new component must have its own CSS file for styles that belong exclusively to that component (e.g. `ComponentName.css` in the same directory). Shared/global styles remain in `App.css` or `index.css`.
+- **Import aliases** — use path aliases instead of relative imports in `.ts`/`.tsx` files:
+  - `@/` (`src/`) — for cross-cutting modules: hooks (`@/hooks/...`), utils (`@/utils/...`), types (`@/types`), i18n (`@/i18n/...`), db (`@/db/...`)
+  - `@components/` (`src/components/`) — for components (`@components/ComponentName/ComponentName`)
+  - Relative imports (`./` or `../`) are only allowed within the same component directory (e.g. `./ChildComponent` from `ParentComponent.tsx`)
 - **Mark in-progress before starting** — when the next step is identified and the user explicitly says to begin work, mark the step as «в работе» in [TODO.md](TODO.md) before making any code changes.
 - **User verifies before done** — after implementation, the user reviews the result. Only mark a step as `[x]` done after the user's explicit confirmation.
 - **Update component schema** — after completing a TODO item that changes the component tree (new components, new nesting, removed components), update the implemented component hierarchy in [README.md](README.md) § «Реализованная схема вложенности компонентов».
