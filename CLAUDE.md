@@ -61,6 +61,7 @@ Current schema is described in [README.md § Структура данных](RE
   - `@/` (`src/`) — for cross-cutting modules: hooks (`@/hooks/...`), utils (`@/utils/...`), types (`@/types`), i18n (`@/i18n/...`), db (`@/db/...`)
   - `@components/` (`src/components/`) — for components (`@components/ComponentName/ComponentName`)
   - Relative imports (`./` or `../`) are only allowed within the same component directory (e.g. `./ChildComponent` from `ParentComponent.tsx`)
+- **Take next task** — when the user asks to take a new/next/another task («возьми новую задачу», «следующую», «очередную»), take the first unchecked (`- [ ]`) item from the «Взять в работу» section in [TODO.md](TODO.md) (including subsections), mark it as «в работе» before making any code changes, and begin working on it.
 - **Mark in-progress before starting** — when the next step is identified and the user explicitly says to begin work, mark the step as «в работе» in [TODO.md](TODO.md) before making any code changes.
 - **User verifies before done** — after implementation, the user reviews the result. Only mark a step as `[x]` done after the user's explicit confirmation.
 - **Update component schema** — after completing a TODO item that changes the component tree (new components, new nesting, removed components), update the implemented component hierarchy in [README.md](README.md) § «Реализованная схема вложенности компонентов».
