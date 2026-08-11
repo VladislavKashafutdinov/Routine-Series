@@ -74,6 +74,44 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/import": {
+            "post": {
+                "description": "Accepts a JSON file and imports its data (activities, seriesDefinitions, completions, rewardIssues). Truncates existing data first.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "import"
+                ],
+                "summary": "Import data",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "JSON data dump",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ImportStats"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -119,6 +157,23 @@ const docTemplate = `{
             "properties": {
                 "error": {
                     "type": "string"
+                }
+            }
+        },
+        "models.ImportStats": {
+            "type": "object",
+            "properties": {
+                "activities": {
+                    "type": "integer"
+                },
+                "completions": {
+                    "type": "integer"
+                },
+                "reward_issues": {
+                    "type": "integer"
+                },
+                "series_definitions": {
+                    "type": "integer"
                 }
             }
         },

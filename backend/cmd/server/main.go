@@ -69,6 +69,9 @@ func main() {
 	// Activities
 	r.Post("/api/v1/activities", handlers.CreateActivity(application))
 
+	// Import
+	r.Post("/api/v1/import", handlers.ImportData(application))
+
 	srv := &http.Server{
 		Addr:         ":" + cfg.Port,
 		Handler:      r,

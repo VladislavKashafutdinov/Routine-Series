@@ -91,7 +91,7 @@
 
 ---
 
-## 3. Импорт данных
+## 3. ✅ Импорт данных
 
 Один POST-эндпоинт, принимающий полный дамп данных (activities, series_definitions, completions, reward_issues) и вставляющий их в БД. Нужен для миграции из IndexedDB в PostgreSQL ([план родительского проекта](BACKEND_DEVELOPING_PLAN.md) → п. 3), а также для загрузки тестовых данных при разработке.
 

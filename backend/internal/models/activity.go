@@ -28,8 +28,8 @@ type ActivityWithDef struct {
 
 // CreateActivityRequest is the request body for creating an activity.
 type CreateActivityRequest struct {
-	Name        string  `json:"name"`
-	SeriesLength int    `json:"series_length"`
-	Reward      float64 `json:"reward"`
-	Currency    string  `json:"currency"`
+	Name         string  `json:"name"`
+	SeriesLength int     `json:"series_length"`
+	Reward       float64 `json:"reward"`
+	Currency     string  `json:"currency"`
 }

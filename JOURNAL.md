@@ -11,6 +11,7 @@
 - Подключена БД + health-check: `Config.DatabaseURL`, `pgxpool` (max=10, min=1), startup `SELECT 1`, структура `App` для DI, `GET /api/v1/health` с проверкой БД, graceful shutdown закрывает пул
 - Написаны миграции БД: `golang-migrate`, 4 таблицы (`activities`, `series_definitions`, `completions`, `reward_issues`), 3 индекса, автозапуск UP при старте сервера
 - Реализовано создание активности: модели (Activity, SeriesDefinition, ActivityWithDef), CRUD (транзакция activities + series_definitions), `POST /api/v1/activities` с валидацией, Swagger-аннотации
+- Реализован импорт данных: `POST /api/v1/import` принимает JSON-файл (multipart), camelCase-модели как в дампе IndexedDB, батчевая вставка через CopyFrom, TRUNCATE CASCADE перед импортом
 
 ## 2026-08-10
 

@@ -29,6 +29,17 @@ definitions:
       error:
         type: string
     type: object
+  models.ImportStats:
+    properties:
+      activities:
+        type: integer
+      completions:
+        type: integer
+      reward_issues:
+        type: integer
+      series_definitions:
+        type: integer
+    type: object
   models.SeriesDefinition:
     properties:
       activity_id:
@@ -91,4 +102,30 @@ paths:
       summary: Health check
       tags:
       - system
+  /import:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Accepts a JSON file and imports its data (activities, seriesDefinitions,
+        completions, rewardIssues). Truncates existing data first.
+      parameters:
+      - description: JSON data dump
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ImportStats'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Import data
+      tags:
+      - import
 swagger: "2.0"
