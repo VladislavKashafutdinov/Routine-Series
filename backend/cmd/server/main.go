@@ -42,6 +42,10 @@ func main() {
 	}
 	defer pool.Close()
 
+	if err := db.RunMigrations(cfg.DatabaseURL, "migrations"); err != nil {
+		log.Fatalf("migrations error: %v", err)
+	}
+
 	application := &app.App{Pool: pool}
 
 	r := chi.NewRouter()

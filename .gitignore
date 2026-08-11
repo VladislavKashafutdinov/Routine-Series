@@ -14,7 +14,7 @@ dist-ssr
 .env
 
 # Go backend
-backend/*.exe
+backend/**/*.exe
 
 # Editor directories and files
 .vscode/*

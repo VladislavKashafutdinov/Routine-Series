@@ -46,14 +46,14 @@
 **Проверка:** с валидным `DATABASE_URL` сервер стартует и health-check возвращает `{"status":"ok"}`; с невалидным — падает при старте с ошибкой; в Swagger UI эндпоинт виден.
 
 ### 1.5. Миграции базы данных
-- Установить `golang-migrate` как инструмент для миграций
-- Написать UP-миграцию: создание таблицы `activities` (id SERIAL PK, name TEXT NOT NULL, archived BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT now())
-- Написать UP-миграцию: создание таблицы `series_definitions` (id SERIAL PK, activity_id INT FK REFERENCES activities, series_length INT NOT NULL, reward NUMERIC NOT NULL DEFAULT 0, currency TEXT NOT NULL, created_at TIMESTAMPTZ DEFAULT now())
-- Написать UP-миграцию: создание таблицы `completions` (id SERIAL PK, activity_id INT FK REFERENCES activities, date DATE NOT NULL, UNIQUE(activity_id, date))
-- Написать UP-миграцию: создание таблицы `reward_issues` (id SERIAL PK, activity_id INT FK REFERENCES activities, date DATE NOT NULL, amount NUMERIC NOT NULL, currency TEXT NOT NULL)
-- Создать индексы: `completions(activity_id, date)`, `series_definitions(activity_id, created_at)`, `reward_issues(activity_id, date)`
-- Написать DOWN-миграции для отката каждой таблицы
-- Добавить автоматический запуск UP-миграций в `main.go` перед стартом HTTP-сервера
+- [x] Установить `golang-migrate` как инструмент для миграций
+- [x] Написать UP-миграцию: создание таблицы `activities` (id SERIAL PK, name TEXT NOT NULL, archived BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT now())
+- [x] Написать UP-миграцию: создание таблицы `series_definitions` (id SERIAL PK, activity_id INT FK REFERENCES activities, series_length INT NOT NULL, reward NUMERIC NOT NULL DEFAULT 0, currency TEXT NOT NULL, created_at TIMESTAMPTZ DEFAULT now())
+- [x] Написать UP-миграцию: создание таблицы `completions` (id SERIAL PK, activity_id INT FK REFERENCES activities, date DATE NOT NULL, UNIQUE(activity_id, date))
+- [x] Написать UP-миграцию: создание таблицы `reward_issues` (id SERIAL PK, activity_id INT FK REFERENCES activities, date DATE NOT NULL, amount NUMERIC NOT NULL, currency TEXT NOT NULL)
+- [x] Создать индексы: `completions(activity_id, date)`, `series_definitions(activity_id, created_at)`, `reward_issues(activity_id, date)`
+- [x] Написать DOWN-миграции для отката каждой таблицы
+- [x] Добавить автоматический запуск UP-миграций в `main.go` перед стартом HTTP-сервера
 
 **Проверка:** после старта таблицы созданы в БД (видно в Neon-консоли или через `psql`)
 
