@@ -20,12 +20,29 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 
 	_ "routine-series/backend/docs"
+	"routine-series/backend/internal/app"
 	"routine-series/backend/internal/config"
+	"routine-series/backend/internal/db"
+	"routine-series/backend/internal/handlers"
 	"routine-series/backend/internal/middleware"
 )
 
 func main() {
-	cfg := config.Load()
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("config error: %v", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	pool, err := db.NewPool(ctx, cfg.DatabaseURL)
+	if err != nil {
+		log.Fatalf("database error: %v", err)
+	}
+	defer pool.Close()
+
+	application := &app.App{Pool: pool}
 
 	r := chi.NewRouter()
 
@@ -41,6 +58,9 @@ func main() {
 	r.Get("/api/v1/swagger.json", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "docs/swagger.json")
 	})
+
+	// Health check
+	r.Get("/api/v1/health", handlers.HealthCheck(application))
 
 	srv := &http.Server{
 		Addr:         ":" + cfg.Port,
@@ -63,10 +83,10 @@ func main() {
 	<-quit
 	log.Println("shutting down...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer shutdownCancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
+	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Fatalf("shutdown error: %v", err)
 	}
 	log.Println("server stopped")

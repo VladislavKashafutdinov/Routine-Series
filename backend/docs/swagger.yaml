@@ -5,5 +5,18 @@ info:
   description: REST API for tracking daily activities, completions, and rewards.
   title: Routine Series API
   version: 0.1.0
-paths: {}
+paths:
+  /health:
+    get:
+      description: Returns ok if the server and database are reachable.
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Health check
+      tags:
+      - system
 swagger: "2.0"

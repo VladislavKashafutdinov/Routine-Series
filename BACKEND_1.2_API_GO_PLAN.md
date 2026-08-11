@@ -33,23 +33,19 @@
 
 **Проверка:** открыть `http://localhost:8080/swagger/` — Swagger UI загружается (спецификация пока пустая)
 
-### 1.4. Health-check
-- Добавить хендлер `GET /api/v1/health` → `{"status":"ok"}`
-- Аннотировать его Swaggo-комментарием (summary, success response)
-- Выполнить `swag init` повторно — health-check появляется в спецификации
+### 1.4. Подключение к БД + health-check
+- [x] Добавить в `Config` поле `DatabaseURL` (переменная `DATABASE_URL`, без дефолта — обязательная)
+- [x] Реализовать создание пула соединений к Neon PostgreSQL через `pgxpool` с параметрами `max_connections=10`, `min_connections=1`
+- [x] Реализовать health-check при старте: `SELECT 1` — если БД недоступна, сервер завершается с понятной ошибкой
+- [x] Реализовать структуру `App` для dependency injection (пул передаётся в обработчики)
+- [x] Реализовать закрытие пула при graceful shutdown
+- [x] Добавить хендлер `GET /api/v1/health` → `{"status":"ok"}` (проверяет `SELECT 1`)
+- [x] Аннотировать хендлер Swaggo-комментарием (summary, success response)
+- [x] Выполнить `swag init` повторно
 
-**Проверка:** открыть Swagger UI → эндпоинт `GET /api/v1/health` виден, кнопка «Execute» возвращает `{"status":"ok"}`
+**Проверка:** с валидным `DATABASE_URL` сервер стартует и health-check возвращает `{"status":"ok"}`; с невалидным — падает при старте с ошибкой; в Swagger UI эндпоинт виден.
 
-### 1.5. Подключение к базе данных
-- Добавить в `Config` поле `DatabaseURL` (переменная `DATABASE_URL`, без дефолта — обязательная)
-- Реализовать создание пула соединений к Neon PostgreSQL через `pgxpool` с параметрами `max_connections=10`, `min_connections=1`
-- Реализовать health-check при старте: `SELECT 1` — если БД недоступна, сервер завершается с понятной ошибкой
-- Передавать пул в обработчики через контекст или структуру (dependency injection)
-- Реализовать закрытие пула при graceful shutdown
-
-**Проверка:** с валидным `DATABASE_URL` сервер стартует; с невалидным — падает с ошибкой
-
-### 1.6. Миграции базы данных
+### 1.5. Миграции базы данных
 - Установить `golang-migrate` как инструмент для миграций
 - Написать UP-миграцию: создание таблицы `activities` (id SERIAL PK, name TEXT NOT NULL, archived BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT now())
 - Написать UP-миграцию: создание таблицы `series_definitions` (id SERIAL PK, activity_id INT FK REFERENCES activities, series_length INT NOT NULL, reward NUMERIC NOT NULL DEFAULT 0, currency TEXT NOT NULL, created_at TIMESTAMPTZ DEFAULT now())
