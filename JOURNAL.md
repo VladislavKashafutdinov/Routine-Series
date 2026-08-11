@@ -6,6 +6,8 @@
 - Исследован Neon Free Tier: 0.5 GB, 100 CU-часов/мес, прямое подключение работает, проект создан
 - Обе задачи перенесены в DONE.md
 - Инициализирован Go-бэкенд (`backend/`): модуль `routine-series/backend`, структура директорий, зависимости (chi, pgx, swaggo), `.env.example`, `README.md`
+- Реализован скелет API: ErrorResponse, Config, chi-роутер с middleware (Recoverer, логгер, Content-Type JSON), graceful shutdown (SIGINT/SIGTERM, 30с)
+- Настроен Swagger/OpenAPI: аннотации в main.go, генерация docs/, отдача Swagger UI (`/swagger/`) и `swagger.json` (`/api/v1/swagger.json`)
 
 ## 2026-08-10
 

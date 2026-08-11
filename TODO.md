@@ -4,6 +4,8 @@
 
 ### API на Go
 - [x] [Инициализация проекта](BACKEND_1.2_API_GO_PLAN.md#11-инициализация-проекта)
+- [x] [Скелет апи на go](BACKEND_1.2_API_GO_PLAN.md#12-конфигурация-роутер-и-точка-входа-скелет-без-хендлеров)
+- [x] [OpenAPI / Swagger](BACKEND_1.2_API_GO_PLAN.md#13-openapi--swagger-инфраструктура)
 
 ## Отложено
 
