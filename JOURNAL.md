@@ -1,29 +1,5 @@
 # Дневник
 
-## 2026-08-11
-
-- Исследован Supabase как бесплатный хостинг PostgreSQL: не подходит — прямой доступ к БД (IPv4) платный аддон ($25/мес Pro)
-- Исследован Neon Free Tier: 0.5 GB, 100 CU-часов/мес, прямое подключение работает, проект создан
-- Обе задачи перенесены в DONE.md
-- Инициализирован Go-бэкенд (`backend/`): модуль `routine-series/backend`, структура директорий, зависимости (chi, pgx, swaggo), `.env.example`, `README.md`
-- Реализован скелет API: ErrorResponse, Config, chi-роутер с middleware (Recoverer, логгер, Content-Type JSON), graceful shutdown (SIGINT/SIGTERM, 30с)
-- Настроен Swagger/OpenAPI: аннотации в main.go, генерация docs/, отдача Swagger UI (`/swagger/`) и `swagger.json` (`/api/v1/swagger.json`)
-- Подключена БД + health-check: `Config.DatabaseURL`, `pgxpool` (max=10, min=1), startup `SELECT 1`, структура `App` для DI, `GET /api/v1/health` с проверкой БД, graceful shutdown закрывает пул
-- Написаны миграции БД: `golang-migrate`, 4 таблицы (`activities`, `series_definitions`, `completions`, `reward_issues`), 3 индекса, автозапуск UP при старте сервера
-- Реализовано создание активности: модели (Activity, SeriesDefinition, ActivityWithDef), CRUD (транзакция activities + series_definitions), `POST /api/v1/activities` с валидацией, Swagger-аннотации
-- Реализован импорт данных: `POST /api/v1/import` принимает JSON-файл (multipart), camelCase-модели как в дампе IndexedDB, батчевая вставка через CopyFrom, TRUNCATE CASCADE перед импортом
-
-## 2026-08-12
-
-- Реализован просмотр активностей: `GET /api/v1/activities`, `GET /api/v1/activities/archived`, `GET /api/v1/activities/{id}`, LATERAL JOIN для актуального SeriesDefinition, Swagger
-
-## 2026-08-10
-
-- Настроен GitHub Pages деплой: workflow с configure-pages + deploy-pages, приложение раскатано и доступно
-- Обновлён BACKEND_DEVELOPING_PLAN.md: реструктурирован план, п.0 (раскатка на github pages) отмечен выполненным
-- В TODO.md добавлен раздел «Разработка бэка» с первым пунктом про Supabase Postgres
-- В CLAUDE.md добавлено правило import aliases: `@/` для кросс-модулей, `@components/` для компонентов, относительные импорты только внутри одной папки компонента
-
 ## 2026-07-03
 
 - Инициализирован проект
@@ -62,50 +38,12 @@
 - Документация: VISION.md (целевое состояние), TARGET_SCHEMA.md (целевая схема)
 - Актуализированы структура данных и индексы БД в README
 
-## 2026-07-21
+## 2026-07-10
 
-- На карточке активности показывается награда из SeriesDefinition
-
-## 2026-07-20
-
-- Рефакторинг: добавлены алиасы `@/` и `@components/` для импортов
-
-## 2026-07-18
-
-- Реализован алгоритм v2: super-series, MAX-def matching, 27/27 тестов
-- Исправлен баг множественных активных серий
-
-## 2026-07-17
-
-- Техдолг: удалён мёртвый код, компоненты разнесены по папкам
-
-## 2026-07-16
-
-- Удаление seriesDefinition (createdAt >= virtualToday, не единственная)
-- Исправлен баг: completions до createdAt первого SeriesDefinition не попадали в серию
-- Написан тест на этот сценарий (26/26)
-
-## 2026-07-11
-
-- SeriesContext: вычисление серий один раз вместо дублирования в компонентах
-- findCurrentSeries: исключает broken, находит active и completed
-- Исправлен баг: неверная seriesDefinition при формировании серий
-- Исправлен баг: длинные серии выходят за пределы карточки (flex-wrap, left-align)
-- Исправлен баг: разрывы в SeriesProgress при перемотке времени (текущая серия + фильтрация будущих дат)
-
-## 2026-07-10 (финал)
-
-- Исправлен баг: форма SeriesDefinition пропадала после добавления (убран флаг expanded)
-- Исправлен баг: ошибка `Cannot read properties of undefined (reading 'seriesLength')` при добавлении активности
-- Добавлены проверки пустоты seriesDefinitions во всех компонентах-потребителях
-
-## 2026-07-10 (завершение)
-
-- 20. Экспорт/Импорт: JSON-файл со всеми таблицами БД
-  - Экспорт: скачивание всех данных одним файлом
-  - Импорт: валидация структуры, подтверждение, конвертация Date, reload
-- Все задачи из TODO.md выполнены
-- В работе остались только отложенные и баги
+- Синхронизированы VISION.md и TARGET_SCHEMA.md (устранены все несостыковки)
+- SeriesDefinitionTab добавлен в целевую схему
+- TODO.md очищен от выполненных задач, оставлен только 13 и отложенные
+- DONE.md пополнен записями за 08-09.07
 
 ## 2026-07-10 (продолжение)
 
@@ -122,9 +60,71 @@
 - Расчёт наград вынесен в utils/rewards.ts
 - Актуализированы README, CLAUDE.md, DONE.md, JOURNAL.md
 
-## 2026-07-10
+## 2026-07-10 (завершение)
 
-- Синхронизированы VISION.md и TARGET_SCHEMA.md (устранены все несостыковки)
-- SeriesDefinitionTab добавлен в целевую схему
-- TODO.md очищен от выполненных задач, оставлен только 13 и отложенные
-- DONE.md пополнен записями за 08-09.07
+- 20. Экспорт/Импорт: JSON-файл со всеми таблицами БД
+  - Экспорт: скачивание всех данных одним файлом
+  - Импорт: валидация структуры, подтверждение, конвертация Date, reload
+- Все задачи из TODO.md выполнены
+- В работе остались только отложенные и баги
+
+## 2026-07-10 (финал)
+
+- Исправлен баг: форма SeriesDefinition пропадала после добавления (убран флаг expanded)
+- Исправлен баг: ошибка `Cannot read properties of undefined (reading 'seriesLength')` при добавлении активности
+- Добавлены проверки пустоты seriesDefinitions во всех компонентах-потребителях
+
+## 2026-07-11
+
+- SeriesContext: вычисление серий один раз вместо дублирования в компонентах
+- findCurrentSeries: исключает broken, находит active и completed
+- Исправлен баг: неверная seriesDefinition при формировании серий
+- Исправлен баг: длинные серии выходят за пределы карточки (flex-wrap, left-align)
+- Исправлен баг: разрывы в SeriesProgress при перемотке времени (текущая серия + фильтрация будущих дат)
+
+## 2026-07-16
+
+- Удаление seriesDefinition (createdAt >= virtualToday, не единственная)
+- Исправлен баг: completions до createdAt первого SeriesDefinition не попадали в серию
+- Написан тест на этот сценарий (26/26)
+
+## 2026-07-17
+
+- Техдолг: удалён мёртвый код, компоненты разнесены по папкам
+
+## 2026-07-18
+
+- Реализован алгоритм v2: super-series, MAX-def matching, 27/27 тестов
+- Исправлен баг множественных активных серий
+
+## 2026-07-20
+
+- Рефакторинг: добавлены алиасы `@/` и `@components/` для импортов
+
+## 2026-07-21
+
+- На карточке активности показывается награда из SeriesDefinition
+
+## 2026-08-10
+
+- Настроен GitHub Pages деплой: workflow с configure-pages + deploy-pages, приложение раскатано и доступно
+- Обновлён BACKEND_DEVELOPING_PLAN.md: реструктурирован план, п.0 (раскатка на github pages) отмечен выполненным
+- В TODO.md добавлен раздел «Разработка бэка» с первым пунктом про Supabase Postgres
+- В CLAUDE.md добавлено правило import aliases: `@/` для кросс-модулей, `@components/` для компонентов, относительные импорты только внутри одной папки компонента
+
+## 2026-08-11
+
+- Исследован Supabase как бесплатный хостинг PostgreSQL: не подходит — прямой доступ к БД (IPv4) платный аддон ($25/мес Pro)
+- Исследован Neon Free Tier: 0.5 GB, 100 CU-часов/мес, прямое подключение работает, проект создан
+- Обе задачи перенесены в DONE.md
+- Инициализирован Go-бэкенд (`backend/`): модуль `routine-series/backend`, структура директорий, зависимости (chi, pgx, swaggo), `.env.example`, `README.md`
+- Реализован скелет API: ErrorResponse, Config, chi-роутер с middleware (Recoverer, логгер, Content-Type JSON), graceful shutdown (SIGINT/SIGTERM, 30с)
+- Настроен Swagger/OpenAPI: аннотации в main.go, генерация docs/, отдача Swagger UI (`/swagger/`) и `swagger.json` (`/api/v1/swagger.json`)
+- Подключена БД + health-check: `Config.DatabaseURL`, `pgxpool` (max=10, min=1), startup `SELECT 1`, структура `App` для DI, `GET /api/v1/health` с проверкой БД, graceful shutdown закрывает пул
+- Написаны миграции БД: `golang-migrate`, 4 таблицы (`activities`, `series_definitions`, `completions`, `reward_issues`), 3 индекса, автозапуск UP при старте сервера
+- Реализовано создание активности: модели (Activity, SeriesDefinition, ActivityWithDef), CRUD (транзакция activities + series_definitions), `POST /api/v1/activities` с валидацией, Swagger-аннотации
+- Реализован импорт данных: `POST /api/v1/import` принимает JSON-файл (multipart), camelCase-модели как в дампе IndexedDB, батчевая вставка через CopyFrom, TRUNCATE CASCADE перед импортом
+
+## 2026-08-12
+
+- Реализован просмотр активностей: `GET /api/v1/activities`, `GET /api/v1/activities/archived`, `GET /api/v1/activities/{id}`, LATERAL JOIN для актуального SeriesDefinition, Swagger
