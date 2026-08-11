@@ -66,6 +66,9 @@ func main() {
 	// Health check
 	r.Get("/api/v1/health", handlers.HealthCheck(application))
 
+	// Activities
+	r.Post("/api/v1/activities", handlers.CreateActivity(application))
+
 	srv := &http.Server{
 		Addr:         ":" + cfg.Port,
 		Handler:      r,

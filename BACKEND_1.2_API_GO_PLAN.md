@@ -66,26 +66,26 @@
 Один POST-эндпоинт, создающий активность вместе с первой версией определения серии в одной транзакции.
 
 ### 2.1. Модели
-- Определить структуру `Activity` с JSON-тегами: `id`, `name`, `archived`, `created_at`
-- Определить структуру `SeriesDefinition` с JSON-тегами: `id`, `activity_id`, `series_length`, `reward`, `currency`, `created_at`
-- Определить структуру `CreateActivityRequest` с полями `name`, `series_length`, `reward`, `currency`
+- [x] Определить структуру `Activity` с JSON-тегами: `id`, `name`, `archived`, `created_at`
+- [x] Определить структуру `SeriesDefinition` с JSON-тегами: `id`, `activity_id`, `series_length`, `reward`, `currency`, `created_at`
+- [x] Определить структуру `CreateActivityRequest` с полями `name`, `series_length`, `reward`, `currency`
 
 ### 2.2. CRUD-функция
-- Реализовать `CreateActivity(ctx, name, seriesLength, reward, currency) → ActivityWithDef` — вставка в `activities` и `series_definitions` в одной транзакции, возврат созданной активности с определением
+- [x] Реализовать `CreateActivity(ctx, name, seriesLength, reward, currency) → ActivityWithDef` — вставка в `activities` и `series_definitions` в одной транзакции, возврат созданной активности с определением
 
 ### 2.3. HTTP-обработчик
-- `POST /api/v1/activities` — создание активности с параметрами серии (тело: `{name, series_length, reward, currency}`) → 201 + ActivityWithDef
+- [x] `POST /api/v1/activities` — создание активности с параметрами серии (тело: `{name, series_length, reward, currency}`) → 201 + ActivityWithDef
 
 ### 2.4. Валидация
-- `name` непустой, не длиннее 255 символов, без пробелов по краям (trim)
-- `series_length` > 0
-- `reward` >= 0
-- `currency` непустой
-- Возвращать `400 {error: "..."}` при нарушении
+- [x] `name` непустой, не длиннее 255 символов, без пробелов по краям (trim)
+- [x] `series_length` > 0
+- [x] `reward` >= 0
+- [x] `currency` непустой
+- [x] Возвращать `400 {error: "..."}` при нарушении
 
 ### 2.5. Swagger-аннотация
-- Аннотировать обработчик Swaggo-комментарием (summary, params, success 201, error 400)
-- Выполнить `swag init`, проверить через Swagger UI
+- [x] Аннотировать обработчик Swaggo-комментарием (summary, params, success 201, error 400)
+- [x] Выполнить `swag init`, проверить через Swagger UI
 
 **Результат:** активность с параметрами серии создаётся одним запросом, обе записи — в одной транзакции.
 

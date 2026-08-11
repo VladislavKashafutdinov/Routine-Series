@@ -1,4 +1,49 @@
 basePath: /api/v1
+definitions:
+  models.ActivityWithDef:
+    properties:
+      archived:
+        type: boolean
+      created_at:
+        type: string
+      definition:
+        $ref: '#/definitions/models.SeriesDefinition'
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.CreateActivityRequest:
+    properties:
+      currency:
+        type: string
+      name:
+        type: string
+      reward:
+        type: number
+      series_length:
+        type: integer
+    type: object
+  models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  models.SeriesDefinition:
+    properties:
+      activity_id:
+        type: integer
+      created_at:
+        type: string
+      currency:
+        type: string
+      id:
+        type: integer
+      reward:
+        type: number
+      series_length:
+        type: integer
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -6,6 +51,33 @@ info:
   title: Routine Series API
   version: 0.1.0
 paths:
+  /activities:
+    post:
+      consumes:
+      - application/json
+      description: Creates an activity together with its first series definition in
+        a single transaction.
+      parameters:
+      - description: Activity data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateActivityRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ActivityWithDef'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create activity
+      tags:
+      - activities
   /health:
     get:
       description: Returns ok if the server and database are reachable.

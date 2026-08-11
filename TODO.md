@@ -8,7 +8,7 @@
 - [x] [OpenAPI / Swagger](BACKEND_1.2_API_GO_PLAN.md#13-openapi--swagger-инфраструктура)
 - [x] [Подключение к БД + health-check](BACKEND_1.2_API_GO_PLAN.md#14-подключение-к-бд--health-check)
 - [x] [Миграции базы данных](BACKEND_1.2_API_GO_PLAN.md#15-миграции-базы-данных)
-- [ ] [Создание активности](BACKEND_1.2_API_GO_PLAN.md#2-создание-активности)
+- [x] Реализация фичи [Создание активности](BACKEND_1.2_API_GO_PLAN.md#2-создание-активности). Все из раздела
 
 ## Отложено
 
