@@ -10,11 +10,11 @@
 ## 1. Инфраструктура
 
 ### 1.1. Инициализация проекта
-- Создать Go-модуль в директории `backend/`
-- Создать структуру директорий: `cmd/server/`, `internal/models/`, `internal/db/`, `internal/handlers/`, `internal/middleware/`, `migrations/`
-- Добавить зависимости: `chi` (HTTP-роутер), `pgx` (драйвер PostgreSQL), `swaggo` (генератор OpenAPI)
-- Создать `backend/.env.example` с переменными `DATABASE_URL`, `PORT`, `ALLOWED_ORIGINS`
-- Написать `backend/README.md` с командами: `go run ./cmd/server`, `swag init`, сборка
+- [x] Создать Go-модуль в директории `backend/`
+- [x] Создать структуру директорий: `cmd/server/`, `internal/models/`, `internal/db/`, `internal/handlers/`, `internal/middleware/`, `migrations/`
+- [x] Добавить зависимости: `chi` (HTTP-роутер), `pgx` (драйвер PostgreSQL), `swaggo` (генератор OpenAPI)
+- [x] Создать `backend/.env.example` с переменными `DATABASE_URL`, `PORT`, `ALLOWED_ORIGINS`
+- [x] Написать `backend/README.md` с командами: `go run ./cmd/server`, `swag init`, сборка
 
 ### 1.2. Конфигурация, роутер и точка входа (скелет без хендлеров)
 - Определить общую структуру `ErrorResponse` с полем `error` — единый формат ошибок для всех эндпоинтов
