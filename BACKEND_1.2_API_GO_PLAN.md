@@ -120,27 +120,27 @@
 
 ---
 
-## 4. Просмотр активностей
+## 4. ✅ Просмотр активностей
 
 Три GET-эндпоинта: список активных, список архивных, одна активность по id. Все возвращают ActivityWithDef (активность + актуальное определение серии).
 
-### 3.1. Модели
+### 4.1. Модели
 - Определить структуру `ActivityWithDef` — Activity + вложенное актуальное SeriesDefinition
 
-### 3.2. CRUD-функции
+### 4.2. CRUD-функции
 - Реализовать `GetAllActive(ctx) → []ActivityWithDef` — активные активности + актуальные определения
 - Реализовать `GetAllArchived(ctx) → []ActivityWithDef` — архивные активности + актуальные определения
 - Реализовать `GetByID(ctx, id) → ActivityWithDef` — одна активность + определение, 404 если не найдена
 
-### 3.3. HTTP-обработчики
+### 4.3. HTTP-обработчики
 - `GET /api/v1/activities` — список активных → 200 + []
 - `GET /api/v1/activities/archived` — список архивных → 200 + []
 - `GET /api/v1/activities/{id}` — одна активность → 200 / 404
 
-### 3.4. Валидация
+### 4.4. Валидация
 - `id` в URL — положительное целое число
 
-### 3.5. Swagger-аннотации
+### 4.5. Swagger-аннотации
 - Аннотировать 3 обработчика Swaggo-комментариями
 - Выполнить `swag init`, проверить через Swagger UI
 
@@ -168,21 +168,21 @@
 
 Один PATCH-эндпоинт: обновление названия активности по id.
 
-### 4.1. Модели
+### 6.1. Модели
 - Определить структуру `UpdateActivityRequest` с полем `name`
 
-### 4.2. CRUD-функция
+### 6.2. CRUD-функция
 - Реализовать `UpdateName(ctx, id, name)` — обновление `name` по id
 
-### 4.3. HTTP-обработчик
+### 6.3. HTTP-обработчик
 - `PATCH /api/v1/activities/{id}` — обновить имя (тело: `{name}`) → 200 / 404
 
-### 4.4. Валидация
+### 6.4. Валидация
 - `name` непустой, не длиннее 255 символов, trim
 - `id` в URL — положительное целое число
 - Возвращать `404 {error: "activity not found"}` если активность не существует
 
-### 4.5. Swagger-аннотация
+### 6.5. Swagger-аннотация
 - Аннотировать обработчик Swaggo-комментарием
 - Выполнить `swag init`, проверить через Swagger UI
 
@@ -194,19 +194,19 @@
 
 Два POST-эндпоинта: отправить в архив и восстановить из архива (soft-delete).
 
-### 5.1. CRUD-функции
+### 7.1. CRUD-функции
 - Реализовать `Archive(ctx, id)` — установка `archived = true`
 - Реализовать `Restore(ctx, id)` — установка `archived = false`
 
-### 5.2. HTTP-обработчики
+### 7.2. HTTP-обработчики
 - `POST /api/v1/activities/{id}/archive` — архивировать → 204 / 404
 - `POST /api/v1/activities/{id}/restore` — восстановить из архива → 204 / 404
 
-### 5.3. Валидация
+### 7.3. Валидация
 - `id` в URL — положительное целое число
 - Возвращать `404 {error: "activity not found"}` если активность не существует
 
-### 5.4. Swagger-аннотации
+### 7.4. Swagger-аннотации
 - Аннотировать 2 обработчика Swaggo-комментариями
 - Выполнить `swag init`, проверить через Swagger UI
 
@@ -218,25 +218,25 @@
 
 Три эндпоинта для версионирования SeriesDefinition внутри существующей активности: создать новую версию, получить все версии, удалить версию.
 
-### 5.1. Модели
+### 8.1. Модели
 - Определить структуру `CreateSeriesDefinitionRequest` с полями `series_length`, `reward`, `currency`
 
-### 5.2. CRUD-функции
+### 8.2. CRUD-функции
 - Реализовать `CreateSeriesDefinition(ctx, activityID, seriesLength, reward, currency) → SeriesDefinition` — новая версия, `created_at` = now()
 - Реализовать `GetSeriesDefinitions(ctx, activityID) → []SeriesDefinition` — все версии, сортировка по `created_at DESC`
 - Реализовать `DeleteSeriesDefinition(ctx, id)` — удаление версии, ошибка если это последнее определение у активности
 
-### 5.3. HTTP-обработчики
+### 8.3. HTTP-обработчики
 - `POST /api/v1/activities/{id}/series-definitions` — новая версия (тело: `{series_length, reward, currency}`) → 201
 - `GET /api/v1/activities/{id}/series-definitions` — все версии → 200 + []
 - `DELETE /api/v1/activities/{id}/series-definitions/{defId}` — удалить версию → 204 / 404 / 409
 
-### 5.4. Валидация
+### 8.4. Валидация
 - `series_length` > 0, `reward` >= 0, `currency` непустой
 - `id` и `defId` — положительные целые числа
 - Возвращать `409 {error: "..."}` при попытке удалить последнее определение
 
-### 5.5. Swagger-аннотации
+### 8.5. Swagger-аннотации
 - Аннотировать 3 обработчика Swaggo-комментариями
 - Выполнить `swag init`, проверить через Swagger UI
 
@@ -248,22 +248,22 @@
 
 Один POST-эндпоинт: если отметки за дату нет — создаёт, если есть — удаляет. Поведение как у кнопки «Отметить/Отменить» в UI.
 
-### 6.1. Модели
+### 9.1. Модели
 - Определить структуру `Completion` с JSON-тегами: `id`, `activity_id`, `date`
 - Определить структуру `ToggleCompletionRequest` с полями `activity_id`, `date`
 - Определить структуру `ToggleCompletionResponse` с полями `created` (true — добавлена, false — удалена) и `completion`
 
-### 6.2. CRUD-функция
+### 9.2. CRUD-функция
 - Реализовать `ToggleCompletion(ctx, activityID, date) → (created bool, Completion)` — если отметка есть → удалить, если нет → создать
 
-### 6.3. HTTP-обработчик
+### 9.3. HTTP-обработчик
 - `POST /api/v1/completions/toggle` — переключить отметку (тело: `{activity_id, date}`) → 200 + `{created, completion}`
 
-### 6.4. Валидация
+### 9.4. Валидация
 - `date` соответствует формату YYYY-MM-DD
 - `activity_id` ссылается на существующую и не архивную активность
 
-### 6.5. Swagger-аннотация
+### 9.5. Swagger-аннотация
 - Аннотировать обработчик Swaggo-комментарием
 - Выполнить `swag init`, проверить через Swagger UI
 
@@ -275,20 +275,20 @@
 
 Один GET-эндпоинт: список отметок по активности и диапазону дат.
 
-### 7.1. Модели
-- Использовать `Completion` (из раздела 6)
+### 10.1. Модели
+- Использовать `Completion` (из раздела 9)
 
-### 7.2. CRUD-функция
+### 10.2. CRUD-функция
 - Реализовать `GetByActivityAndDateRange(ctx, activityID, from, to) → []Completion` — отметки в диапазоне дат
 
-### 7.3. HTTP-обработчик
+### 10.3. HTTP-обработчик
 - `GET /api/v1/completions?activity_id={id}&from={date}&to={date}` — отметки в диапазоне → 200 + []
 
-### 7.4. Валидация
+### 10.4. Валидация
 - `activity_id` — положительное целое, ссылается на существующую активность
 - `from` и `to` — формат YYYY-MM-DD, `from <= to`
 
-### 7.5. Swagger-аннотация
+### 10.5. Swagger-аннотация
 - Аннотировать обработчик Swaggo-комментарием
 - Выполнить `swag init`, проверить через Swagger UI
 
@@ -300,24 +300,24 @@
 
 Два эндпоинта: создать запись о выдаче награды и получить пагинированный список выдач по активности.
 
-### 8.1. Модели
+### 11.1. Модели
 - Определить структуру `RewardIssue` с JSON-тегами: `id`, `activity_id`, `date`, `amount`, `currency`
 - Определить структуру `CreateRewardIssueRequest` с полями `activity_id`, `date`, `amount`, `currency`
 
-### 8.2. CRUD-функции
+### 11.2. CRUD-функции
 - Реализовать `CreateRewardIssue(ctx, req) → RewardIssue` — вставка записи о выдаче
 - Реализовать `GetByActivityID(ctx, activityID, limit, offset) → ([]RewardIssue, total)` — пагинированный список, сортировка по `date DESC`
 
-### 8.3. HTTP-обработчики
+### 11.3. HTTP-обработчики
 - `POST /api/v1/reward-issues` — создать выдачу (тело: `{activity_id, date, amount, currency}`) → 201
 - `GET /api/v1/reward-issues?activity_id={id}&limit={n}&offset={n}` — список с пагинацией → 200 + `{items, total}`
 
-### 8.4. Валидация
+### 11.4. Валидация
 - `activity_id` ссылается на существующую активность
 - `date` соответствует формату YYYY-MM-DD
 - `amount` > 0, `currency` непустой
 
-### 8.5. Swagger-аннотации
+### 11.5. Swagger-аннотации
 - Аннотировать 2 обработчика Swaggo-комментариями
 - Выполнить `swag init`, проверить через Swagger UI
 
@@ -329,21 +329,21 @@
 
 Один PATCH-эндпоинт: обновить сумму выданной награды.
 
-### 10.1. Модели
+### 12.1. Модели
 - Определить структуру `UpdateRewardIssueRequest` с полем `amount`
 
-### 10.2. CRUD-функция
+### 12.2. CRUD-функция
 - Реализовать `UpdateAmount(ctx, id, amount)` — обновление суммы
 
-### 10.3. HTTP-обработчик
+### 12.3. HTTP-обработчик
 - `PATCH /api/v1/reward-issues/{id}` — обновить сумму (тело: `{amount}`) → 200 / 404
 
-### 10.4. Валидация
+### 12.4. Валидация
 - `id` в URL — положительное целое число
 - `amount` > 0
 - Возвращать `404 {error: "reward issue not found"}` если запись не существует
 
-### 10.5. Swagger-аннотация
+### 12.5. Swagger-аннотация
 - Аннотировать обработчик Swaggo-комментарием
 - Выполнить `swag init`, проверить через Swagger UI
 
@@ -355,17 +355,17 @@
 
 Один DELETE-эндпоинт: удалить запись о выдаче награды.
 
-### 11.1. CRUD-функция
+### 13.1. CRUD-функция
 - Реализовать `DeleteByID(ctx, id)` — удаление записи
 
-### 11.2. HTTP-обработчик
+### 13.2. HTTP-обработчик
 - `DELETE /api/v1/reward-issues/{id}` — удалить выдачу → 204 / 404
 
-### 11.3. Валидация
+### 13.3. Валидация
 - `id` в URL — положительное целое число
 - Возвращать `404 {error: "reward issue not found"}` если запись не существует
 
-### 11.4. Swagger-аннотация
+### 13.4. Swagger-аннотация
 - Аннотировать обработчик Swaggo-комментарием
 - Выполнить `swag init`, проверить через Swagger UI
 

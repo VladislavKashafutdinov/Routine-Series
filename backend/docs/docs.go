@@ -16,6 +16,27 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/activities": {
+            "get": {
+                "description": "Returns all non-archived activities with their latest series definition.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "activities"
+                ],
+                "summary": "List active activities",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ActivityWithDef"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Creates an activity together with its first series definition in a single transaction.",
                 "consumes": [
@@ -48,6 +69,70 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/activities/archived": {
+            "get": {
+                "description": "Returns all archived activities with their latest series definition.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "activities"
+                ],
+                "summary": "List archived activities",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ActivityWithDef"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/activities/{id}": {
+            "get": {
+                "description": "Returns a single activity with its latest series definition.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "activities"
+                ],
+                "summary": "Get activity by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Activity ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ActivityWithDef"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }

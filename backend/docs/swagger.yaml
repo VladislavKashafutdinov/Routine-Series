@@ -63,6 +63,20 @@ info:
   version: 0.1.0
 paths:
   /activities:
+    get:
+      description: Returns all non-archived activities with their latest series definition.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ActivityWithDef'
+            type: array
+      summary: List active activities
+      tags:
+      - activities
     post:
       consumes:
       - application/json
@@ -87,6 +101,48 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create activity
+      tags:
+      - activities
+  /activities/{id}:
+    get:
+      description: Returns a single activity with its latest series definition.
+      parameters:
+      - description: Activity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ActivityWithDef'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get activity by ID
+      tags:
+      - activities
+  /activities/archived:
+    get:
+      description: Returns all archived activities with their latest series definition.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ActivityWithDef'
+            type: array
+      summary: List archived activities
       tags:
       - activities
   /health:

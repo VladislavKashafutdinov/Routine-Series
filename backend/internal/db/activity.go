@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"routine-series/backend/internal/models"
@@ -45,4 +46,74 @@ func CreateActivity(ctx context.Context, pool *pgxpool.Pool, name string, series
 		Activity:   a,
 		Definition: &def,
 	}, nil
+}
+
+const activityWithDefQuery = `
+SELECT a.id, a.name, a.archived, a.created_at,
+       sd.id, sd.activity_id, sd.series_length, sd.reward, sd.currency, sd.created_at
+FROM activities a
+LEFT JOIN LATERAL (
+    SELECT * FROM series_definitions
+    WHERE activity_id = a.id
+    ORDER BY created_at DESC
+    LIMIT 1
+) sd ON true
+`
+
+// GetAllActive returns all non-archived activities with their latest series definition.
+func GetAllActive(ctx context.Context, pool *pgxpool.Pool) ([]models.ActivityWithDef, error) {
+	rows, err := pool.Query(ctx, activityWithDefQuery+` WHERE a.archived = false ORDER BY a.id`)
+	if err != nil {
+		return nil, fmt.Errorf("query activities: %w", err)
+	}
+	defer rows.Close()
+
+	return scanActivityWithDefs(rows)
+}
+
+// GetAllArchived returns all archived activities with their latest series definition.
+func GetAllArchived(ctx context.Context, pool *pgxpool.Pool) ([]models.ActivityWithDef, error) {
+	rows, err := pool.Query(ctx, activityWithDefQuery+` WHERE a.archived = true ORDER BY a.id`)
+	if err != nil {
+		return nil, fmt.Errorf("query archived activities: %w", err)
+	}
+	defer rows.Close()
+
+	return scanActivityWithDefs(rows)
+}
+
+// GetByID returns a single activity with its latest series definition, or nil if not found.
+func GetByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models.ActivityWithDef, error) {
+	row := pool.QueryRow(ctx, activityWithDefQuery+` WHERE a.id = $1`, id)
+
+	var a models.Activity
+	var d models.SeriesDefinition
+	err := row.Scan(
+		&a.ID, &a.Name, &a.Archived, &a.CreatedAt,
+		&d.ID, &d.ActivityID, &d.SeriesLength, &d.Reward, &d.Currency, &d.CreatedAt,
+	)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("query activity %d: %w", id, err)
+	}
+
+	return &models.ActivityWithDef{Activity: a, Definition: &d}, nil
+}
+
+func scanActivityWithDefs(rows pgx.Rows) ([]models.ActivityWithDef, error) {
+	var results []models.ActivityWithDef
+	for rows.Next() {
+		var a models.Activity
+		var d models.SeriesDefinition
+		if err := rows.Scan(
+			&a.ID, &a.Name, &a.Archived, &a.CreatedAt,
+			&d.ID, &d.ActivityID, &d.SeriesLength, &d.Reward, &d.Currency, &d.CreatedAt,
+		); err != nil {
+			return nil, fmt.Errorf("scan activity: %w", err)
+		}
+		results = append(results, models.ActivityWithDef{Activity: a, Definition: &d})
+	}
+	return results, rows.Err()
 }

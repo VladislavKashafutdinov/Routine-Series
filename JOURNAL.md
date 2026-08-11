@@ -13,6 +13,10 @@
 - Реализовано создание активности: модели (Activity, SeriesDefinition, ActivityWithDef), CRUD (транзакция activities + series_definitions), `POST /api/v1/activities` с валидацией, Swagger-аннотации
 - Реализован импорт данных: `POST /api/v1/import` принимает JSON-файл (multipart), camelCase-модели как в дампе IndexedDB, батчевая вставка через CopyFrom, TRUNCATE CASCADE перед импортом
 
+## 2026-08-12
+
+- Реализован просмотр активностей: `GET /api/v1/activities`, `GET /api/v1/activities/archived`, `GET /api/v1/activities/{id}`, LATERAL JOIN для актуального SeriesDefinition, Swagger
+
 ## 2026-08-10
 
 - Настроен GitHub Pages деплой: workflow с configure-pages + deploy-pages, приложение раскатано и доступно
