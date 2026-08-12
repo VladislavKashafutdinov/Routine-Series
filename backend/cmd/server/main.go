@@ -18,6 +18,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
+	"github.com/swaggo/swag"
 
 	_ "routine-series/backend/docs"
 	"routine-series/backend/internal/app"
@@ -60,7 +61,9 @@ func main() {
 		httpSwagger.URL("/api/v1/swagger.json"),
 	))
 	r.Get("/api/v1/swagger.json", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "docs/swagger.json")
+		doc, _ := swag.ReadDoc()
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(doc))
 	})
 
 	// Health check
