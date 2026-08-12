@@ -1,19 +1,19 @@
 basePath: /api/v1
 definitions:
-  activity.ActivityWithDef:
+  internal_activity.ActivityWithDef:
     properties:
       archived:
         type: boolean
       created_at:
         type: string
       definition:
-        $ref: '#/definitions/seriesdefinition.SeriesDefinition'
+        $ref: '#/definitions/routine-series_backend_internal_seriesdefinition.SeriesDefinition'
       id:
         type: integer
       name:
         type: string
     type: object
-  activity.CreateActivityRequest:
+  internal_activity.CreateActivityRequest:
     properties:
       currency:
         type: string
@@ -24,17 +24,12 @@ definitions:
       series_length:
         type: integer
     type: object
-  activity.UpdateActivityRequest:
+  internal_activity.UpdateActivityRequest:
     properties:
       name:
         type: string
     type: object
-  api.ErrorResponse:
-    properties:
-      error:
-        type: string
-    type: object
-  completion.Completion:
+  internal_completion.Completion:
     properties:
       activity_id:
         type: integer
@@ -45,7 +40,7 @@ definitions:
       id:
         type: integer
     type: object
-  completion.ToggleRequest:
+  internal_completion.ToggleRequest:
     properties:
       activity_id:
         example: 1
@@ -55,14 +50,14 @@ definitions:
         example: "2026-08-12"
         type: string
     type: object
-  completion.ToggleResponse:
+  internal_completion.ToggleResponse:
     properties:
       completion:
-        $ref: '#/definitions/completion.Completion'
+        $ref: '#/definitions/internal_completion.Completion'
       created:
         type: boolean
     type: object
-  dataimport.Stats:
+  internal_dataimport.Stats:
     properties:
       activities:
         type: integer
@@ -73,7 +68,7 @@ definitions:
       series_definitions:
         type: integer
     type: object
-  reward.CreateRequest:
+  internal_reward.CreateRequest:
     properties:
       activity_id:
         example: 1
@@ -89,16 +84,16 @@ definitions:
         example: "2026-08-12"
         type: string
     type: object
-  reward.PaginatedResponse:
+  internal_reward.PaginatedResponse:
     properties:
       items:
         items:
-          $ref: '#/definitions/reward.RewardIssue'
+          $ref: '#/definitions/internal_reward.RewardIssue'
         type: array
       total:
         type: integer
     type: object
-  reward.RewardIssue:
+  internal_reward.RewardIssue:
     properties:
       activity_id:
         type: integer
@@ -113,13 +108,20 @@ definitions:
       id:
         type: integer
     type: object
-  reward.UpdateRequest:
+  internal_reward.UpdateRequest:
     properties:
       amount:
         example: 150
         type: number
+      currency:
+        example: ₽
+        type: string
+      date:
+        description: YYYY-MM-DD
+        example: "2026-08-12"
+        type: string
     type: object
-  seriesdefinition.CreateRequest:
+  internal_seriesdefinition.CreateRequest:
     properties:
       currency:
         type: string
@@ -128,7 +130,27 @@ definitions:
       series_length:
         type: integer
     type: object
-  seriesdefinition.SeriesDefinition:
+  internal_seriesdefinition.SeriesDefinition:
+    properties:
+      activity_id:
+        type: integer
+      created_at:
+        type: string
+      currency:
+        type: string
+      id:
+        type: integer
+      reward:
+        type: number
+      series_length:
+        type: integer
+    type: object
+  routine-series_backend_internal_api.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  routine-series_backend_internal_seriesdefinition.SeriesDefinition:
     properties:
       activity_id:
         type: integer
@@ -160,7 +182,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/activity.ActivityWithDef'
+              $ref: '#/definitions/internal_activity.ActivityWithDef'
             type: array
       summary: List active activities
       tags:
@@ -176,18 +198,18 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/activity.CreateActivityRequest'
+          $ref: '#/definitions/internal_activity.CreateActivityRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/activity.ActivityWithDef'
+            $ref: '#/definitions/internal_activity.ActivityWithDef'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Create activity
       tags:
       - activities
@@ -206,15 +228,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/activity.ActivityWithDef'
+            $ref: '#/definitions/internal_activity.ActivityWithDef'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Get activity by ID
       tags:
       - activities
@@ -233,22 +255,22 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/activity.UpdateActivityRequest'
+          $ref: '#/definitions/internal_activity.UpdateActivityRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/activity.ActivityWithDef'
+            $ref: '#/definitions/internal_activity.ActivityWithDef'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Rename activity
       tags:
       - activities
@@ -269,11 +291,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Archive activity
       tags:
       - activities
@@ -294,11 +316,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Restore activity
       tags:
       - activities
@@ -319,12 +341,12 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/seriesdefinition.SeriesDefinition'
+              $ref: '#/definitions/internal_seriesdefinition.SeriesDefinition'
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: List series definitions
       tags:
       - series-definitions
@@ -343,22 +365,22 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/seriesdefinition.CreateRequest'
+          $ref: '#/definitions/internal_seriesdefinition.CreateRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/seriesdefinition.SeriesDefinition'
+            $ref: '#/definitions/internal_seriesdefinition.SeriesDefinition'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Create series definition
       tags:
       - series-definitions
@@ -385,15 +407,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Delete series definition
       tags:
       - series-definitions
@@ -407,7 +429,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/activity.ActivityWithDef'
+              $ref: '#/definitions/internal_activity.ActivityWithDef'
             type: array
       summary: List archived activities
       tags:
@@ -438,12 +460,12 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/completion.Completion'
+              $ref: '#/definitions/internal_completion.Completion'
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: List completions
       tags:
       - completions
@@ -459,18 +481,18 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/completion.ToggleRequest'
+          $ref: '#/definitions/internal_completion.ToggleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/completion.ToggleResponse'
+            $ref: '#/definitions/internal_completion.ToggleResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Toggle completion
       tags:
       - completions
@@ -505,11 +527,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dataimport.Stats'
+            $ref: '#/definitions/internal_dataimport.Stats'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Import data
       tags:
       - import
@@ -536,11 +558,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/reward.PaginatedResponse'
+            $ref: '#/definitions/internal_reward.PaginatedResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: List reward issues
       tags:
       - rewards
@@ -554,18 +576,18 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/reward.CreateRequest'
+          $ref: '#/definitions/internal_reward.CreateRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/reward.RewardIssue'
+            $ref: '#/definitions/internal_reward.RewardIssue'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Create reward issue
       tags:
       - rewards
@@ -586,45 +608,46 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Delete reward issue
       tags:
       - rewards
     patch:
       consumes:
       - application/json
-      description: Updates the amount of a reward issue by ID.
+      description: Updates fields of a reward issue by ID. All fields are optional;
+        at least one must be provided.
       parameters:
       - description: Reward Issue ID
         in: path
         name: id
         required: true
         type: integer
-      - description: New amount
+      - description: Fields to update
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/reward.UpdateRequest'
+          $ref: '#/definitions/internal_reward.UpdateRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/reward.RewardIssue'
+            $ref: '#/definitions/internal_reward.RewardIssue'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/api.ErrorResponse'
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
       summary: Update reward issue
       tags:
       - rewards

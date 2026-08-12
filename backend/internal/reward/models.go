@@ -29,18 +29,35 @@ type PaginatedResponse struct {
 	Total int           `json:"total"`
 }
 
-// UpdateRequest is the request body for updating a reward issue amount.
+// UpdateRequest is the request body for updating a reward issue.
+// All fields are optional; at least one must be provided (PATCH semantics).
 type UpdateRequest struct {
-	Amount float64 `json:"amount" example:"150"`
+	Amount   *float64 `json:"amount,omitempty" example:"150"`
+	Date     *string  `json:"date,omitempty" example:"2026-08-12"` // YYYY-MM-DD
+	Currency *string  `json:"currency,omitempty" example:"₽"`
 }
 
 // Validate checks the request fields and returns an error if invalid.
 func (r UpdateRequest) Validate() error {
-	if r.Amount <= 0 {
+	// At least one field must be provided.
+	if !r.hasAmount() && !r.hasDate() && !r.hasCurrency() {
+		return fmt.Errorf("at least one field (amount, date, currency) must be provided")
+	}
+	if r.hasAmount() && *r.Amount <= 0 {
 		return fmt.Errorf("amount must be greater than 0")
+	}
+	if r.hasDate() && !dateRe.MatchString(*r.Date) {
+		return fmt.Errorf("date must be in YYYY-MM-DD format")
+	}
+	if r.hasCurrency() && strings.TrimSpace(*r.Currency) == "" {
+		return fmt.Errorf("currency must not be empty")
 	}
 	return nil
 }
+
+func (r UpdateRequest) hasAmount() bool   { return r.Amount != nil }
+func (r UpdateRequest) hasDate() bool     { return r.Date != nil }
+func (r UpdateRequest) hasCurrency() bool { return r.Currency != nil }
 
 var dateRe = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
 

@@ -2,8 +2,11 @@ package reward
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -55,13 +58,47 @@ func ListByActivity(ctx context.Context, pool *pgxpool.Pool, activityID int, lim
 	return &PaginatedResponse{Items: items, Total: total}, rows.Err()
 }
 
-// UpdateAmount updates the amount of a reward issue. Returns false if not found.
-func UpdateAmount(ctx context.Context, pool *pgxpool.Pool, id int, amount float64) (bool, error) {
-	tag, err := pool.Exec(ctx, `UPDATE reward_issues SET amount = $2 WHERE id = $1`, id, amount)
-	if err != nil {
-		return false, fmt.Errorf("update reward issue %d: %w", id, err)
+// Update updates fields of a reward issue by ID. Only non-nil fields in the
+// request are applied (PATCH semantics). Returns the updated reward issue,
+// or nil if not found.
+func Update(ctx context.Context, pool *pgxpool.Pool, id int, req UpdateRequest) (*RewardIssue, error) {
+	var sets []string
+	var args []any
+	argIdx := 2 // $1 is id
+
+	if req.hasAmount() {
+		sets = append(sets, fmt.Sprintf("amount = $%d", argIdx))
+		args = append(args, *req.Amount)
+		argIdx++
 	}
-	return tag.RowsAffected() > 0, nil
+	if req.hasDate() {
+		sets = append(sets, fmt.Sprintf("date = $%d", argIdx))
+		args = append(args, *req.Date)
+		argIdx++
+	}
+	if req.hasCurrency() {
+		sets = append(sets, fmt.Sprintf("currency = $%d", argIdx))
+		args = append(args, *req.Currency)
+		argIdx++
+	}
+
+	query := fmt.Sprintf(
+		`UPDATE reward_issues SET %s WHERE id = $1
+		 RETURNING id, activity_id, date::text, amount, currency`,
+		strings.Join(sets, ", "),
+	)
+
+	allArgs := append([]any{id}, args...)
+
+	var r RewardIssue
+	err := pool.QueryRow(ctx, query, allArgs...).Scan(&r.ID, &r.ActivityID, &r.Date, &r.Amount, &r.Currency)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil // not found
+		}
+		return nil, fmt.Errorf("update reward issue %d: %w", id, err)
+	}
+	return &r, nil
 }
 
 // DeleteByID deletes a reward issue by ID. Returns false if not found.

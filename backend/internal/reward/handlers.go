@@ -87,12 +87,12 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 // Update godoc
 //
 //	@Summary		Update reward issue
-//	@Description	Updates the amount of a reward issue by ID.
+//	@Description	Updates fields of a reward issue by ID. All fields are optional; at least one must be provided.
 //	@Tags			rewards
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path		int				true	"Reward Issue ID"
-//	@Param			body	body		UpdateRequest	true	"New amount"
+//	@Param			body	body		UpdateRequest	true	"Fields to update"
 //	@Success		200		{object}	RewardIssue
 //	@Failure		400		{object}	api.ErrorResponse
 //	@Failure		404		{object}	api.ErrorResponse
@@ -114,18 +114,17 @@ func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	found, err := UpdateAmount(r.Context(), h.Pool, id, req.Amount)
+	updated, err := Update(r.Context(), h.Pool, id, req)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "failed to update reward issue")
 		return
 	}
-	if !found {
+	if updated == nil {
 		writeError(w, http.StatusNotFound, "reward issue not found")
 		return
 	}
 
-	// Return updated — need to re-query. For now, return the updated amount.
-	json.NewEncoder(w).Encode(map[string]any{"id": id, "amount": req.Amount})
+	json.NewEncoder(w).Encode(updated)
 }
 
 // Delete godoc

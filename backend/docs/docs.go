@@ -31,7 +31,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/activity.ActivityWithDef"
+                                "$ref": "#/definitions/internal_activity.ActivityWithDef"
                             }
                         }
                     }
@@ -56,7 +56,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/activity.CreateActivityRequest"
+                            "$ref": "#/definitions/internal_activity.CreateActivityRequest"
                         }
                     }
                 ],
@@ -64,13 +64,13 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/activity.ActivityWithDef"
+                            "$ref": "#/definitions/internal_activity.ActivityWithDef"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -92,7 +92,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/activity.ActivityWithDef"
+                                "$ref": "#/definitions/internal_activity.ActivityWithDef"
                             }
                         }
                     }
@@ -122,19 +122,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/activity.ActivityWithDef"
+                            "$ref": "#/definitions/internal_activity.ActivityWithDef"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -165,7 +165,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/activity.UpdateActivityRequest"
+                            "$ref": "#/definitions/internal_activity.UpdateActivityRequest"
                         }
                     }
                 ],
@@ -173,19 +173,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/activity.ActivityWithDef"
+                            "$ref": "#/definitions/internal_activity.ActivityWithDef"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -217,13 +217,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -255,13 +255,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -292,14 +292,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/seriesdefinition.SeriesDefinition"
+                                "$ref": "#/definitions/internal_seriesdefinition.SeriesDefinition"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -330,7 +330,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/seriesdefinition.CreateRequest"
+                            "$ref": "#/definitions/internal_seriesdefinition.CreateRequest"
                         }
                     }
                 ],
@@ -338,19 +338,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/seriesdefinition.SeriesDefinition"
+                            "$ref": "#/definitions/internal_seriesdefinition.SeriesDefinition"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -389,19 +389,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -446,14 +446,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/completion.Completion"
+                                "$ref": "#/definitions/internal_completion.Completion"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -479,7 +479,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/completion.ToggleRequest"
+                            "$ref": "#/definitions/internal_completion.ToggleRequest"
                         }
                     }
                 ],
@@ -487,13 +487,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/completion.ToggleResponse"
+                            "$ref": "#/definitions/internal_completion.ToggleResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -545,13 +545,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dataimport.Stats"
+                            "$ref": "#/definitions/internal_dataimport.Stats"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -592,13 +592,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/reward.PaginatedResponse"
+                            "$ref": "#/definitions/internal_reward.PaginatedResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -622,7 +622,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/reward.CreateRequest"
+                            "$ref": "#/definitions/internal_reward.CreateRequest"
                         }
                     }
                 ],
@@ -630,13 +630,13 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/reward.RewardIssue"
+                            "$ref": "#/definitions/internal_reward.RewardIssue"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -668,19 +668,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
             },
             "patch": {
-                "description": "Updates the amount of a reward issue by ID.",
+                "description": "Updates fields of a reward issue by ID. All fields are optional; at least one must be provided.",
                 "consumes": [
                     "application/json"
                 ],
@@ -700,12 +700,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "New amount",
+                        "description": "Fields to update",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/reward.UpdateRequest"
+                            "$ref": "#/definitions/internal_reward.UpdateRequest"
                         }
                     }
                 ],
@@ -713,19 +713,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/reward.RewardIssue"
+                            "$ref": "#/definitions/internal_reward.RewardIssue"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/api.ErrorResponse"
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
                         }
                     }
                 }
@@ -733,7 +733,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "activity.ActivityWithDef": {
+        "internal_activity.ActivityWithDef": {
             "type": "object",
             "properties": {
                 "archived": {
@@ -743,7 +743,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "definition": {
-                    "$ref": "#/definitions/seriesdefinition.SeriesDefinition"
+                    "$ref": "#/definitions/routine-series_backend_internal_seriesdefinition.SeriesDefinition"
                 },
                 "id": {
                     "type": "integer"
@@ -753,7 +753,7 @@ const docTemplate = `{
                 }
             }
         },
-        "activity.CreateActivityRequest": {
+        "internal_activity.CreateActivityRequest": {
             "type": "object",
             "properties": {
                 "currency": {
@@ -770,7 +770,7 @@ const docTemplate = `{
                 }
             }
         },
-        "activity.UpdateActivityRequest": {
+        "internal_activity.UpdateActivityRequest": {
             "type": "object",
             "properties": {
                 "name": {
@@ -778,15 +778,7 @@ const docTemplate = `{
                 }
             }
         },
-        "api.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                }
-            }
-        },
-        "completion.Completion": {
+        "internal_completion.Completion": {
             "type": "object",
             "properties": {
                 "activity_id": {
@@ -802,7 +794,7 @@ const docTemplate = `{
                 }
             }
         },
-        "completion.ToggleRequest": {
+        "internal_completion.ToggleRequest": {
             "type": "object",
             "properties": {
                 "activity_id": {
@@ -816,18 +808,18 @@ const docTemplate = `{
                 }
             }
         },
-        "completion.ToggleResponse": {
+        "internal_completion.ToggleResponse": {
             "type": "object",
             "properties": {
                 "completion": {
-                    "$ref": "#/definitions/completion.Completion"
+                    "$ref": "#/definitions/internal_completion.Completion"
                 },
                 "created": {
                     "type": "boolean"
                 }
             }
         },
-        "dataimport.Stats": {
+        "internal_dataimport.Stats": {
             "type": "object",
             "properties": {
                 "activities": {
@@ -844,7 +836,7 @@ const docTemplate = `{
                 }
             }
         },
-        "reward.CreateRequest": {
+        "internal_reward.CreateRequest": {
             "type": "object",
             "properties": {
                 "activity_id": {
@@ -866,13 +858,13 @@ const docTemplate = `{
                 }
             }
         },
-        "reward.PaginatedResponse": {
+        "internal_reward.PaginatedResponse": {
             "type": "object",
             "properties": {
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/reward.RewardIssue"
+                        "$ref": "#/definitions/internal_reward.RewardIssue"
                     }
                 },
                 "total": {
@@ -880,7 +872,7 @@ const docTemplate = `{
                 }
             }
         },
-        "reward.RewardIssue": {
+        "internal_reward.RewardIssue": {
             "type": "object",
             "properties": {
                 "activity_id": {
@@ -902,16 +894,25 @@ const docTemplate = `{
                 }
             }
         },
-        "reward.UpdateRequest": {
+        "internal_reward.UpdateRequest": {
             "type": "object",
             "properties": {
                 "amount": {
                     "type": "number",
                     "example": 150
+                },
+                "currency": {
+                    "type": "string",
+                    "example": "₽"
+                },
+                "date": {
+                    "description": "YYYY-MM-DD",
+                    "type": "string",
+                    "example": "2026-08-12"
                 }
             }
         },
-        "seriesdefinition.CreateRequest": {
+        "internal_seriesdefinition.CreateRequest": {
             "type": "object",
             "properties": {
                 "currency": {
@@ -925,7 +926,38 @@ const docTemplate = `{
                 }
             }
         },
-        "seriesdefinition.SeriesDefinition": {
+        "internal_seriesdefinition.SeriesDefinition": {
+            "type": "object",
+            "properties": {
+                "activity_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "reward": {
+                    "type": "number"
+                },
+                "series_length": {
+                    "type": "integer"
+                }
+            }
+        },
+        "routine-series_backend_internal_api.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "routine-series_backend_internal_seriesdefinition.SeriesDefinition": {
             "type": "object",
             "properties": {
                 "activity_id": {
