@@ -7,7 +7,7 @@
 - [x] [Ветка и конфигурация](BACKEND_2_FRONTEND_API_PLAN.md#1-ветка-и-конфигурация)
 - [x] [CORS на бэкенде](BACKEND_2_FRONTEND_API_PLAN.md#2-cors-на-бэкенде)
 - [x] [Создание активности через API](BACKEND_2_FRONTEND_API_PLAN.md#3-создание-активности-через-api-первая-теневая-мутация)
-- [ ] [Отметка выполнения через API](BACKEND_2_FRONTEND_API_PLAN.md#4-отметка-выполнения-через-api)
+- [x] [Отметка выполнения через API](BACKEND_2_FRONTEND_API_PLAN.md#4-отметка-выполнения-через-api)
 - [ ] [Переименование активности через API](BACKEND_2_FRONTEND_API_PLAN.md#5-переименование-активности-через-api)
 - [ ] [Архивирование, восстановление и удаление через API](BACKEND_2_FRONTEND_API_PLAN.md#6-архивирование-восстановление-и-удаление-через-api)
 - [ ] [Параметры серии через API](BACKEND_2_FRONTEND_API_PLAN.md#7-параметры-серии-через-api)

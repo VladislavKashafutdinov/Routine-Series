@@ -1,5 +1,5 @@
-import type { Activity, SeriesDefinition } from '@/types';
-import type { ApiActivity, ApiSeriesDefinition } from './types';
+import type { Activity, Completion, SeriesDefinition } from '@/types';
+import type { ApiActivity, ApiCompletion, ApiSeriesDefinition } from './types';
 
 export function toActivity(a: ApiActivity): Activity {
   return {
@@ -18,5 +18,13 @@ export function toSeriesDefinition(d: ApiSeriesDefinition): SeriesDefinition {
     reward: d.reward,
     currency: d.currency,
     createdAt: new Date(d.created_at),
+  };
+}
+
+export function toCompletion(c: ApiCompletion): Completion {
+  return {
+    id: c.id,
+    activityId: c.activity_id,
+    date: c.date,
   };
 }

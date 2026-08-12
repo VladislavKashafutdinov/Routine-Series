@@ -21,6 +21,18 @@ export interface ApiActivityWithDef extends ApiActivity {
   definition?: ApiSeriesDefinition;
 }
 
+export interface ApiCompletion {
+  id: number;
+  activity_id: number;
+  date: string; // "YYYY-MM-DD"
+}
+
+/** POST /api/v1/completions/toggle response. */
+export interface ApiToggleResponse {
+  created: boolean;
+  completion?: ApiCompletion;
+}
+
 /** Unified error format returned by all endpoints. */
 export interface ApiError {
   error: string;

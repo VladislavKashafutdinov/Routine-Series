@@ -1,7 +1,7 @@
 import type { Activity, ActivityWithStreak, Completion, RewardIssue, SeriesDefinition } from '@/types';
 import { useEffect, useState } from 'react';
 
-import { createActivity } from '@/api/client';
+import { createActivity, toggleCompletion } from '@/api/client';
 import { db } from '@/db/db';
 import { liveQuery } from 'dexie';
 import { useVirtualToday } from './VirtualTodayContext';
@@ -90,6 +90,11 @@ export function useActivities() {
     } else {
       await db.completions.add({ activityId, date: virtualToday });
     }
+
+    // Shadow write to API — background, non-blocking
+    toggleCompletion(activityId, virtualToday).catch((err) => {
+      console.error('API toggleCompletion failed:', err);
+    });
   };
 
   const toggleDate = async (activityId: number, date: string) => {
@@ -101,6 +106,11 @@ export function useActivities() {
     } else {
       await db.completions.add({ activityId, date });
     }
+
+    // Shadow write to API — background, non-blocking
+    toggleCompletion(activityId, date).catch((err) => {
+      console.error('API toggleCompletion failed:', err);
+    });
   };
 
   const addRewardIssue = async (activityId: number, amount: number, currency: string, date: string) => {
