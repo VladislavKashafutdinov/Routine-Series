@@ -139,6 +139,48 @@ const docTemplate = `{
                     }
                 }
             },
+            "delete": {
+                "description": "Permanently deletes an activity and its series definitions. Refuses if completions or reward issues exist (archive instead).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "activities"
+                ],
+                "summary": "Hard-delete activity",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Activity ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/routine-series_backend_internal_api.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "patch": {
                 "description": "Updates the name of an activity by ID.",
                 "consumes": [

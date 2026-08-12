@@ -3,7 +3,7 @@
 ## Взять в работу
 
 - [x] В апи: RewardIssue должно быть возможно изменить currency и date так же как на фронте
-- [ ] В апи: нужен метод жесткого удаления activity, если у активности нет completions/rewardIssues
+- [x] В апи: нужен метод жесткого удаления activity, если у активности нет completions/rewardIssues
 
 ## Отложено
 

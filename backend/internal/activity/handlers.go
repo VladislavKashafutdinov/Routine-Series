@@ -2,6 +2,7 @@ package activity
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -217,6 +218,42 @@ func (h *Handlers) RestoreActivity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !found {
+		writeError(w, http.StatusNotFound, "activity not found")
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// DeleteActivity godoc
+//
+//	@Summary		Hard-delete activity
+//	@Description	Permanently deletes an activity and its series definitions. Refuses if completions or reward issues exist (archive instead).
+//	@Tags			activities
+//	@Produce		json
+//	@Param			id	path		int	true	"Activity ID"
+//	@Success		204
+//	@Failure		400	{object}	api.ErrorResponse
+//	@Failure		404	{object}	api.ErrorResponse
+//	@Failure		409	{object}	api.ErrorResponse
+//	@Router			/activities/{id} [delete]
+func (h *Handlers) DeleteActivity(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil || id <= 0 {
+		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		return
+	}
+
+	deleted, err := HardDelete(r.Context(), h.Pool, id)
+	if err != nil {
+		if errors.Is(err, ErrHasDependents) {
+			writeError(w, http.StatusConflict, err.Error())
+			return
+		}
+		writeError(w, http.StatusInternalServerError, "failed to delete activity")
+		return
+	}
+	if !deleted {
 		writeError(w, http.StatusNotFound, "activity not found")
 		return
 	}

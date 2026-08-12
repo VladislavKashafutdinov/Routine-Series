@@ -123,6 +123,52 @@ func Restore(ctx context.Context, pool *pgxpool.Pool, id int) (bool, error) {
 	return tag.RowsAffected() > 0, nil
 }
 
+// HardDelete permanently deletes an activity and its series definitions.
+// Refuses to delete if completions or reward issues exist (returns false, ErrHasDependents).
+// Returns (true, nil) on success, (false, nil) if activity not found.
+func HardDelete(ctx context.Context, pool *pgxpool.Pool, id int) (bool, error) {
+	// Check for dependents.
+	var count int
+	err := pool.QueryRow(ctx, `SELECT COUNT(*) FROM completions WHERE activity_id = $1`, id).Scan(&count)
+	if err != nil {
+		return false, fmt.Errorf("check completions for activity %d: %w", id, err)
+	}
+	if count > 0 {
+		return false, ErrHasDependents
+	}
+
+	err = pool.QueryRow(ctx, `SELECT COUNT(*) FROM reward_issues WHERE activity_id = $1`, id).Scan(&count)
+	if err != nil {
+		return false, fmt.Errorf("check reward_issues for activity %d: %w", id, err)
+	}
+	if count > 0 {
+		return false, ErrHasDependents
+	}
+
+	// Delete series definitions first, then the activity itself.
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		return false, fmt.Errorf("begin tx: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	_, err = tx.Exec(ctx, `DELETE FROM series_definitions WHERE activity_id = $1`, id)
+	if err != nil {
+		return false, fmt.Errorf("delete series_definitions for activity %d: %w", id, err)
+	}
+
+	tag, err := tx.Exec(ctx, `DELETE FROM activities WHERE id = $1`, id)
+	if err != nil {
+		return false, fmt.Errorf("delete activity %d: %w", id, err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return false, fmt.Errorf("commit tx: %w", err)
+	}
+
+	return tag.RowsAffected() > 0, nil
+}
+
 func scanWithDefs(rows pgx.Rows) ([]ActivityWithDef, error) {
 	var results []ActivityWithDef
 	for rows.Next() {

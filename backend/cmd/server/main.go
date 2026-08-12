@@ -81,6 +81,7 @@ func main() {
 	r.Get("/api/v1/activities/archived", actH.ListArchivedActivities)
 	r.Get("/api/v1/activities/{id}", actH.GetActivity)
 	r.Patch("/api/v1/activities/{id}", actH.UpdateActivity)
+	r.Delete("/api/v1/activities/{id}", actH.DeleteActivity)
 	r.Post("/api/v1/activities/{id}/archive", actH.ArchiveActivity)
 	r.Post("/api/v1/activities/{id}/restore", actH.RestoreActivity)
 	r.Post("/api/v1/activities", actH.CreateActivity)

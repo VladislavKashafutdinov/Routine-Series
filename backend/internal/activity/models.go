@@ -1,12 +1,17 @@
 package activity
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"routine-series/backend/internal/seriesdefinition"
 )
+
+// ErrHasDependents is returned when an activity can't be hard-deleted
+// because it has completions or reward issues.
+var ErrHasDependents = errors.New("activity has completions or reward issues, archive instead")
 
 // Activity represents a tracked activity.
 type Activity struct {

@@ -214,6 +214,35 @@ paths:
       tags:
       - activities
   /activities/{id}:
+    delete:
+      description: Permanently deletes an activity and its series definitions. Refuses
+        if completions or reward issues exist (archive instead).
+      parameters:
+      - description: Activity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/routine-series_backend_internal_api.ErrorResponse'
+      summary: Hard-delete activity
+      tags:
+      - activities
     get:
       description: Returns a single activity with its latest series definition.
       parameters:
