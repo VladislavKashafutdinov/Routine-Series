@@ -38,6 +38,11 @@ func main() {
 		log.Fatalf("config error: %v", err)
 	}
 
+	corsCfg, err := api.LoadCORSConfig()
+	if err != nil {
+		log.Fatalf("cors config error: %v", err)
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -55,7 +60,7 @@ func main() {
 
 	// Middleware stack
 	r.Use(chimw.Recoverer)
-	r.Use(api.CORS)
+	r.Use(api.CORS(corsCfg.AllowedOrigins))
 	r.Use(app.Logger)
 	r.Use(api.ContentTypeJSON)
 
