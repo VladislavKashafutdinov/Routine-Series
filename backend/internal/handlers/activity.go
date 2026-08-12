@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 
@@ -31,27 +30,8 @@ func CreateActivity(a *app.App) http.HandlerFunc {
 			writeError(w, http.StatusBadRequest, "invalid JSON body")
 			return
 		}
-
-		// Validation
-		req.Name = strings.TrimSpace(req.Name)
-		if req.Name == "" {
-			writeError(w, http.StatusBadRequest, "name is required")
-			return
-		}
-		if len(req.Name) > 255 {
-			writeError(w, http.StatusBadRequest, "name must not exceed 255 characters")
-			return
-		}
-		if req.SeriesLength <= 0 {
-			writeError(w, http.StatusBadRequest, "series_length must be greater than 0")
-			return
-		}
-		if req.Reward < 0 {
-			writeError(w, http.StatusBadRequest, "reward must not be negative")
-			return
-		}
-		if strings.TrimSpace(req.Currency) == "" {
-			writeError(w, http.StatusBadRequest, "currency is required")
+		if err := req.Validate(); err != nil {
+			writeError(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -163,14 +143,8 @@ func UpdateActivity(a *app.App) http.HandlerFunc {
 			writeError(w, http.StatusBadRequest, "invalid JSON body")
 			return
 		}
-
-		req.Name = strings.TrimSpace(req.Name)
-		if req.Name == "" {
-			writeError(w, http.StatusBadRequest, "name is required")
-			return
-		}
-		if len(req.Name) > 255 {
-			writeError(w, http.StatusBadRequest, "name must not exceed 255 characters")
+		if err := req.Validate(); err != nil {
+			writeError(w, http.StatusBadRequest, err.Error())
 			return
 		}
 

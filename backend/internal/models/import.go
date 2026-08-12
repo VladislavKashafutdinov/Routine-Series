@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // --- Import types (camelCase — matches frontend IndexedDB export format) ---
 
@@ -70,6 +73,71 @@ type ImportStats struct {
 	SeriesDefinitions int `json:"series_definitions"`
 	Completions       int `json:"completions"`
 	RewardIssues      int `json:"reward_issues"`
+}
+
+// -- Validation methods --
+
+// Validate checks required fields in all arrays.
+func (p ImportPayload) Validate() error {
+	for i, a := range p.Activities {
+		if err := a.Validate(); err != nil {
+			return fmt.Errorf("activities[%d]: %w", i, err)
+		}
+	}
+	for i, d := range p.SeriesDefinitions {
+		if err := d.Validate(); err != nil {
+			return fmt.Errorf("seriesDefinitions[%d]: %w", i, err)
+		}
+	}
+	for i, c := range p.Completions {
+		if err := c.Validate(); err != nil {
+			return fmt.Errorf("completions[%d]: %w", i, err)
+		}
+	}
+	for i, ri := range p.RewardIssues {
+		if err := ri.Validate(); err != nil {
+			return fmt.Errorf("rewardIssues[%d]: %w", i, err)
+		}
+	}
+	return nil
+}
+
+// Validate checks required fields.
+func (a ImportActivity) Validate() error {
+	if a.Name == "" {
+		return fmt.Errorf("name is required")
+	}
+	return nil
+}
+
+// Validate checks required fields.
+func (d ImportSeriesDefinition) Validate() error {
+	if d.SeriesLength <= 0 {
+		return fmt.Errorf("seriesLength > 0 required")
+	}
+	if d.Currency == "" {
+		return fmt.Errorf("currency is required")
+	}
+	return nil
+}
+
+// Validate checks required fields.
+func (c ImportCompletion) Validate() error {
+	if c.Date == "" {
+		return fmt.Errorf("date is required")
+	}
+	return nil
+}
+
+// Validate checks required fields.
+func (ri ImportRewardIssue) Validate() error {
+	if ri.Currency == "" {
+		return fmt.Errorf("currency is required")
+	}
+	if ri.Amount <= 0 {
+		return fmt.Errorf("amount > 0 required")
+	}
+	return nil
 }
 
 // ToDBActivity converts an import activity to a DB activity.

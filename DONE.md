@@ -4,6 +4,31 @@
 
 ---
 
+### 2026-08-12 — API на Go: просмотр активностей
+
+- `GET /api/v1/activities` — список активных (неархивных) с актуальным SeriesDefinition через LATERAL JOIN
+- `GET /api/v1/activities/archived` — список архивных
+- `GET /api/v1/activities/{id}` — одна активность по ID
+- Swagger-аннотации для всех endpoint'ов
+
+### 2026-08-11 — API на Go: создание активности и импорт
+
+- **Создание активности:** модели (Activity, SeriesDefinition, ActivityWithDef), CRUD-функции с транзакцией (activities + series_definitions), `POST /api/v1/activities` с валидацией
+- **Импорт данных:** `POST /api/v1/import` — multipart JSON-файл, camelCase-модели как в дампе IndexedDB, батчевая вставка через CopyFrom, TRUNCATE CASCADE перед импортом
+
+### 2026-08-11 — API на Go: инициализация, скелет, БД, миграции
+
+- Инициализация Go-модуля `routine-series/backend`, структура директорий, зависимости (chi, pgx, swaggo)
+- Скелет API: ErrorResponse, Config, chi-роутер, middleware (Recoverer, логгер, Content-Type JSON), graceful shutdown
+- Swagger/OpenAPI: аннотации в main.go, генерация docs/, Swagger UI (`/swagger/`), `swagger.json`
+- Подключение к БД: `Config.DatabaseURL`, pgxpool (max=10, min=1), startup `SELECT 1`, `GET /api/v1/health`
+- Миграции: golang-migrate, 4 таблицы, 3 индекса, автозапуск UP при старте
+
+### 2026-08-10 — Деплой на GitHub Pages
+
+- Настроен GitHub Actions workflow: configure-pages + deploy-pages
+- Приложение раскатано и доступно
+
 ### 2026-08-11 — Бесплатный хостинг PostgreSQL: выбор Neon
 
 - Supabase не подошёл: прямой доступ к БД (IPv4/Direct connections) требует платный аддон ($25/мес Pro)

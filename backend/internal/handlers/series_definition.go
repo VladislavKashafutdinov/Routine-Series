@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 
@@ -13,7 +12,7 @@ import (
 	"routine-series/backend/internal/models"
 )
 
-// CreateSeriesDefinition godoc
+// CreateSeriesDef godoc
 //
 //	@Summary		Create series definition
 //	@Description	Adds a new series definition version for an activity.
@@ -39,17 +38,8 @@ func CreateSeriesDef(a *app.App) http.HandlerFunc {
 			writeError(w, http.StatusBadRequest, "invalid JSON body")
 			return
 		}
-
-		if req.SeriesLength <= 0 {
-			writeError(w, http.StatusBadRequest, "series_length must be greater than 0")
-			return
-		}
-		if req.Reward < 0 {
-			writeError(w, http.StatusBadRequest, "reward must not be negative")
-			return
-		}
-		if strings.TrimSpace(req.Currency) == "" {
-			writeError(w, http.StatusBadRequest, "currency is required")
+		if err := req.Validate(); err != nil {
+			writeError(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -91,7 +81,7 @@ func ListSeriesDefinitions(a *app.App) http.HandlerFunc {
 	}
 }
 
-// DeleteSeriesDefinition godoc
+// DeleteSeriesDef godoc
 //
 //	@Summary		Delete series definition
 //	@Description	Deletes a series definition version. Cannot delete the last remaining definition.

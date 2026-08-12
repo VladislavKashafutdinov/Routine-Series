@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
-	"strconv"
 
 	"routine-series/backend/internal/app"
 	"routine-series/backend/internal/db"
@@ -43,64 +43,41 @@ func ImportData(a *app.App) http.HandlerFunc {
 			writeError(w, http.StatusBadRequest, "invalid JSON in uploaded file")
 			return
 		}
+		if err := payload.Validate(); err != nil {
+			writeError(w, http.StatusBadRequest, err.Error())
+			return
+		}
 
-		// Convert and validate activities.
+		// Convert import types to DB types.
 		activities := make([]models.Activity, 0, len(payload.Activities))
-		for i, a := range payload.Activities {
-			if a.Name == "" {
-				writeError(w, http.StatusBadRequest, "activities["+strconv.Itoa(i)+"]: name is required")
-				return
-			}
+		for _, a := range payload.Activities {
 			dbAct, err := a.ToDBActivity()
 			if err != nil {
-				writeError(w, http.StatusBadRequest, "activities["+strconv.Itoa(i)+"]: invalid createdAt: "+err.Error())
+				writeError(w, http.StatusBadRequest, "invalid createdAt for activity "+fmt.Sprintf("%d", a.ID)+": "+err.Error())
 				return
 			}
 			activities = append(activities, dbAct)
 		}
 
-		// Convert and validate series definitions.
 		definitions := make([]models.SeriesDefinition, 0, len(payload.SeriesDefinitions))
-		for i, d := range payload.SeriesDefinitions {
-			if d.SeriesLength <= 0 {
-				writeError(w, http.StatusBadRequest, "seriesDefinitions["+strconv.Itoa(i)+"]: seriesLength > 0 required")
-				return
-			}
-			if d.Currency == "" {
-				writeError(w, http.StatusBadRequest, "seriesDefinitions["+strconv.Itoa(i)+"]: currency is required")
-				return
-			}
+		for _, d := range payload.SeriesDefinitions {
 			dbDef, err := d.ToDBSeriesDefinition()
 			if err != nil {
-				writeError(w, http.StatusBadRequest, "seriesDefinitions["+strconv.Itoa(i)+"]: invalid createdAt: "+err.Error())
+				writeError(w, http.StatusBadRequest, "invalid createdAt for seriesDefinition "+fmt.Sprintf("%d", d.ID)+": "+err.Error())
 				return
 			}
 			definitions = append(definitions, dbDef)
 		}
 
-		// Validate completions.
 		completions := make([]models.Completion, 0, len(payload.Completions))
-		for i, c := range payload.Completions {
-			if c.Date == "" {
-				writeError(w, http.StatusBadRequest, "completions["+strconv.Itoa(i)+"]: date is required")
-				return
-			}
+		for _, c := range payload.Completions {
 			completions = append(completions, models.Completion{
 				ID: c.ID, ActivityID: c.ActivityID, Date: c.Date,
 			})
 		}
 
-		// Validate reward issues.
 		rewardIssues := make([]models.RewardIssue, 0, len(payload.RewardIssues))
-		for i, ri := range payload.RewardIssues {
-			if ri.Currency == "" {
-				writeError(w, http.StatusBadRequest, "rewardIssues["+strconv.Itoa(i)+"]: currency is required")
-				return
-			}
-			if ri.Amount <= 0 {
-				writeError(w, http.StatusBadRequest, "rewardIssues["+strconv.Itoa(i)+"]: amount > 0 required")
-				return
-			}
+		for _, ri := range payload.RewardIssues {
 			rewardIssues = append(rewardIssues, models.RewardIssue{
 				ID: ri.ID, ActivityID: ri.ActivityID, Date: ri.Date,
 				Amount: ri.Amount, Currency: ri.Currency,
