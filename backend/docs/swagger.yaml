@@ -113,6 +113,12 @@ definitions:
       id:
         type: integer
     type: object
+  reward.UpdateRequest:
+    properties:
+      amount:
+        example: 150
+        type: number
+    type: object
   seriesdefinition.CreateRequest:
     properties:
       currency:
@@ -561,6 +567,41 @@ paths:
           schema:
             $ref: '#/definitions/api.ErrorResponse'
       summary: Create reward issue
+      tags:
+      - rewards
+  /reward-issues/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Updates the amount of a reward issue by ID.
+      parameters:
+      - description: Reward Issue ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New amount
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/reward.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reward.RewardIssue'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Update reward issue
       tags:
       - rewards
 swagger: "2.0"

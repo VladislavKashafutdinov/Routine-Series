@@ -54,3 +54,12 @@ func ListByActivity(ctx context.Context, pool *pgxpool.Pool, activityID int, lim
 	}
 	return &PaginatedResponse{Items: items, Total: total}, rows.Err()
 }
+
+// UpdateAmount updates the amount of a reward issue. Returns false if not found.
+func UpdateAmount(ctx context.Context, pool *pgxpool.Pool, id int, amount float64) (bool, error) {
+	tag, err := pool.Exec(ctx, `UPDATE reward_issues SET amount = $2 WHERE id = $1`, id, amount)
+	if err != nil {
+		return false, fmt.Errorf("update reward issue %d: %w", id, err)
+	}
+	return tag.RowsAffected() > 0, nil
+}

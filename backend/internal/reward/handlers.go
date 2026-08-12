@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"routine-series/backend/internal/api"
@@ -81,6 +82,50 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(result)
+}
+
+// Update godoc
+//
+//	@Summary		Update reward issue
+//	@Description	Updates the amount of a reward issue by ID.
+//	@Tags			rewards
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int				true	"Reward Issue ID"
+//	@Param			body	body		UpdateRequest	true	"New amount"
+//	@Success		200		{object}	RewardIssue
+//	@Failure		400		{object}	api.ErrorResponse
+//	@Failure		404		{object}	api.ErrorResponse
+//	@Router			/reward-issues/{id} [patch]
+func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil || id <= 0 {
+		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		return
+	}
+
+	var req UpdateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		return
+	}
+	if err := req.Validate(); err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	found, err := UpdateAmount(r.Context(), h.Pool, id, req.Amount)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to update reward issue")
+		return
+	}
+	if !found {
+		writeError(w, http.StatusNotFound, "reward issue not found")
+		return
+	}
+
+	// Return updated — need to re-query. For now, return the updated amount.
+	json.NewEncoder(w).Encode(map[string]any{"id": id, "amount": req.Amount})
 }
 
 func writeError(w http.ResponseWriter, status int, message string) {

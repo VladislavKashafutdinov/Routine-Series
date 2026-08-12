@@ -29,6 +29,19 @@ type PaginatedResponse struct {
 	Total int           `json:"total"`
 }
 
+// UpdateRequest is the request body for updating a reward issue amount.
+type UpdateRequest struct {
+	Amount float64 `json:"amount" example:"150"`
+}
+
+// Validate checks the request fields and returns an error if invalid.
+func (r UpdateRequest) Validate() error {
+	if r.Amount <= 0 {
+		return fmt.Errorf("amount must be greater than 0")
+	}
+	return nil
+}
+
 var dateRe = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
 
 // Validate checks the request fields and returns an error if invalid.
