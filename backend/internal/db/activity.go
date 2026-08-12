@@ -102,6 +102,18 @@ func GetByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models.ActivityW
 	return &models.ActivityWithDef{Activity: a, Definition: &d}, nil
 }
 
+// UpdateName updates the name of an activity by ID. Returns false if not found.
+func UpdateName(ctx context.Context, pool *pgxpool.Pool, id int, name string) (bool, error) {
+	tag, err := pool.Exec(ctx,
+		`UPDATE activities SET name = $2 WHERE id = $1`,
+		id, name,
+	)
+	if err != nil {
+		return false, fmt.Errorf("update activity %d: %w", id, err)
+	}
+	return tag.RowsAffected() > 0, nil
+}
+
 func scanActivityWithDefs(rows pgx.Rows) ([]models.ActivityWithDef, error) {
 	var results []models.ActivityWithDef
 	for rows.Next() {

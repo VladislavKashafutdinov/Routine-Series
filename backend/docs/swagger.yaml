@@ -55,6 +55,11 @@ definitions:
       series_length:
         type: integer
     type: object
+  models.UpdateActivityRequest:
+    properties:
+      name:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -128,6 +133,40 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Get activity by ID
+      tags:
+      - activities
+    patch:
+      consumes:
+      - application/json
+      description: Updates the name of an activity by ID.
+      parameters:
+      - description: Activity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New name
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateActivityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ActivityWithDef'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Rename activity
       tags:
       - activities
   /activities/archived:

@@ -137,6 +137,59 @@ func GetActivity(a *app.App) http.HandlerFunc {
 	}
 }
 
+// UpdateActivity godoc
+//
+//	@Summary		Rename activity
+//	@Description	Updates the name of an activity by ID.
+//	@Tags			activities
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int							true	"Activity ID"
+//	@Param			body	body		models.UpdateActivityRequest	true	"New name"
+//	@Success		200		{object}	models.ActivityWithDef
+//	@Failure		400		{object}	models.ErrorResponse
+//	@Failure		404		{object}	models.ErrorResponse
+//	@Router			/activities/{id} [patch]
+func UpdateActivity(a *app.App) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil || id <= 0 {
+			writeError(w, http.StatusBadRequest, "id must be a positive integer")
+			return
+		}
+
+		var req models.UpdateActivityRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeError(w, http.StatusBadRequest, "invalid JSON body")
+			return
+		}
+
+		req.Name = strings.TrimSpace(req.Name)
+		if req.Name == "" {
+			writeError(w, http.StatusBadRequest, "name is required")
+			return
+		}
+		if len(req.Name) > 255 {
+			writeError(w, http.StatusBadRequest, "name must not exceed 255 characters")
+			return
+		}
+
+		found, err := db.UpdateName(r.Context(), a.Pool, id, req.Name)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, "failed to update activity")
+			return
+		}
+		if !found {
+			writeError(w, http.StatusNotFound, "activity not found")
+			return
+		}
+
+		// Return updated activity with definition.
+		activity, _ := db.GetByID(r.Context(), a.Pool, id)
+		json.NewEncoder(w).Encode(activity)
+	}
+}
+
 func writeError(w http.ResponseWriter, status int, message string) {
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(models.ErrorResponse{Error: message})

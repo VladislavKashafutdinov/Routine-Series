@@ -26,6 +26,11 @@ type ActivityWithDef struct {
 	Definition *SeriesDefinition `json:"definition,omitempty"`
 }
 
+// UpdateActivityRequest is the request body for renaming an activity.
+type UpdateActivityRequest struct {
+	Name string `json:"name"`
+}
+
 // CreateActivityRequest is the request body for creating an activity.
 type CreateActivityRequest struct {
 	Name         string  `json:"name"`
