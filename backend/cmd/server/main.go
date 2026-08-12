@@ -92,6 +92,7 @@ func main() {
 
 	// Completions
 	complH := &completion.Handlers{Pool: pool}
+	r.Get("/api/v1/completions", complH.List)
 	r.Post("/api/v1/completions/toggle", complH.Toggle)
 
 	// Import

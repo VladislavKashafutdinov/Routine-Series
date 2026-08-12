@@ -3,6 +3,7 @@ package completion
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -43,6 +44,41 @@ func (h *Handlers) Toggle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(result)
+}
+
+// List godoc
+//
+//	@Summary		List completions
+//	@Description	Returns completions for an activity within a date range.
+//	@Tags			completions
+//	@Produce		json
+//	@Param			activity_id	query		int		true	"Activity ID"
+//	@Param			from		query		string	true	"Start date (YYYY-MM-DD)"
+//	@Param			to			query		string	true	"End date (YYYY-MM-DD)"
+//	@Success		200			{array}		Completion
+//	@Failure		400			{object}	api.ErrorResponse
+//	@Router			/completions [get]
+func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+
+	activityID, _ := strconv.Atoi(q.Get("activity_id"))
+	req := ListRequest{
+		ActivityID: activityID,
+		From:       q.Get("from"),
+		To:         q.Get("to"),
+	}
+	if err := req.Validate(); err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	completions, err := ListByDateRange(r.Context(), h.Pool, req.ActivityID, req.From, req.To)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to list completions")
+		return
+	}
+
+	json.NewEncoder(w).Encode(completions)
 }
 
 func writeError(w http.ResponseWriter, status int, message string) {

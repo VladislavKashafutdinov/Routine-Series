@@ -366,6 +366,41 @@ paths:
       summary: List archived activities
       tags:
       - activities
+  /completions:
+    get:
+      description: Returns completions for an activity within a date range.
+      parameters:
+      - description: Activity ID
+        in: query
+        name: activity_id
+        required: true
+        type: integer
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/completion.Completion'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: List completions
+      tags:
+      - completions
   /completions/toggle:
     post:
       consumes:

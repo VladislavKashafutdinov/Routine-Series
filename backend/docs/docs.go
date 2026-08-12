@@ -407,6 +407,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/completions": {
+            "get": {
+                "description": "Returns completions for an activity within a date range.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "completions"
+                ],
+                "summary": "List completions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Activity ID",
+                        "name": "activity_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date (YYYY-MM-DD)",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date (YYYY-MM-DD)",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/completion.Completion"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/completions/toggle": {
             "post": {
                 "description": "Creates a completion mark for the given date if none exists; deletes it if one already exists.",
