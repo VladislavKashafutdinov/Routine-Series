@@ -556,6 +556,91 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/reward-issues": {
+            "get": {
+                "description": "Returns paginated reward issues for an activity, newest first.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rewards"
+                ],
+                "summary": "List reward issues",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Activity ID",
+                        "name": "activity_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit (default 20)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset (default 0)",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/reward.PaginatedResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Records a reward issuance for an activity.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rewards"
+                ],
+                "summary": "Create reward issue",
+                "parameters": [
+                    {
+                        "description": "Reward data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/reward.CreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/reward.RewardIssue"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -666,6 +751,64 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "series_definitions": {
+                    "type": "integer"
+                }
+            }
+        },
+        "reward.CreateRequest": {
+            "type": "object",
+            "properties": {
+                "activity_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "amount": {
+                    "type": "number",
+                    "example": 100
+                },
+                "currency": {
+                    "type": "string",
+                    "example": "₽"
+                },
+                "date": {
+                    "description": "YYYY-MM-DD",
+                    "type": "string",
+                    "example": "2026-08-12"
+                }
+            }
+        },
+        "reward.PaginatedResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/reward.RewardIssue"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "reward.RewardIssue": {
+            "type": "object",
+            "properties": {
+                "activity_id": {
+                    "type": "integer"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "date": {
+                    "description": "YYYY-MM-DD",
+                    "type": "string",
+                    "example": "2026-08-12"
+                },
+                "id": {
                     "type": "integer"
                 }
             }

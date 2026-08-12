@@ -73,6 +73,46 @@ definitions:
       series_definitions:
         type: integer
     type: object
+  reward.CreateRequest:
+    properties:
+      activity_id:
+        example: 1
+        type: integer
+      amount:
+        example: 100
+        type: number
+      currency:
+        example: ₽
+        type: string
+      date:
+        description: YYYY-MM-DD
+        example: "2026-08-12"
+        type: string
+    type: object
+  reward.PaginatedResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/reward.RewardIssue'
+        type: array
+      total:
+        type: integer
+    type: object
+  reward.RewardIssue:
+    properties:
+      activity_id:
+        type: integer
+      amount:
+        type: number
+      currency:
+        type: string
+      date:
+        description: YYYY-MM-DD
+        example: "2026-08-12"
+        type: string
+      id:
+        type: integer
+    type: object
   seriesdefinition.CreateRequest:
     properties:
       currency:
@@ -467,4 +507,60 @@ paths:
       summary: Import data
       tags:
       - import
+  /reward-issues:
+    get:
+      description: Returns paginated reward issues for an activity, newest first.
+      parameters:
+      - description: Activity ID
+        in: query
+        name: activity_id
+        required: true
+        type: integer
+      - description: Limit (default 20)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reward.PaginatedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: List reward issues
+      tags:
+      - rewards
+    post:
+      consumes:
+      - application/json
+      description: Records a reward issuance for an activity.
+      parameters:
+      - description: Reward data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/reward.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/reward.RewardIssue'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Create reward issue
+      tags:
+      - rewards
 swagger: "2.0"

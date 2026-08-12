@@ -25,6 +25,7 @@ import (
 	"routine-series/backend/internal/api"
 	"routine-series/backend/internal/app"
 	"routine-series/backend/internal/completion"
+	"routine-series/backend/internal/reward"
 	"routine-series/backend/internal/dataimport"
 	"routine-series/backend/internal/dbpool"
 	"routine-series/backend/internal/health"
@@ -94,6 +95,11 @@ func main() {
 	complH := &completion.Handlers{Pool: pool}
 	r.Get("/api/v1/completions", complH.List)
 	r.Post("/api/v1/completions/toggle", complH.Toggle)
+
+	// Rewards
+	rewardH := &reward.Handlers{Pool: pool}
+	r.Get("/api/v1/reward-issues", rewardH.List)
+	r.Post("/api/v1/reward-issues", rewardH.Create)
 
 	// Import
 	importH := &dataimport.Handlers{Pool: pool}
