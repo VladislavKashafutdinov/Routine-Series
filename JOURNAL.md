@@ -128,3 +128,15 @@
 ## 2026-08-12
 
 - Реализован просмотр активностей: `GET /api/v1/activities`, `GET /api/v1/activities/archived`, `GET /api/v1/activities/{id}`, LATERAL JOIN для актуального SeriesDefinition, Swagger
+- Реализована подготовка к деплою: Dockerfile, docker-compose, env-переменные
+- Реализовано переименование активности: `PATCH /api/v1/activities/{id}/rename`
+- Реализовано архивирование и восстановление: `POST /api/v1/activities/{id}/archive`, `POST /api/v1/activities/{id}/restore`
+- Реализовано управление параметрами серии: `POST /api/v1/activities/{id}/series-definition`
+- Рефакторинг: выделены валидаторы для хендлеров со сложными входными данными, правило зафиксировано в developing design
+- Рефакторинг: пакеты организованы по смыслам (activity, series_definition, app, pool) вместо слоёв (handlers, db, models)
+- Реализован toggle ежедневных отметок: `POST /api/v1/completions/toggle`
+- Реализован просмотр ежедневных отметок: `GET /api/v1/completions`
+- Реализовано создание и просмотр наград: `POST /api/v1/reward-issues`, `GET /api/v1/reward-issues`
+- Реализовано редактирование наград: `PATCH /api/v1/reward-issues/{id}`
+- Реализовано удаление наград: `DELETE /api/v1/reward-issues/{id}`
+- Перенос выполненных задач из TODO.md в DONE.md

@@ -4,6 +4,31 @@
 
 ---
 
+### 2026-08-12 — API на Go: награды (создание, просмотр, редактирование, удаление)
+
+- `POST /api/v1/reward-issues` — создание записи выдачи награды
+- `GET /api/v1/reward-issues` — просмотр всех записей выдачи наград
+- `PATCH /api/v1/reward-issues/{id}` — редактирование записи (дата, сумма, валюта)
+- `DELETE /api/v1/reward-issues/{id}` — удаление записи
+
+### 2026-08-12 — API на Go: ежедневные отметки (toggle + просмотр)
+
+- `POST /api/v1/completions/toggle` — toggle отметки на дату (добавить/убрать)
+- `GET /api/v1/completions` — просмотр отметок с фильтрацией по activityId и диапазону дат
+
+### 2026-08-12 — API на Go: переименование, архив, параметры серии
+
+- `PATCH /api/v1/activities/{id}/rename` — переименование активности
+- `POST /api/v1/activities/{id}/archive` — архивирование (soft-delete)
+- `POST /api/v1/activities/{id}/restore` — восстановление из архива
+- `POST /api/v1/activities/{id}/series-definition` — создание новой версии параметров серии
+
+### 2026-08-12 — API на Go: подготовка к деплою + рефакторинг
+
+- Dockerfile, docker-compose, env-переменные для деплоя
+- Рефакторинг: валидаторы вынесены из хендлеров в отдельные функции, правило зафиксировано в developing design
+- Рефакторинг: пакеты организованы по смыслам (activity, series_definition, app, pool) вместо слоёв (handlers, db, models)
+
 ### 2026-08-12 — API на Go: просмотр активностей
 
 - `GET /api/v1/activities` — список активных (неархивных) с актуальным SeriesDefinition через LATERAL JOIN
