@@ -77,6 +77,8 @@ func main() {
 	r.Get("/api/v1/activities/archived", handlers.ListArchivedActivities(application))
 	r.Get("/api/v1/activities/{id}", handlers.GetActivity(application))
 	r.Patch("/api/v1/activities/{id}", handlers.UpdateActivity(application))
+	r.Post("/api/v1/activities/{id}/archive", handlers.ArchiveActivity(application))
+	r.Post("/api/v1/activities/{id}/restore", handlers.RestoreActivity(application))
 	r.Post("/api/v1/activities", handlers.CreateActivity(application))
 
 	// Import

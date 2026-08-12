@@ -114,6 +114,24 @@ func UpdateName(ctx context.Context, pool *pgxpool.Pool, id int, name string) (b
 	return tag.RowsAffected() > 0, nil
 }
 
+// Archive sets archived = true for an activity. Returns false if not found.
+func Archive(ctx context.Context, pool *pgxpool.Pool, id int) (bool, error) {
+	tag, err := pool.Exec(ctx, `UPDATE activities SET archived = true WHERE id = $1`, id)
+	if err != nil {
+		return false, fmt.Errorf("archive activity %d: %w", id, err)
+	}
+	return tag.RowsAffected() > 0, nil
+}
+
+// Restore sets archived = false for an activity. Returns false if not found.
+func Restore(ctx context.Context, pool *pgxpool.Pool, id int) (bool, error) {
+	tag, err := pool.Exec(ctx, `UPDATE activities SET archived = false WHERE id = $1`, id)
+	if err != nil {
+		return false, fmt.Errorf("restore activity %d: %w", id, err)
+	}
+	return tag.RowsAffected() > 0, nil
+}
+
 func scanActivityWithDefs(rows pgx.Rows) ([]models.ActivityWithDef, error) {
 	var results []models.ActivityWithDef
 	for rows.Next() {

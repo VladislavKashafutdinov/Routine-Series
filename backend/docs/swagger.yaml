@@ -169,6 +169,56 @@ paths:
       summary: Rename activity
       tags:
       - activities
+  /activities/{id}/archive:
+    post:
+      description: Moves an activity to the archive (soft-delete).
+      parameters:
+      - description: Activity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Archive activity
+      tags:
+      - activities
+  /activities/{id}/restore:
+    post:
+      description: Restores an activity from the archive.
+      parameters:
+      - description: Activity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Restore activity
+      tags:
+      - activities
   /activities/archived:
     get:
       description: Returns all archived activities with their latest series definition.

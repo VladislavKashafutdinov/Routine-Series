@@ -190,6 +190,72 @@ func UpdateActivity(a *app.App) http.HandlerFunc {
 	}
 }
 
+// ArchiveActivity godoc
+//
+//	@Summary		Archive activity
+//	@Description	Moves an activity to the archive (soft-delete).
+//	@Tags			activities
+//	@Produce		json
+//	@Param			id	path		int	true	"Activity ID"
+//	@Success		204
+//	@Failure		400	{object}	models.ErrorResponse
+//	@Failure		404	{object}	models.ErrorResponse
+//	@Router			/activities/{id}/archive [post]
+func ArchiveActivity(a *app.App) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil || id <= 0 {
+			writeError(w, http.StatusBadRequest, "id must be a positive integer")
+			return
+		}
+
+		found, err := db.Archive(r.Context(), a.Pool, id)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, "failed to archive activity")
+			return
+		}
+		if !found {
+			writeError(w, http.StatusNotFound, "activity not found")
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// RestoreActivity godoc
+//
+//	@Summary		Restore activity
+//	@Description	Restores an activity from the archive.
+//	@Tags			activities
+//	@Produce		json
+//	@Param			id	path		int	true	"Activity ID"
+//	@Success		204
+//	@Failure		400	{object}	models.ErrorResponse
+//	@Failure		404	{object}	models.ErrorResponse
+//	@Router			/activities/{id}/restore [post]
+func RestoreActivity(a *app.App) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil || id <= 0 {
+			writeError(w, http.StatusBadRequest, "id must be a positive integer")
+			return
+		}
+
+		found, err := db.Restore(r.Context(), a.Pool, id)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, "failed to restore activity")
+			return
+		}
+		if !found {
+			writeError(w, http.StatusNotFound, "activity not found")
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
 func writeError(w http.ResponseWriter, status int, message string) {
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(models.ErrorResponse{Error: message})
