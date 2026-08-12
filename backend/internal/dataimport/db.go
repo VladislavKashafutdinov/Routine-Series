@@ -1,4 +1,4 @@
-package db
+package dataimport
 
 import (
 	"context"
@@ -7,18 +7,21 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"routine-series/backend/internal/models"
+	"routine-series/backend/internal/activity"
+	"routine-series/backend/internal/completion"
+	"routine-series/backend/internal/reward"
+	"routine-series/backend/internal/seriesdefinition"
 )
 
 // ImportAll clears all tables and inserts the given data in a single transaction.
 func ImportAll(
 	ctx context.Context, pool *pgxpool.Pool,
-	activities []models.Activity,
-	definitions []models.SeriesDefinition,
-	completions []models.Completion,
-	rewardIssues []models.RewardIssue,
-) (models.ImportStats, error) {
-	stats := models.ImportStats{}
+	activities []activity.Activity,
+	definitions []seriesdefinition.SeriesDefinition,
+	completions []completion.Completion,
+	rewardIssues []reward.RewardIssue,
+) (Stats, error) {
+	stats := Stats{}
 
 	tx, err := pool.Begin(ctx)
 	if err != nil {
@@ -26,16 +29,13 @@ func ImportAll(
 	}
 	defer tx.Rollback(ctx)
 
-	// Truncate all tables (CASCADE drops FK-dependent rows).
 	_, err = tx.Exec(ctx, `TRUNCATE activities, series_definitions, completions, reward_issues RESTART IDENTITY CASCADE`)
 	if err != nil {
 		return stats, fmt.Errorf("truncate: %w", err)
 	}
 
-	// Batch insert activities.
 	if len(activities) > 0 {
-		n, err := tx.CopyFrom(
-			ctx,
+		n, err := tx.CopyFrom(ctx,
 			pgx.Identifier{"activities"},
 			[]string{"id", "name", "archived", "created_at"},
 			pgx.CopyFromSlice(len(activities), func(i int) ([]any, error) {
@@ -49,10 +49,8 @@ func ImportAll(
 		stats.Activities = int(n)
 	}
 
-	// Batch insert series definitions.
 	if len(definitions) > 0 {
-		n, err := tx.CopyFrom(
-			ctx,
+		n, err := tx.CopyFrom(ctx,
 			pgx.Identifier{"series_definitions"},
 			[]string{"id", "activity_id", "series_length", "reward", "currency", "created_at"},
 			pgx.CopyFromSlice(len(definitions), func(i int) ([]any, error) {
@@ -66,10 +64,8 @@ func ImportAll(
 		stats.SeriesDefinitions = int(n)
 	}
 
-	// Batch insert completions.
 	if len(completions) > 0 {
-		n, err := tx.CopyFrom(
-			ctx,
+		n, err := tx.CopyFrom(ctx,
 			pgx.Identifier{"completions"},
 			[]string{"id", "activity_id", "date"},
 			pgx.CopyFromSlice(len(completions), func(i int) ([]any, error) {
@@ -83,10 +79,8 @@ func ImportAll(
 		stats.Completions = int(n)
 	}
 
-	// Batch insert reward issues.
 	if len(rewardIssues) > 0 {
-		n, err := tx.CopyFrom(
-			ctx,
+		n, err := tx.CopyFrom(ctx,
 			pgx.Identifier{"reward_issues"},
 			[]string{"id", "activity_id", "date", "amount", "currency"},
 			pgx.CopyFromSlice(len(rewardIssues), func(i int) ([]any, error) {
@@ -100,7 +94,6 @@ func ImportAll(
 		stats.RewardIssues = int(n)
 	}
 
-	// Reset sequences to match imported IDs (SERIAL gets out of sync after CopyFrom with explicit IDs).
 	sequences := []struct{ seq, table string }{
 		{"activities_id_seq", "activities"},
 		{"series_definitions_id_seq", "series_definitions"},

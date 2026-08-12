@@ -1,4 +1,4 @@
-package middleware
+package app
 
 import (
 	"log"
@@ -13,14 +13,6 @@ func Logger(next http.Handler) http.Handler {
 		wr := &responseWriter{ResponseWriter: w, status: http.StatusOK}
 		next.ServeHTTP(wr, r)
 		log.Printf("%s %s %d %s", r.Method, r.URL.Path, wr.status, time.Since(start))
-	})
-}
-
-// ContentTypeJSON sets Content-Type: application/json on all responses.
-func ContentTypeJSON(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		next.ServeHTTP(w, r)
 	})
 }
 

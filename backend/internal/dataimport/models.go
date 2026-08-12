@@ -1,30 +1,33 @@
-package models
+package dataimport
 
 import (
 	"fmt"
 	"time"
+
+	"routine-series/backend/internal/activity"
+	"routine-series/backend/internal/seriesdefinition"
 )
 
 // --- Import types (camelCase — matches frontend IndexedDB export format) ---
 
-// ImportPayload is the structure of an imported JSON file.
-type ImportPayload struct {
-	Activities        []ImportActivity        `json:"activities"`
-	SeriesDefinitions []ImportSeriesDefinition `json:"seriesDefinitions"`
-	Completions       []ImportCompletion      `json:"completions"`
-	RewardIssues      []ImportRewardIssue     `json:"rewardIssues"`
+// Payload is the structure of an imported JSON file.
+type Payload struct {
+	Activities        []Activity        `json:"activities"`
+	SeriesDefinitions []SeriesDefinition `json:"seriesDefinitions"`
+	Completions       []Completion      `json:"completions"`
+	RewardIssues      []RewardIssue     `json:"rewardIssues"`
 }
 
-// ImportActivity matches the frontend activity export format.
-type ImportActivity struct {
+// Activity matches the frontend activity export format.
+type Activity struct {
 	ID        int    `json:"id"`
 	Name      string `json:"name"`
 	Archived  bool   `json:"archived"`
 	CreatedAt string `json:"createdAt"`
 }
 
-// ImportSeriesDefinition matches the frontend seriesDefinition export format.
-type ImportSeriesDefinition struct {
+// SeriesDefinition matches the frontend seriesDefinition export format.
+type SeriesDefinition struct {
 	ID           int    `json:"id"`
 	ActivityID   int    `json:"activityId"`
 	SeriesLength int    `json:"seriesLength"`
@@ -33,15 +36,15 @@ type ImportSeriesDefinition struct {
 	CreatedAt    string `json:"createdAt"`
 }
 
-// ImportCompletion matches the frontend completion export format.
-type ImportCompletion struct {
+// Completion matches the frontend completion export format.
+type Completion struct {
 	ID         int    `json:"id"`
 	ActivityID int    `json:"activityId"`
 	Date       string `json:"date"`
 }
 
-// ImportRewardIssue matches the frontend rewardIssue export format.
-type ImportRewardIssue struct {
+// RewardIssue matches the frontend rewardIssue export format.
+type RewardIssue struct {
 	ID         int     `json:"id"`
 	ActivityID int     `json:"activityId"`
 	Date       string  `json:"date"`
@@ -49,36 +52,18 @@ type ImportRewardIssue struct {
 	Currency   string  `json:"currency"`
 }
 
-// --- DB types (snake_case — used for API responses and DB operations) ---
-
-// Completion represents a daily completion mark.
-type Completion struct {
-	ID         int    `json:"id"`
-	ActivityID int    `json:"activity_id"`
-	Date       string `json:"date"`
-}
-
-// RewardIssue represents a reward issuance record.
-type RewardIssue struct {
-	ID         int     `json:"id"`
-	ActivityID int     `json:"activity_id"`
-	Date       string  `json:"date"`
-	Amount     float64 `json:"amount"`
-	Currency   string  `json:"currency"`
-}
-
-// ImportStats reports how many records were imported per table.
-type ImportStats struct {
+// Stats reports how many records were imported per table.
+type Stats struct {
 	Activities        int `json:"activities"`
 	SeriesDefinitions int `json:"series_definitions"`
 	Completions       int `json:"completions"`
 	RewardIssues      int `json:"reward_issues"`
 }
 
-// -- Validation methods --
+// -- Validation --
 
 // Validate checks required fields in all arrays.
-func (p ImportPayload) Validate() error {
+func (p Payload) Validate() error {
 	for i, a := range p.Activities {
 		if err := a.Validate(); err != nil {
 			return fmt.Errorf("activities[%d]: %w", i, err)
@@ -102,16 +87,14 @@ func (p ImportPayload) Validate() error {
 	return nil
 }
 
-// Validate checks required fields.
-func (a ImportActivity) Validate() error {
+func (a Activity) Validate() error {
 	if a.Name == "" {
 		return fmt.Errorf("name is required")
 	}
 	return nil
 }
 
-// Validate checks required fields.
-func (d ImportSeriesDefinition) Validate() error {
+func (d SeriesDefinition) Validate() error {
 	if d.SeriesLength <= 0 {
 		return fmt.Errorf("seriesLength > 0 required")
 	}
@@ -121,16 +104,14 @@ func (d ImportSeriesDefinition) Validate() error {
 	return nil
 }
 
-// Validate checks required fields.
-func (c ImportCompletion) Validate() error {
+func (c Completion) Validate() error {
 	if c.Date == "" {
 		return fmt.Errorf("date is required")
 	}
 	return nil
 }
 
-// Validate checks required fields.
-func (ri ImportRewardIssue) Validate() error {
+func (ri RewardIssue) Validate() error {
 	if ri.Currency == "" {
 		return fmt.Errorf("currency is required")
 	}
@@ -140,22 +121,24 @@ func (ri ImportRewardIssue) Validate() error {
 	return nil
 }
 
+// -- Converters --
+
 // ToDBActivity converts an import activity to a DB activity.
-func (a ImportActivity) ToDBActivity() (Activity, error) {
+func (a Activity) ToDBActivity() (activity.Activity, error) {
 	t, err := time.Parse(time.RFC3339, a.CreatedAt)
 	if err != nil {
-		return Activity{}, err
+		return activity.Activity{}, err
 	}
-	return Activity{ID: a.ID, Name: a.Name, Archived: a.Archived, CreatedAt: t}, nil
+	return activity.Activity{ID: a.ID, Name: a.Name, Archived: a.Archived, CreatedAt: t}, nil
 }
 
 // ToDBSeriesDefinition converts an import series definition to a DB series definition.
-func (d ImportSeriesDefinition) ToDBSeriesDefinition() (SeriesDefinition, error) {
+func (d SeriesDefinition) ToDBSeriesDefinition() (seriesdefinition.SeriesDefinition, error) {
 	t, err := time.Parse(time.RFC3339, d.CreatedAt)
 	if err != nil {
-		return SeriesDefinition{}, err
+		return seriesdefinition.SeriesDefinition{}, err
 	}
-	return SeriesDefinition{
+	return seriesdefinition.SeriesDefinition{
 		ID: d.ID, ActivityID: d.ActivityID,
 		SeriesLength: d.SeriesLength, Reward: d.Reward,
 		Currency: d.Currency, CreatedAt: t,

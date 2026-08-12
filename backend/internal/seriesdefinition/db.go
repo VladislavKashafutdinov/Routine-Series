@@ -1,4 +1,4 @@
-package db
+package seriesdefinition
 
 import (
 	"context"
@@ -6,13 +6,11 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-
-	"routine-series/backend/internal/models"
 )
 
-// CreateSeriesDefinition inserts a new series definition for an activity.
-func CreateSeriesDefinition(ctx context.Context, pool *pgxpool.Pool, activityID int, seriesLength int, reward float64, currency string) (*models.SeriesDefinition, error) {
-	var d models.SeriesDefinition
+// Create inserts a new series definition for an activity.
+func Create(ctx context.Context, pool *pgxpool.Pool, activityID int, seriesLength int, reward float64, currency string) (*SeriesDefinition, error) {
+	var d SeriesDefinition
 	err := pool.QueryRow(ctx,
 		`INSERT INTO series_definitions (activity_id, series_length, reward, currency)
 		 VALUES ($1, $2, $3, $4)
@@ -25,8 +23,8 @@ func CreateSeriesDefinition(ctx context.Context, pool *pgxpool.Pool, activityID 
 	return &d, nil
 }
 
-// GetSeriesDefinitions returns all series definitions for an activity, newest first.
-func GetSeriesDefinitions(ctx context.Context, pool *pgxpool.Pool, activityID int) ([]models.SeriesDefinition, error) {
+// List returns all series definitions for an activity, newest first.
+func List(ctx context.Context, pool *pgxpool.Pool, activityID int) ([]SeriesDefinition, error) {
 	rows, err := pool.Query(ctx,
 		`SELECT id, activity_id, series_length, reward, currency, created_at
 		 FROM series_definitions WHERE activity_id = $1
@@ -37,9 +35,9 @@ func GetSeriesDefinitions(ctx context.Context, pool *pgxpool.Pool, activityID in
 	}
 	defer rows.Close()
 
-	var results []models.SeriesDefinition
+	var results []SeriesDefinition
 	for rows.Next() {
-		var d models.SeriesDefinition
+		var d SeriesDefinition
 		if err := rows.Scan(&d.ID, &d.ActivityID, &d.SeriesLength, &d.Reward, &d.Currency, &d.CreatedAt); err != nil {
 			return nil, fmt.Errorf("scan series definition: %w", err)
 		}
@@ -48,10 +46,9 @@ func GetSeriesDefinitions(ctx context.Context, pool *pgxpool.Pool, activityID in
 	return results, rows.Err()
 }
 
-// DeleteSeriesDefinition deletes a series definition by ID.
+// Delete deletes a series definition by ID.
 // Returns (found, isLast) — isLast means it's the only remaining definition for the activity.
-func DeleteSeriesDefinition(ctx context.Context, pool *pgxpool.Pool, id int) (found bool, isLast bool, err error) {
-	// Get activity_id for this definition.
+func Delete(ctx context.Context, pool *pgxpool.Pool, id int) (found bool, isLast bool, err error) {
 	var activityID int
 	err = pool.QueryRow(ctx, `SELECT activity_id FROM series_definitions WHERE id = $1`, id).Scan(&activityID)
 	if err != nil {
@@ -61,14 +58,13 @@ func DeleteSeriesDefinition(ctx context.Context, pool *pgxpool.Pool, id int) (fo
 		return false, false, fmt.Errorf("query series definition %d: %w", id, err)
 	}
 
-	// Count remaining definitions for this activity.
 	var count int
 	err = pool.QueryRow(ctx, `SELECT COUNT(*) FROM series_definitions WHERE activity_id = $1`, activityID).Scan(&count)
 	if err != nil {
 		return false, false, fmt.Errorf("count series definitions: %w", err)
 	}
 	if count <= 1 {
-		return true, true, nil // isLast
+		return true, true, nil
 	}
 
 	_, err = pool.Exec(ctx, `DELETE FROM series_definitions WHERE id = $1`, id)

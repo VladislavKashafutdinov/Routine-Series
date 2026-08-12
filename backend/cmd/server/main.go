@@ -21,15 +21,17 @@ import (
 	"github.com/swaggo/swag"
 
 	_ "routine-series/backend/docs"
+	"routine-series/backend/internal/activity"
+	"routine-series/backend/internal/api"
 	"routine-series/backend/internal/app"
-	"routine-series/backend/internal/config"
-	"routine-series/backend/internal/db"
-	"routine-series/backend/internal/handlers"
-	"routine-series/backend/internal/middleware"
+	"routine-series/backend/internal/dataimport"
+	"routine-series/backend/internal/dbpool"
+	"routine-series/backend/internal/health"
+	"routine-series/backend/internal/seriesdefinition"
 )
 
 func main() {
-	cfg, err := config.Load()
+	dbCfg, err := dbpool.LoadConfig()
 	if err != nil {
 		log.Fatalf("config error: %v", err)
 	}
@@ -37,24 +39,22 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	pool, err := db.NewPool(ctx, cfg.DatabaseURL)
+	pool, err := dbpool.NewPool(ctx, dbCfg)
 	if err != nil {
 		log.Fatalf("database error: %v", err)
 	}
 	defer pool.Close()
 
-	if err := db.RunMigrations(cfg.DatabaseURL, "migrations"); err != nil {
+	if err := dbpool.RunMigrations(dbCfg, "migrations"); err != nil {
 		log.Fatalf("migrations error: %v", err)
 	}
-
-	application := &app.App{Pool: pool}
 
 	r := chi.NewRouter()
 
 	// Middleware stack
 	r.Use(chimw.Recoverer)
-	r.Use(middleware.Logger)
-	r.Use(middleware.ContentTypeJSON)
+	r.Use(app.Logger)
+	r.Use(api.ContentTypeJSON)
 
 	// Swagger
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
@@ -70,25 +70,36 @@ func main() {
 	})
 
 	// Health check
-	r.Get("/api/v1/health", handlers.HealthCheck(application))
+	healthH := &health.Handlers{Pool: pool}
+	r.Get("/api/v1/health", healthH.HealthCheck)
 
 	// Activities
-	r.Get("/api/v1/activities", handlers.ListActivities(application))
-	r.Get("/api/v1/activities/archived", handlers.ListArchivedActivities(application))
-	r.Get("/api/v1/activities/{id}", handlers.GetActivity(application))
-	r.Patch("/api/v1/activities/{id}", handlers.UpdateActivity(application))
-	r.Post("/api/v1/activities/{id}/archive", handlers.ArchiveActivity(application))
-	r.Post("/api/v1/activities/{id}/restore", handlers.RestoreActivity(application))
-	r.Post("/api/v1/activities/{id}/series-definitions", handlers.CreateSeriesDef(application))
-	r.Get("/api/v1/activities/{id}/series-definitions", handlers.ListSeriesDefinitions(application))
-	r.Delete("/api/v1/activities/{id}/series-definitions/{defId}", handlers.DeleteSeriesDef(application))
-	r.Post("/api/v1/activities", handlers.CreateActivity(application))
+	actH := &activity.Handlers{Pool: pool}
+	r.Get("/api/v1/activities", actH.ListActivities)
+	r.Get("/api/v1/activities/archived", actH.ListArchivedActivities)
+	r.Get("/api/v1/activities/{id}", actH.GetActivity)
+	r.Patch("/api/v1/activities/{id}", actH.UpdateActivity)
+	r.Post("/api/v1/activities/{id}/archive", actH.ArchiveActivity)
+	r.Post("/api/v1/activities/{id}/restore", actH.RestoreActivity)
+	r.Post("/api/v1/activities", actH.CreateActivity)
+
+	// Series definitions
+	sdefH := &seriesdefinition.Handlers{Pool: pool}
+	r.Post("/api/v1/activities/{id}/series-definitions", sdefH.Create)
+	r.Get("/api/v1/activities/{id}/series-definitions", sdefH.List)
+	r.Delete("/api/v1/activities/{id}/series-definitions/{defId}", sdefH.Delete)
 
 	// Import
-	r.Post("/api/v1/import", handlers.ImportData(application))
+	importH := &dataimport.Handlers{Pool: pool}
+	r.Post("/api/v1/import", importH.ImportData)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
 	srv := &http.Server{
-		Addr:         ":" + cfg.Port,
+		Addr:         ":" + port,
 		Handler:      r,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -99,7 +110,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		log.Printf("server starting on :%s", cfg.Port)
+		log.Printf("server starting on :%s", port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("server error: %v", err)
 		}

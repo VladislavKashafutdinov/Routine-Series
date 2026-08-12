@@ -31,7 +31,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.ActivityWithDef"
+                                "$ref": "#/definitions/activity.ActivityWithDef"
                             }
                         }
                     }
@@ -56,7 +56,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateActivityRequest"
+                            "$ref": "#/definitions/activity.CreateActivityRequest"
                         }
                     }
                 ],
@@ -64,13 +64,13 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.ActivityWithDef"
+                            "$ref": "#/definitions/activity.ActivityWithDef"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -92,7 +92,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.ActivityWithDef"
+                                "$ref": "#/definitions/activity.ActivityWithDef"
                             }
                         }
                     }
@@ -122,19 +122,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ActivityWithDef"
+                            "$ref": "#/definitions/activity.ActivityWithDef"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -165,7 +165,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateActivityRequest"
+                            "$ref": "#/definitions/activity.UpdateActivityRequest"
                         }
                     }
                 ],
@@ -173,19 +173,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ActivityWithDef"
+                            "$ref": "#/definitions/activity.ActivityWithDef"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -217,13 +217,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -255,13 +255,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -292,14 +292,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.SeriesDefinition"
+                                "$ref": "#/definitions/seriesdefinition.SeriesDefinition"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -330,7 +330,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateSeriesDefinitionRequest"
+                            "$ref": "#/definitions/seriesdefinition.CreateRequest"
                         }
                     }
                 ],
@@ -338,19 +338,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.SeriesDefinition"
+                            "$ref": "#/definitions/seriesdefinition.SeriesDefinition"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -389,19 +389,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -453,13 +453,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ImportStats"
+                            "$ref": "#/definitions/dataimport.Stats"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -467,7 +467,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.ActivityWithDef": {
+        "activity.ActivityWithDef": {
             "type": "object",
             "properties": {
                 "archived": {
@@ -477,7 +477,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "definition": {
-                    "$ref": "#/definitions/models.SeriesDefinition"
+                    "$ref": "#/definitions/seriesdefinition.SeriesDefinition"
                 },
                 "id": {
                     "type": "integer"
@@ -487,7 +487,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateActivityRequest": {
+        "activity.CreateActivityRequest": {
             "type": "object",
             "properties": {
                 "currency": {
@@ -504,21 +504,15 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateSeriesDefinitionRequest": {
+        "activity.UpdateActivityRequest": {
             "type": "object",
             "properties": {
-                "currency": {
+                "name": {
                     "type": "string"
-                },
-                "reward": {
-                    "type": "number"
-                },
-                "series_length": {
-                    "type": "integer"
                 }
             }
         },
-        "models.ErrorResponse": {
+        "api.ErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {
@@ -526,7 +520,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.ImportStats": {
+        "dataimport.Stats": {
             "type": "object",
             "properties": {
                 "activities": {
@@ -543,7 +537,21 @@ const docTemplate = `{
                 }
             }
         },
-        "models.SeriesDefinition": {
+        "seriesdefinition.CreateRequest": {
+            "type": "object",
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "reward": {
+                    "type": "number"
+                },
+                "series_length": {
+                    "type": "integer"
+                }
+            }
+        },
+        "seriesdefinition.SeriesDefinition": {
             "type": "object",
             "properties": {
                 "activity_id": {
@@ -563,14 +571,6 @@ const docTemplate = `{
                 },
                 "series_length": {
                     "type": "integer"
-                }
-            }
-        },
-        "models.UpdateActivityRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
                 }
             }
         }

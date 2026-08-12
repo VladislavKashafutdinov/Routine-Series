@@ -25,7 +25,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.ActivityWithDef"
+                                "$ref": "#/definitions/activity.ActivityWithDef"
                             }
                         }
                     }
@@ -50,7 +50,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateActivityRequest"
+                            "$ref": "#/definitions/activity.CreateActivityRequest"
                         }
                     }
                 ],
@@ -58,13 +58,13 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.ActivityWithDef"
+                            "$ref": "#/definitions/activity.ActivityWithDef"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -86,7 +86,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.ActivityWithDef"
+                                "$ref": "#/definitions/activity.ActivityWithDef"
                             }
                         }
                     }
@@ -116,19 +116,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ActivityWithDef"
+                            "$ref": "#/definitions/activity.ActivityWithDef"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -159,7 +159,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateActivityRequest"
+                            "$ref": "#/definitions/activity.UpdateActivityRequest"
                         }
                     }
                 ],
@@ -167,19 +167,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ActivityWithDef"
+                            "$ref": "#/definitions/activity.ActivityWithDef"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -211,13 +211,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -249,13 +249,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -286,14 +286,14 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.SeriesDefinition"
+                                "$ref": "#/definitions/seriesdefinition.SeriesDefinition"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -324,7 +324,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateSeriesDefinitionRequest"
+                            "$ref": "#/definitions/seriesdefinition.CreateRequest"
                         }
                     }
                 ],
@@ -332,19 +332,19 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.SeriesDefinition"
+                            "$ref": "#/definitions/seriesdefinition.SeriesDefinition"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -383,19 +383,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -447,13 +447,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ImportStats"
+                            "$ref": "#/definitions/dataimport.Stats"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/api.ErrorResponse"
                         }
                     }
                 }
@@ -461,7 +461,7 @@
         }
     },
     "definitions": {
-        "models.ActivityWithDef": {
+        "activity.ActivityWithDef": {
             "type": "object",
             "properties": {
                 "archived": {
@@ -471,7 +471,7 @@
                     "type": "string"
                 },
                 "definition": {
-                    "$ref": "#/definitions/models.SeriesDefinition"
+                    "$ref": "#/definitions/seriesdefinition.SeriesDefinition"
                 },
                 "id": {
                     "type": "integer"
@@ -481,7 +481,7 @@
                 }
             }
         },
-        "models.CreateActivityRequest": {
+        "activity.CreateActivityRequest": {
             "type": "object",
             "properties": {
                 "currency": {
@@ -498,21 +498,15 @@
                 }
             }
         },
-        "models.CreateSeriesDefinitionRequest": {
+        "activity.UpdateActivityRequest": {
             "type": "object",
             "properties": {
-                "currency": {
+                "name": {
                     "type": "string"
-                },
-                "reward": {
-                    "type": "number"
-                },
-                "series_length": {
-                    "type": "integer"
                 }
             }
         },
-        "models.ErrorResponse": {
+        "api.ErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {
@@ -520,7 +514,7 @@
                 }
             }
         },
-        "models.ImportStats": {
+        "dataimport.Stats": {
             "type": "object",
             "properties": {
                 "activities": {
@@ -537,7 +531,21 @@
                 }
             }
         },
-        "models.SeriesDefinition": {
+        "seriesdefinition.CreateRequest": {
+            "type": "object",
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "reward": {
+                    "type": "number"
+                },
+                "series_length": {
+                    "type": "integer"
+                }
+            }
+        },
+        "seriesdefinition.SeriesDefinition": {
             "type": "object",
             "properties": {
                 "activity_id": {
@@ -557,14 +565,6 @@
                 },
                 "series_length": {
                     "type": "integer"
-                }
-            }
-        },
-        "models.UpdateActivityRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
                 }
             }
         }

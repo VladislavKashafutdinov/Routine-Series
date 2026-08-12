@@ -1,4 +1,4 @@
-package db
+package dbpool
 
 import (
 	"fmt"
@@ -10,8 +10,8 @@ import (
 )
 
 // RunMigrations applies all pending UP migrations from the given directory.
-func RunMigrations(databaseURL, migrationsDir string) error {
-	m, err := migrate.New("file://"+migrationsDir, databaseURL)
+func RunMigrations(cfg Config, migrationsDir string) error {
+	m, err := migrate.New("file://"+migrationsDir, cfg.DatabaseURL)
 	if err != nil {
 		return fmt.Errorf("init migrate: %w", err)
 	}

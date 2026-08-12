@@ -58,6 +58,12 @@ Current schema is described in [README.md § Структура данных](RE
 - **Task-driven development** — code changes (add/modify/delete) are only allowed when there is a corresponding task in [TODO.md](TODO.md). Without a task, only documentation files may be edited: `CLAUDE.md`, `TODO.md`, `README.md`, `DONE.md`, `JOURNAL.md`.
 - **Never read `.env` files** — `.env` contains real secrets (DB passwords, API keys). NEVER use Read, Grep, Bash (`cat`, `Get-Content`), or any other tool to read `.env` or `.env.*` files. If you need to know which environment variables exist, read `.env.example` instead — it has the same structure with placeholder values.
 - **Request validation in models** — each request struct that has validation rules must implement a `Validate() error` method. Handlers call `req.Validate()` instead of inline validation. Keeps handlers clean.
+- **Domain package = models + db + handlers** — everything about one domain lives in one package (e.g. `activity/` contains `models.go`, `db.go`, `handlers.go`). No layer-based packages (`handlers/`, `db/`, `models/`).
+- **Cross-domain operations get their own package** — operations spanning multiple domains (e.g. `dataimport/`, `health/`) are separate packages, not dumped into `app/`.
+- **`api/` = front/back contract** — types and middleware that define the API contract (e.g. `ErrorResponse`, `ContentTypeJSON`).
+- **`app/` = application infrastructure** — how the app works internally, not the API contract (e.g. `Logger`).
+- **Config lives where it's used** — `DATABASE_URL` stays inside `dbpool/`, `PORT` stays in `main.go`. No global config package.
+- **Per-package `Handlers` struct** — each package exposes a `Handlers{Pool}` struct with methods, instead of closures or a global App struct. Dependencies are explicit.
 - **Per-component CSS** — each new component must have its own CSS file for styles that belong exclusively to that component (e.g. `ComponentName.css` in the same directory). Shared/global styles remain in `App.css` or `index.css`.
 - **Import aliases** — use path aliases instead of relative imports in `.ts`/`.tsx` files:
   - `@/` (`src/`) — for cross-cutting modules: hooks (`@/hooks/...`), utils (`@/utils/...`), types (`@/types`), i18n (`@/i18n/...`), db (`@/db/...`)
