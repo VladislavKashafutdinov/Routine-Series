@@ -55,6 +55,7 @@ func main() {
 
 	// Middleware stack
 	r.Use(chimw.Recoverer)
+	r.Use(api.CORS)
 	r.Use(app.Logger)
 	r.Use(api.ContentTypeJSON)
 
