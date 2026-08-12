@@ -1,7 +1,6 @@
 // @title           Routine Series API
 // @version         0.1.0
 // @description     REST API for tracking daily activities, completions, and rewards.
-// @host            localhost:8080
 // @BasePath        /api/v1
 
 package main
