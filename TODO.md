@@ -5,7 +5,7 @@
 - [x] В апи: RewardIssue должно быть возможно изменить currency и date так же как на фронте
 - [x] В апи: нужен метод жесткого удаления activity, если у активности нет completions/rewardIssues
 - [x] [Ветка и конфигурация](BACKEND_2_FRONTEND_API_PLAN.md#1-ветка-и-конфигурация)
-- [ ] [CORS на бэкенде](BACKEND_2_FRONTEND_API_PLAN.md#2-cors-на-бэкенде)
+- [x] [CORS на бэкенде](BACKEND_2_FRONTEND_API_PLAN.md#2-cors-на-бэкенде)
 - [ ] [Создание активности через API](BACKEND_2_FRONTEND_API_PLAN.md#3-создание-активности-через-api-первая-теневая-мутация)
 - [ ] [Отметка выполнения через API](BACKEND_2_FRONTEND_API_PLAN.md#4-отметка-выполнения-через-api)
 - [ ] [Переименование активности через API](BACKEND_2_FRONTEND_API_PLAN.md#5-переименование-активности-через-api)
