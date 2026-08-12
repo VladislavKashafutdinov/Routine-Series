@@ -24,6 +24,7 @@ import (
 	"routine-series/backend/internal/activity"
 	"routine-series/backend/internal/api"
 	"routine-series/backend/internal/app"
+	"routine-series/backend/internal/completion"
 	"routine-series/backend/internal/dataimport"
 	"routine-series/backend/internal/dbpool"
 	"routine-series/backend/internal/health"
@@ -88,6 +89,10 @@ func main() {
 	r.Post("/api/v1/activities/{id}/series-definitions", sdefH.Create)
 	r.Get("/api/v1/activities/{id}/series-definitions", sdefH.List)
 	r.Delete("/api/v1/activities/{id}/series-definitions/{defId}", sdefH.Delete)
+
+	// Completions
+	complH := &completion.Handlers{Pool: pool}
+	r.Post("/api/v1/completions/toggle", complH.Toggle)
 
 	// Import
 	importH := &dataimport.Handlers{Pool: pool}

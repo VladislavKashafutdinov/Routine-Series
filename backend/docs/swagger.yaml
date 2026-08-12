@@ -34,6 +34,34 @@ definitions:
       error:
         type: string
     type: object
+  completion.Completion:
+    properties:
+      activity_id:
+        type: integer
+      date:
+        description: YYYY-MM-DD
+        example: "2026-08-12"
+        type: string
+      id:
+        type: integer
+    type: object
+  completion.ToggleRequest:
+    properties:
+      activity_id:
+        example: 1
+        type: integer
+      date:
+        description: YYYY-MM-DD
+        example: "2026-08-12"
+        type: string
+    type: object
+  completion.ToggleResponse:
+    properties:
+      completion:
+        $ref: '#/definitions/completion.Completion'
+      created:
+        type: boolean
+    type: object
   dataimport.Stats:
     properties:
       activities:
@@ -338,6 +366,33 @@ paths:
       summary: List archived activities
       tags:
       - activities
+  /completions/toggle:
+    post:
+      consumes:
+      - application/json
+      description: Creates a completion mark for the given date if none exists; deletes
+        it if one already exists.
+      parameters:
+      - description: Completion data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/completion.ToggleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/completion.ToggleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Toggle completion
+      tags:
+      - completions
   /health:
     get:
       description: Returns ok if the server and database are reachable.

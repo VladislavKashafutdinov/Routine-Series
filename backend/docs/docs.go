@@ -407,6 +407,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/completions/toggle": {
+            "post": {
+                "description": "Creates a completion mark for the given date if none exists; deletes it if one already exists.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "completions"
+                ],
+                "summary": "Toggle completion",
+                "parameters": [
+                    {
+                        "description": "Completion data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/completion.ToggleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/completion.ToggleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "description": "Returns ok if the server and database are reachable.",
@@ -517,6 +557,47 @@ const docTemplate = `{
             "properties": {
                 "error": {
                     "type": "string"
+                }
+            }
+        },
+        "completion.Completion": {
+            "type": "object",
+            "properties": {
+                "activity_id": {
+                    "type": "integer"
+                },
+                "date": {
+                    "description": "YYYY-MM-DD",
+                    "type": "string",
+                    "example": "2026-08-12"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "completion.ToggleRequest": {
+            "type": "object",
+            "properties": {
+                "activity_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "date": {
+                    "description": "YYYY-MM-DD",
+                    "type": "string",
+                    "example": "2026-08-12"
+                }
+            }
+        },
+        "completion.ToggleResponse": {
+            "type": "object",
+            "properties": {
+                "completion": {
+                    "$ref": "#/definitions/completion.Completion"
+                },
+                "created": {
+                    "type": "boolean"
                 }
             }
         },
