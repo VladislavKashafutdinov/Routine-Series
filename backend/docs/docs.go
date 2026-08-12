@@ -267,6 +267,146 @@ const docTemplate = `{
                 }
             }
         },
+        "/activities/{id}/series-definitions": {
+            "get": {
+                "description": "Returns all series definition versions for an activity, newest first.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "series-definitions"
+                ],
+                "summary": "List series definitions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Activity ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.SeriesDefinition"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new series definition version for an activity.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "series-definitions"
+                ],
+                "summary": "Create series definition",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Activity ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Series parameters",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateSeriesDefinitionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.SeriesDefinition"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/activities/{id}/series-definitions/{defId}": {
+            "delete": {
+                "description": "Deletes a series definition version. Cannot delete the last remaining definition.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "series-definitions"
+                ],
+                "summary": "Delete series definition",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Activity ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Series Definition ID",
+                        "name": "defId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "description": "Returns ok if the server and database are reachable.",
@@ -354,6 +494,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "reward": {
+                    "type": "number"
+                },
+                "series_length": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.CreateSeriesDefinitionRequest": {
+            "type": "object",
+            "properties": {
+                "currency": {
                     "type": "string"
                 },
                 "reward": {

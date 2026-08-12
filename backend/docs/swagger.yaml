@@ -24,6 +24,15 @@ definitions:
       series_length:
         type: integer
     type: object
+  models.CreateSeriesDefinitionRequest:
+    properties:
+      currency:
+        type: string
+      reward:
+        type: number
+      series_length:
+        type: integer
+    type: object
   models.ErrorResponse:
     properties:
       error:
@@ -219,6 +228,101 @@ paths:
       summary: Restore activity
       tags:
       - activities
+  /activities/{id}/series-definitions:
+    get:
+      description: Returns all series definition versions for an activity, newest
+        first.
+      parameters:
+      - description: Activity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SeriesDefinition'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: List series definitions
+      tags:
+      - series-definitions
+    post:
+      consumes:
+      - application/json
+      description: Adds a new series definition version for an activity.
+      parameters:
+      - description: Activity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Series parameters
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateSeriesDefinitionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SeriesDefinition'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create series definition
+      tags:
+      - series-definitions
+  /activities/{id}/series-definitions/{defId}:
+    delete:
+      description: Deletes a series definition version. Cannot delete the last remaining
+        definition.
+      parameters:
+      - description: Activity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Series Definition ID
+        in: path
+        name: defId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete series definition
+      tags:
+      - series-definitions
   /activities/archived:
     get:
       description: Returns all archived activities with their latest series definition.

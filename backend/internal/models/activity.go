@@ -31,6 +31,13 @@ type UpdateActivityRequest struct {
 	Name string `json:"name"`
 }
 
+// CreateSeriesDefinitionRequest is the request body for creating a new series definition.
+type CreateSeriesDefinitionRequest struct {
+	SeriesLength int     `json:"series_length"`
+	Reward       float64 `json:"reward"`
+	Currency     string  `json:"currency"`
+}
+
 // CreateActivityRequest is the request body for creating an activity.
 type CreateActivityRequest struct {
 	Name         string  `json:"name"`

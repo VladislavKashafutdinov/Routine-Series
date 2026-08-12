@@ -79,6 +79,9 @@ func main() {
 	r.Patch("/api/v1/activities/{id}", handlers.UpdateActivity(application))
 	r.Post("/api/v1/activities/{id}/archive", handlers.ArchiveActivity(application))
 	r.Post("/api/v1/activities/{id}/restore", handlers.RestoreActivity(application))
+	r.Post("/api/v1/activities/{id}/series-definitions", handlers.CreateSeriesDef(application))
+	r.Get("/api/v1/activities/{id}/series-definitions", handlers.ListSeriesDefinitions(application))
+	r.Delete("/api/v1/activities/{id}/series-definitions/{defId}", handlers.DeleteSeriesDef(application))
 	r.Post("/api/v1/activities", handlers.CreateActivity(application))
 
 	// Import

@@ -100,6 +100,21 @@ func ImportAll(
 		stats.RewardIssues = int(n)
 	}
 
+	// Reset sequences to match imported IDs (SERIAL gets out of sync after CopyFrom with explicit IDs).
+	sequences := []struct{ seq, table string }{
+		{"activities_id_seq", "activities"},
+		{"series_definitions_id_seq", "series_definitions"},
+		{"completions_id_seq", "completions"},
+		{"reward_issues_id_seq", "reward_issues"},
+	}
+	for _, s := range sequences {
+		if _, err := tx.Exec(ctx,
+			`SELECT setval($1, COALESCE((SELECT MAX(id) FROM `+pgx.Identifier{s.table}.Sanitize()+`), 0), true)`, s.seq,
+		); err != nil {
+			return stats, fmt.Errorf("reset sequence %s: %w", s.seq, err)
+		}
+	}
+
 	if err := tx.Commit(ctx); err != nil {
 		return stats, fmt.Errorf("commit tx: %w", err)
 	}
