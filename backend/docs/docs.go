@@ -643,6 +643,42 @@ const docTemplate = `{
             }
         },
         "/reward-issues/{id}": {
+            "delete": {
+                "description": "Deletes a reward issue by ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rewards"
+                ],
+                "summary": "Delete reward issue",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Reward Issue ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "patch": {
                 "description": "Updates the amount of a reward issue by ID.",
                 "consumes": [

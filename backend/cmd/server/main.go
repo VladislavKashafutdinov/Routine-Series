@@ -101,6 +101,7 @@ func main() {
 	r.Get("/api/v1/reward-issues", rewardH.List)
 	r.Post("/api/v1/reward-issues", rewardH.Create)
 	r.Patch("/api/v1/reward-issues/{id}", rewardH.Update)
+	r.Delete("/api/v1/reward-issues/{id}", rewardH.Delete)
 
 	// Import
 	importH := &dataimport.Handlers{Pool: pool}

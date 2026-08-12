@@ -128,6 +128,37 @@ func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]any{"id": id, "amount": req.Amount})
 }
 
+// Delete godoc
+//
+//	@Summary		Delete reward issue
+//	@Description	Deletes a reward issue by ID.
+//	@Tags			rewards
+//	@Produce		json
+//	@Param			id	path		int	true	"Reward Issue ID"
+//	@Success		204
+//	@Failure		400	{object}	api.ErrorResponse
+//	@Failure		404	{object}	api.ErrorResponse
+//	@Router			/reward-issues/{id} [delete]
+func (h *Handlers) Delete(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil || id <= 0 {
+		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		return
+	}
+
+	found, err := DeleteByID(r.Context(), h.Pool, id)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to delete reward issue")
+		return
+	}
+	if !found {
+		writeError(w, http.StatusNotFound, "reward issue not found")
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func writeError(w http.ResponseWriter, status int, message string) {
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(api.ErrorResponse{Error: message})

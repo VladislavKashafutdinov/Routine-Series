@@ -570,6 +570,30 @@ paths:
       tags:
       - rewards
   /reward-issues/{id}:
+    delete:
+      description: Deletes a reward issue by ID.
+      parameters:
+      - description: Reward Issue ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Delete reward issue
+      tags:
+      - rewards
     patch:
       consumes:
       - application/json

@@ -63,3 +63,12 @@ func UpdateAmount(ctx context.Context, pool *pgxpool.Pool, id int, amount float6
 	}
 	return tag.RowsAffected() > 0, nil
 }
+
+// DeleteByID deletes a reward issue by ID. Returns false if not found.
+func DeleteByID(ctx context.Context, pool *pgxpool.Pool, id int) (bool, error) {
+	tag, err := pool.Exec(ctx, `DELETE FROM reward_issues WHERE id = $1`, id)
+	if err != nil {
+		return false, fmt.Errorf("delete reward issue %d: %w", id, err)
+	}
+	return tag.RowsAffected() > 0, nil
+}
