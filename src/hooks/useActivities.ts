@@ -1,6 +1,7 @@
 import type { Activity, ActivityWithStreak, Completion, RewardIssue, SeriesDefinition } from '@/types';
 import { useEffect, useState } from 'react';
 
+import { createActivity } from '@/api/client';
 import { db } from '@/db/db';
 import { liveQuery } from 'dexie';
 import { useVirtualToday } from './VirtualTodayContext';
@@ -68,6 +69,11 @@ export function useActivities() {
       reward,
       currency,
       createdAt: new Date(virtualToday + 'T' + new Date().toISOString().slice(11, 19)),
+    });
+
+    // Shadow write to API — background, non-blocking
+    createActivity(name.trim(), seriesLength, reward, currency).catch((err) => {
+      console.error('API createActivity failed:', err);
     });
   };
 
