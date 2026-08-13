@@ -1,7 +1,7 @@
 import type { Activity, ActivityWithStreak, Completion, RewardIssue, SeriesDefinition } from '@/types';
 import { useEffect, useState } from 'react';
 
-import { createActivity, toggleCompletion } from '@/api/client';
+import { createActivity, toggleCompletion, updateActivity } from '@/api/client';
 import { db } from '@/db/db';
 import { liveQuery } from 'dexie';
 import { useVirtualToday } from './VirtualTodayContext';
@@ -79,6 +79,11 @@ export function useActivities() {
 
   const updateName = async (activityId: number, name: string) => {
     await db.activities.update(activityId, { name: name.trim() });
+
+    // Shadow write to API — background, non-blocking
+    updateActivity(activityId, name.trim()).catch((err) => {
+      console.error('API updateActivity failed:', err);
+    });
   };
 
   const toggleDone = async (activityId: number) => {

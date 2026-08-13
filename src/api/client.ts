@@ -27,3 +27,13 @@ export async function toggleCompletion(
     body: JSON.stringify({ activity_id: activityId, date }),
   });
 }
+
+export async function updateActivity(
+  id: number,
+  name: string,
+): Promise<ApiActivityWithDef> {
+  return apiFetch<ApiActivityWithDef>(`/api/v1/activities/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ name }),
+  });
+}

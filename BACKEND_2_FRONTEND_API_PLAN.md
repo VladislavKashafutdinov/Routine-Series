@@ -15,7 +15,7 @@
 
 ---
 
-## 1. Ветка и конфигурация
+## 1. ✅ Ветка и конфигурация
 
 Ветка `front-backend-integration` уже создана. Переключиться на неё: `git checkout front-backend-integration`.
 
@@ -25,7 +25,7 @@
 
 ---
 
-## 2. CORS на бэкенде
+## 2. ✅ CORS на бэкенде
 
 Добавить CORS middleware в `backend/cmd/server/main.go` (разрешить origin GitHub Pages и localhost с любым портом). Задеплоить обновлённый бэкенд на хост.
 
@@ -33,7 +33,7 @@
 
 ---
 
-## 3. Создание активности через API (первая теневая мутация)
+## 3. ✅ Создание активности через API (первая теневая мутация)
 
 Создать три файла:
 - `src/api/types.ts` — интерфейсы `ApiActivity`, `ApiSeriesDefinition`, `ApiActivityWithDef`, `ApiError` (snake_case-поля, даты — строки)
@@ -46,7 +46,7 @@
 
 ---
 
-## 4. Отметка выполнения через API
+## 4. ✅ Отметка выполнения через API
 
 Добавить в `src/api/types.ts`: `ApiCompletion`, `ApiToggleResponse`. В `mapping.ts`: `toCompletion()`. В `client.ts`: `toggleCompletion(activityId, date)` → `POST /api/v1/completions/toggle`.
 
@@ -56,7 +56,7 @@
 
 ---
 
-## 5. Переименование активности через API
+## 5. ✅ Переименование активности через API
 
 Добавить в `client.ts`: `updateActivity(id, name)` → `PATCH /api/v1/activities/{id}`. В `useActivities.updateName`: после Dexie добавить вызов API.
 
