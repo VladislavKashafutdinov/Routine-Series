@@ -1,7 +1,8 @@
 import type { Activity, ActivityWithStreak, Completion, RewardIssue, SeriesDefinition } from '@/types';
 import { useEffect, useState } from 'react';
 
-import { createActivity, toggleCompletion, updateActivity } from '@/api/client';
+import { archiveActivity, createActivity, deleteActivityHard, restoreActivity, updateActivity } from '@/api/activities';
+import { toggleCompletion } from '@/api/completions';
 import { db } from '@/db/db';
 import { liveQuery } from 'dexie';
 import { useVirtualToday } from './VirtualTodayContext';
@@ -146,6 +147,11 @@ export function useActivities() {
 
   const unarchiveActivity = async (activityId: number) => {
     await db.activities.update(activityId, { archived: false });
+
+    // Shadow write to API — background, non-blocking
+    restoreActivity(activityId).catch((err) => {
+      console.error('API restoreActivity failed:', err);
+    });
   };
 
   const deleteActivity = async (activityId: number) => {
@@ -153,11 +159,21 @@ export function useActivities() {
     const hasRewardIssues = (await db.rewardIssues.where({ activityId }).count()) > 0;
     if (hasCompletions || hasRewardIssues) {
       await db.activities.update(activityId, { archived: true });
+
+      // Shadow write to API — background, non-blocking
+      archiveActivity(activityId).catch((err) => {
+        console.error('API archiveActivity failed:', err);
+      });
     } else {
       await db.activities.delete(activityId);
       await db.seriesDefinitions.where({ activityId }).delete();
       await db.rewardIssues.where({ activityId }).delete();
       await db.completions.where({ activityId }).delete();
+
+      // Shadow write to API — background, non-blocking
+      deleteActivityHard(activityId).catch((err) => {
+        console.error('API deleteActivityHard failed:', err);
+      });
     }
   };
 
