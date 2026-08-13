@@ -2,17 +2,6 @@
 
 ## Взять в работу
 
-- [x] В апи: RewardIssue должно быть возможно изменить currency и date так же как на фронте
-- [x] В апи: нужен метод жесткого удаления activity, если у активности нет completions/rewardIssues
-- [x] [Ветка и конфигурация](BACKEND_2_FRONTEND_API_PLAN.md#1-ветка-и-конфигурация)
-- [x] [CORS на бэкенде](BACKEND_2_FRONTEND_API_PLAN.md#2-cors-на-бэкенде)
-- [x] [Создание активности через API](BACKEND_2_FRONTEND_API_PLAN.md#3-создание-активности-через-api-первая-теневая-мутация)
-- [x] [Отметка выполнения через API](BACKEND_2_FRONTEND_API_PLAN.md#4-отметка-выполнения-через-api)
-- [x] [Переименование активности через API](BACKEND_2_FRONTEND_API_PLAN.md#5-переименование-активности-через-api)
-- [x] [Архивирование, восстановление и удаление через API](BACKEND_2_FRONTEND_API_PLAN.md#6-архивирование-восстановление-и-удаление-через-api)
-- [x] [Параметры серии через API](BACKEND_2_FRONTEND_API_PLAN.md#7-параметры-серии-через-api)
-- [x] [Награды через API](BACKEND_2_FRONTEND_API_PLAN.md#8-награды-через-api)
-- [x] [Переключение чтения с Dexie на API](BACKEND_2_FRONTEND_API_PLAN.md#9-переключение-чтения-с-dexie-на-api)
 - [ ] [Экспорт и импорт через API](BACKEND_2_FRONTEND_API_PLAN.md#10-экспорт-и-импорт-через-api)
 - [ ] [Удаление Dexie](BACKEND_2_FRONTEND_API_PLAN.md#11-удаление-dexie)
 

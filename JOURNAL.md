@@ -158,3 +158,7 @@
 
 - п.5 «Переименование активности через API»: теневая мутация `updateActivity` → `PATCH /api/v1/activities/{id}`, вызов после Dexie в `useActivities.updateName`
 - Фикс вне TODO: dataimport — `setval` только для непустых таблиц (пустой импорт падал с «value 0 is out of bounds for sequence»)
+- п.6 «Архивирование, восстановление и удаление через API»: теневые мутации archive/restore/hard-delete (409 → fallback на archive), `client.ts` разбит на per-section файлы (`activities.ts`, `completions.ts`)
+- п.7 «Параметры серии через API»: теневые мутации создания/удаления seriesDefinition (`seriesDefinitions.ts`), попутно исправлены conditional hooks в SeriesDefinitionTab
+- п.8 «Награды через API»: теневые мутации create/update/delete (`rewardIssues.ts`), типы `ApiRewardIssue`, `ApiPaginatedRewardIssues`, `toRewardIssue()`
+- п.9 «Переключение чтения с Dexie на API»: `ActivitiesProvider`/`ActivitiesContext` — данные загружаются через API, `useActivities` стал консьюмером контекста, `main.tsx` обёрнут в провайдер, Dexie-чтение (liveQuery) убрано

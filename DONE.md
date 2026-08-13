@@ -4,6 +4,34 @@
 
 ---
 
+### 2026-08-14 — Подключение фронта к API: чтение через API (п. 9)
+
+- `ActivitiesProvider`/`ActivitiesContext`: данные загружаются через API (активности, series-definitions, completions, reward-issues)
+- `useActivities` стал консьюмером контекста, `main.tsx` обёрнут в провайдер
+- Dexie-чтение (liveQuery) убрано, мутации работают через API с перезагрузкой данных
+
+### 2026-08-14 — Подключение фронта к API: теневые мутации (п. 5–8)
+
+- **п. 5. Переименование:** `updateActivity` → `PATCH /api/v1/activities/{id}`
+- **п. 6. Архив/восстановление/удаление:** `archiveActivity`, `restoreActivity`, hard-delete (409 → fallback на archive); `client.ts` разбит на per-section файлы (`activities.ts`, `completions.ts`)
+- **п. 7. Параметры серии:** создание/удаление seriesDefinition через API (`seriesDefinitions.ts`); попутно исправлены conditional hooks в SeriesDefinitionTab
+- **п. 8. Награды:** create/update/delete через API (`rewardIssues.ts`); типы `ApiRewardIssue`, `ApiPaginatedRewardIssues`, `toRewardIssue()`
+
+### 2026-08-13 — Подключение фронта к API: теневые мутации (п. 3–4)
+
+- **п. 3. Создание активности:** `src/api/` (types, mapping, client, fetch), теневая мутация `createActivity`
+- **п. 4. Отметка выполнения:** теневая мутация `toggleCompletion`, `toCompletion()`
+
+### 2026-08-12 — Подключение фронта к API: п. 1–2
+
+- **п. 1. Ветка и конфигурация:** ветка `front-backend-integration`, `VITE_API_BASE_URL`, dev-прокси `/api`
+- **п. 2. CORS:** middleware для localhost и GitHub Pages, origins через `ALLOWED_ORIGINS`
+
+### 2026-08-12 — Фиксы API вне плана
+
+- `PATCH /api/v1/reward-issues/{id}` — возможность изменить currency и date (как на фронте)
+- `DELETE /api/v1/activities/{id}` — жёсткое удаление активности без связанных записей
+
 ### 2026-08-12 — API на Go: награды (создание, просмотр, редактирование, удаление)
 
 - `POST /api/v1/reward-issues` — создание записи выдачи награды
