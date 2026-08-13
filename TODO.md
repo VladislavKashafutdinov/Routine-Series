@@ -11,7 +11,7 @@
 - [x] [Переименование активности через API](BACKEND_2_FRONTEND_API_PLAN.md#5-переименование-активности-через-api)
 - [x] [Архивирование, восстановление и удаление через API](BACKEND_2_FRONTEND_API_PLAN.md#6-архивирование-восстановление-и-удаление-через-api)
 - [x] [Параметры серии через API](BACKEND_2_FRONTEND_API_PLAN.md#7-параметры-серии-через-api)
-- [ ] [Награды через API](BACKEND_2_FRONTEND_API_PLAN.md#8-награды-через-api)
+- [x] [Награды через API](BACKEND_2_FRONTEND_API_PLAN.md#8-награды-через-api)
 - [ ] [Переключение чтения с Dexie на API](BACKEND_2_FRONTEND_API_PLAN.md#9-переключение-чтения-с-dexie-на-api)
 - [ ] [Экспорт и импорт через API](BACKEND_2_FRONTEND_API_PLAN.md#10-экспорт-и-импорт-через-api)
 - [ ] [Удаление Dexie](BACKEND_2_FRONTEND_API_PLAN.md#11-удаление-dexie)

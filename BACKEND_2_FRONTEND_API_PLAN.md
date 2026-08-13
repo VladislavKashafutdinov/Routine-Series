@@ -93,7 +93,7 @@
 
 ---
 
-## 8. Награды через API
+## 8. ✅ Награды через API
 
 Добавить в `src/api/types.ts`: `ApiRewardIssue`, `ApiPaginatedRewardIssues`. В `mapping.ts`: `toRewardIssue()`. В `client.ts`:
 - `createRewardIssue(activityId, amount, currency, date)` → `POST /api/v1/reward-issues`

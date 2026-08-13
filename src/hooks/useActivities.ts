@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { archiveActivity, createActivity, deleteActivityHard, restoreActivity, updateActivity } from '@/api/activities';
 import { toggleCompletion } from '@/api/completions';
+import { createRewardIssue, deleteRewardIssue as apiDeleteRewardIssue, updateRewardIssue as apiUpdateRewardIssue } from '@/api/rewardIssues';
 import { createSeriesDefinition as apiCreateSeriesDefinition, deleteSeriesDefinition as apiDeleteSeriesDefinition } from '@/api/seriesDefinitions';
 import { db } from '@/db/db';
 import { liveQuery } from 'dexie';
@@ -122,14 +123,29 @@ export function useActivities() {
 
   const addRewardIssue = async (activityId: number, amount: number, currency: string, date: string) => {
     await db.rewardIssues.add({ activityId, amount, currency, date });
+
+    // Shadow write to API — background, non-blocking
+    createRewardIssue(activityId, amount, currency, date).catch((err) => {
+      console.error('API createRewardIssue failed:', err);
+    });
   };
 
   const updateRewardIssue = async (id: number, amount: number, currency: string, date: string) => {
     await db.rewardIssues.update(id, { amount, currency, date });
+
+    // Shadow write to API — background, non-blocking
+    apiUpdateRewardIssue(id, amount, currency, date).catch((err) => {
+      console.error('API updateRewardIssue failed:', err);
+    });
   };
 
   const deleteRewardIssue = async (id: number) => {
     await db.rewardIssues.delete(id);
+
+    // Shadow write to API — background, non-blocking
+    apiDeleteRewardIssue(id).catch((err) => {
+      console.error('API deleteRewardIssue failed:', err);
+    });
   };
 
   const deleteSeriesDefinition = async (activityId: number, id: number) => {

@@ -33,6 +33,20 @@ export interface ApiToggleResponse {
   completion?: ApiCompletion;
 }
 
+export interface ApiRewardIssue {
+  id: number;
+  activity_id: number;
+  date: string; // "YYYY-MM-DD"
+  amount: number;
+  currency: string;
+}
+
+/** GET /api/v1/reward-issues response. */
+export interface ApiPaginatedRewardIssues {
+  items: ApiRewardIssue[];
+  total: number;
+}
+
 /** Unified error format returned by all endpoints. */
 export interface ApiError {
   error: string;
