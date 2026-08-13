@@ -101,8 +101,11 @@ func ImportAll(
 		{"reward_issues_id_seq", "reward_issues"},
 	}
 	for _, s := range sequences {
+		table := pgx.Identifier{s.table}.Sanitize()
 		if _, err := tx.Exec(ctx,
-			`SELECT setval($1, COALESCE((SELECT MAX(id) FROM `+pgx.Identifier{s.table}.Sanitize()+`), 0), true)`, s.seq,
+			`SELECT setval($1, (SELECT MAX(id) FROM `+table+`), true)
+			WHERE EXISTS (SELECT 1 FROM `+table+`)`,
+			s.seq,
 		); err != nil {
 			return stats, fmt.Errorf("reset sequence %s: %w", s.seq, err)
 		}
