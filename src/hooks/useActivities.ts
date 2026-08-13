@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { archiveActivity, createActivity, deleteActivityHard, restoreActivity, updateActivity } from '@/api/activities';
 import { toggleCompletion } from '@/api/completions';
+import { createSeriesDefinition as apiCreateSeriesDefinition, deleteSeriesDefinition as apiDeleteSeriesDefinition } from '@/api/seriesDefinitions';
 import { db } from '@/db/db';
 import { liveQuery } from 'dexie';
 import { useVirtualToday } from './VirtualTodayContext';
@@ -131,8 +132,13 @@ export function useActivities() {
     await db.rewardIssues.delete(id);
   };
 
-  const deleteSeriesDefinition = async (id: number) => {
+  const deleteSeriesDefinition = async (activityId: number, id: number) => {
     await db.seriesDefinitions.delete(id);
+
+    // Shadow write to API — background, non-blocking
+    apiDeleteSeriesDefinition(activityId, id).catch((err) => {
+      console.error('API deleteSeriesDefinition failed:', err);
+    });
   };
 
   const addSeriesDefinition = async (activityId: number, seriesLength: number, reward: number, currency: string) => {
@@ -142,6 +148,11 @@ export function useActivities() {
       reward,
       currency,
       createdAt: new Date(virtualToday + 'T' + new Date().toISOString().slice(11, 19)),
+    });
+
+    // Shadow write to API — background, non-blocking
+    apiCreateSeriesDefinition(activityId, seriesLength, reward, currency).catch((err) => {
+      console.error('API createSeriesDefinition failed:', err);
     });
   };
 

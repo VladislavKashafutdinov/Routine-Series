@@ -80,7 +80,7 @@
 
 ---
 
-## 7. Параметры серии через API
+## 7. ✅ Параметры серии через API
 
 Добавить в `client.ts`:
 - `fetchSeriesDefinitions(activityId)` → `GET /api/v1/activities/{id}/series-definitions`
