@@ -1,5 +1,18 @@
-import type { ApiRewardIssue } from './types';
+import type { ApiPaginatedRewardIssues, ApiRewardIssue } from './types';
 import { apiFetch } from './fetch';
+
+export async function fetchRewardIssues(
+  activityId: number,
+  limit: number,
+  offset: number,
+): Promise<ApiPaginatedRewardIssues> {
+  const qs = new URLSearchParams({
+    activity_id: String(activityId),
+    limit: String(limit),
+    offset: String(offset),
+  });
+  return apiFetch<ApiPaginatedRewardIssues>(`/api/v1/reward-issues?${qs}`);
+}
 
 export async function createRewardIssue(
   activityId: number,

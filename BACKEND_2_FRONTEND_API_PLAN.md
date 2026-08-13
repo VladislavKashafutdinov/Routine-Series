@@ -106,7 +106,7 @@
 
 ---
 
-## 9. Переключение чтения с Dexie на API
+## 9. ✅ Переключение чтения с Dexie на API
 
 В `useActivities`:
 - Добавить в `client.ts` недостающие функции чтения: `fetchActivities()`, `fetchArchivedActivities()`, `fetchCompletions(activityId, from, to)`, `fetchRewardIssues(activityId, limit, offset)`. Функции `fetchSeriesDefinitions` уже есть с шага 7.

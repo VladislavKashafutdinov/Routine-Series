@@ -47,7 +47,7 @@ func ListByActivity(ctx context.Context, pool *pgxpool.Pool, activityID int, lim
 	}
 	defer rows.Close()
 
-	var items []RewardIssue
+	items := []RewardIssue{}
 	for rows.Next() {
 		var r RewardIssue
 		if err := rows.Scan(&r.ID, &r.ActivityID, &r.Date, &r.Amount, &r.Currency); err != nil {

@@ -170,7 +170,7 @@ func HardDelete(ctx context.Context, pool *pgxpool.Pool, id int) (bool, error) {
 }
 
 func scanWithDefs(rows pgx.Rows) ([]ActivityWithDef, error) {
-	var results []ActivityWithDef
+	results := []ActivityWithDef{}
 	for rows.Next() {
 		var a Activity
 		var d seriesdefinition.SeriesDefinition
