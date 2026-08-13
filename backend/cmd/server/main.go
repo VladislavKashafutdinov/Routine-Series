@@ -24,10 +24,10 @@ import (
 	"routine-series/backend/internal/api"
 	"routine-series/backend/internal/app"
 	"routine-series/backend/internal/completion"
-	"routine-series/backend/internal/reward"
 	"routine-series/backend/internal/dataimport"
 	"routine-series/backend/internal/dbpool"
 	"routine-series/backend/internal/health"
+	"routine-series/backend/internal/reward"
 	"routine-series/backend/internal/seriesdefinition"
 )
 
@@ -57,10 +57,12 @@ func main() {
 
 	r := chi.NewRouter()
 
+	logger := app.StdLogger{}
+
 	// Middleware stack
 	r.Use(chimw.Recoverer)
 	r.Use(api.CORS(corsCfg.AllowedOrigins))
-	r.Use(app.Logger)
+	r.Use(app.Log)
 	r.Use(api.ContentTypeJSON)
 
 	// Swagger
@@ -110,7 +112,7 @@ func main() {
 	r.Delete("/api/v1/reward-issues/{id}", rewardH.Delete)
 
 	// Import
-	importH := &dataimport.Handlers{Pool: pool}
+	importH := &dataimport.Handlers{Pool: pool, Logger: logger}
 	r.Post("/api/v1/import", importH.ImportData)
 
 	port := os.Getenv("PORT")

@@ -30,17 +30,17 @@ type Handlers struct {
 func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
 	var req CreateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		api.WriteError(w, http.StatusBadRequest, "invalid JSON body")
 		return
 	}
 	if err := req.Validate(); err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		api.WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	issue, err := Create(r.Context(), h.Pool, req.ActivityID, req.Date, req.Amount, req.Currency)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to create reward issue")
+		api.WriteError(w, http.StatusInternalServerError, "failed to create reward issue")
 		return
 	}
 
@@ -68,7 +68,7 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 	offset, _ := strconv.Atoi(q.Get("offset"))
 
 	if activityID <= 0 {
-		writeError(w, http.StatusBadRequest, "activity_id must be a positive integer")
+		api.WriteError(w, http.StatusBadRequest, "activity_id must be a positive integer")
 		return
 	}
 	if limit <= 0 {
@@ -77,7 +77,7 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 
 	result, err := ListByActivity(r.Context(), h.Pool, activityID, limit, offset)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to list reward issues")
+		api.WriteError(w, http.StatusInternalServerError, "failed to list reward issues")
 		return
 	}
 
@@ -100,27 +100,27 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
-		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
 	var req UpdateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		api.WriteError(w, http.StatusBadRequest, "invalid JSON body")
 		return
 	}
 	if err := req.Validate(); err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		api.WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	updated, err := Update(r.Context(), h.Pool, id, req)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to update reward issue")
+		api.WriteError(w, http.StatusInternalServerError, "failed to update reward issue")
 		return
 	}
 	if updated == nil {
-		writeError(w, http.StatusNotFound, "reward issue not found")
+		api.WriteError(w, http.StatusNotFound, "reward issue not found")
 		return
 	}
 
@@ -141,24 +141,19 @@ func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
-		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
 	found, err := DeleteByID(r.Context(), h.Pool, id)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to delete reward issue")
+		api.WriteError(w, http.StatusInternalServerError, "failed to delete reward issue")
 		return
 	}
 	if !found {
-		writeError(w, http.StatusNotFound, "reward issue not found")
+		api.WriteError(w, http.StatusNotFound, "reward issue not found")
 		return
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-}
-
-func writeError(w http.ResponseWriter, status int, message string) {
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(api.ErrorResponse{Error: message})
 }

@@ -16,11 +16,6 @@ type Handlers struct {
 	Pool *pgxpool.Pool
 }
 
-func writeError(w http.ResponseWriter, status int, message string) {
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(api.ErrorResponse{Error: message})
-}
-
 // Create godoc
 //
 //	@Summary		Create series definition
@@ -37,23 +32,23 @@ func writeError(w http.ResponseWriter, status int, message string) {
 func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
-		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
 	var req CreateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		api.WriteError(w, http.StatusBadRequest, "invalid JSON body")
 		return
 	}
 	if err := req.Validate(); err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		api.WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	def, err := Create(r.Context(), h.Pool, id, req.SeriesLength, req.Reward, req.Currency)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to create series definition")
+		api.WriteError(w, http.StatusInternalServerError, "failed to create series definition")
 		return
 	}
 
@@ -74,13 +69,13 @@ func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
-		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
 	defs, err := List(r.Context(), h.Pool, id)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to list series definitions")
+		api.WriteError(w, http.StatusInternalServerError, "failed to list series definitions")
 		return
 	}
 	json.NewEncoder(w).Encode(defs)
@@ -102,21 +97,21 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) Delete(w http.ResponseWriter, r *http.Request) {
 	defID, err := strconv.Atoi(chi.URLParam(r, "defId"))
 	if err != nil || defID <= 0 {
-		writeError(w, http.StatusBadRequest, "defId must be a positive integer")
+		api.WriteError(w, http.StatusBadRequest, "defId must be a positive integer")
 		return
 	}
 
 	found, isLast, err := Delete(r.Context(), h.Pool, defID)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to delete series definition")
+		api.WriteError(w, http.StatusInternalServerError, "failed to delete series definition")
 		return
 	}
 	if !found {
-		writeError(w, http.StatusNotFound, "series definition not found")
+		api.WriteError(w, http.StatusNotFound, "series definition not found")
 		return
 	}
 	if isLast {
-		writeError(w, http.StatusConflict, "cannot delete the last series definition")
+		api.WriteError(w, http.StatusConflict, "cannot delete the last series definition")
 		return
 	}
 
