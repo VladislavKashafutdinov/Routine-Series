@@ -47,6 +47,53 @@ export interface ApiPaginatedRewardIssues {
   total: number;
 }
 
+// ---- Export/import payload (camelCase, matches POST /api/v1/import) ----
+
+export interface ExportActivity {
+  id: number;
+  name: string;
+  archived: boolean;
+  createdAt: string;
+}
+
+export interface ExportSeriesDefinition {
+  id: number;
+  activityId: number;
+  seriesLength: number;
+  reward: number;
+  currency: string;
+  createdAt: string;
+}
+
+export interface ExportCompletion {
+  id: number;
+  activityId: number;
+  date: string;
+}
+
+export interface ExportRewardIssue {
+  id: number;
+  activityId: number;
+  date: string;
+  amount: number;
+  currency: string;
+}
+
+export interface ExportPayload {
+  activities: ExportActivity[];
+  seriesDefinitions: ExportSeriesDefinition[];
+  completions: ExportCompletion[];
+  rewardIssues: ExportRewardIssue[];
+}
+
+/** POST /api/v1/import response. */
+export interface ApiImportStats {
+  activities: number;
+  series_definitions: number;
+  completions: number;
+  reward_issues: number;
+}
+
 /** Unified error format returned by all endpoints. */
 export interface ApiError {
   error: string;

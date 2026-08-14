@@ -17,10 +17,12 @@ export class ApiFetchError extends Error {
  * with the API error message; resolves undefined for empty (204) bodies.
  */
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  // FormData bodies must not get a Content-Type header (browser sets the boundary)
+  const isFormData = init?.body instanceof FormData;
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...init?.headers,
     },
   });

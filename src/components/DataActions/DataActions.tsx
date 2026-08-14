@@ -1,27 +1,56 @@
 import { useRef } from 'react';
 import { useLocale } from '@/i18n/LocaleContext';
-import { db } from '@/db/db';
+import { fetchActivities, fetchArchivedActivities } from '@/api/activities';
+import { fetchCompletions } from '@/api/completions';
+import { importData } from '@/api/dataimport';
+import { fetchRewardIssues } from '@/api/rewardIssues';
+import { fetchSeriesDefinitions } from '@/api/seriesDefinitions';
+import { toExportActivity, toExportCompletion, toExportRewardIssue, toExportSeriesDefinition } from '@/api/mapping';
+import type { ExportPayload } from '@/api/types';
 import './DataActions.css';
+
+// Export must cover everything: completions from epoch to far future
+const EXPORT_FROM = '1970-01-01';
+const EXPORT_TO = '9999-12-31';
+const REWARD_ISSUES_LIMIT = 1000;
 
 export function DataActions() {
   const { lang } = useLocale();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleExport = async () => {
-    const [activities, seriesDefinitions, completions, rewardIssues] = await Promise.all([
-      db.activities.toArray(),
-      db.seriesDefinitions.toArray(),
-      db.completions.toArray(),
-      db.rewardIssues.toArray(),
-    ]);
-    const data = { activities, seriesDefinitions, completions, rewardIssues };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `routine-series-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const [active, archived] = await Promise.all([
+        fetchActivities(),
+        fetchArchivedActivities(),
+      ]);
+      const all = [...(active ?? []), ...(archived ?? [])];
+      const ids = all.map((a) => a.id);
+
+      const [defs, comps, issues] = await Promise.all([
+        Promise.all(ids.map((id) => fetchSeriesDefinitions(id))),
+        Promise.all(ids.map((id) => fetchCompletions(id, EXPORT_FROM, EXPORT_TO))),
+        Promise.all(ids.map((id) => fetchRewardIssues(id, REWARD_ISSUES_LIMIT, 0))),
+      ]);
+
+      const data: ExportPayload = {
+        activities: all.map(toExportActivity),
+        seriesDefinitions: defs.flat().map(toExportSeriesDefinition),
+        completions: comps.flat().map(toExportCompletion),
+        rewardIssues: issues.flatMap((p) => p?.items ?? []).map(toExportRewardIssue),
+      };
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `routine-series-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Export failed:', err);
+      alert(lang === 'en' ? 'Export failed' : 'Ошибка экспорта');
+    }
   };
 
   const handleImport = () => {
@@ -38,36 +67,19 @@ export function DataActions() {
     if (!confirm(msg)) { e.target.value = ''; return; }
 
     try {
+      // Validate structure before upload
       const text = await file.text();
       const data = JSON.parse(text);
-
-      // Validate structure
       if (!data.activities || !data.seriesDefinitions || !data.completions || !data.rewardIssues) {
         throw new Error('Invalid file structure');
       }
 
-      // Convert date strings back to Date objects
-      const acts = data.activities.map((a: any) => ({ ...a, createdAt: new Date(a.createdAt) }));
-      const defs = data.seriesDefinitions.map((d: any) => ({ ...d, createdAt: new Date(d.createdAt) }));
-
-      // Clear and re-import
-      await db.transaction('rw',
-        db.activities, db.seriesDefinitions, db.completions, db.rewardIssues,
-        async () => {
-          await db.activities.clear();
-          await db.seriesDefinitions.clear();
-          await db.completions.clear();
-          await db.rewardIssues.clear();
-          await db.activities.bulkAdd(acts);
-          await db.seriesDefinitions.bulkAdd(defs);
-          await db.completions.bulkAdd(data.completions);
-          await db.rewardIssues.bulkAdd(data.rewardIssues);
-        }
-      );
+      await importData(file);
 
       alert(lang === 'en' ? 'Import complete. Reloading...' : 'Импорт завершён. Перезагрузка...');
       window.location.reload();
     } catch (err) {
+      console.error('Import failed:', err);
       alert(lang === 'en' ? 'Invalid file format' : 'Неверный формат файла');
     }
     e.target.value = '';
