@@ -67,6 +67,9 @@ export interface Strings {
   restore: string;
   restoreConfirm: (name: string) => string;
 
+  // LoginPage
+  loginStub: string;
+
   // HistoryModal
   historyAria: (name: string) => string;
   daysSuffix: (n: number) => string;
@@ -127,6 +130,8 @@ const en: Strings = {
   restore: 'Restore',
   restoreConfirm: (name: string) => `Restore "${name}"?`,
 
+  loginStub: 'Email login is coming soon.',
+
   historyAria: (name: string) => `History for ${name}`,
   daysSuffix: (n: number) => enPlural(n, 'day', 'days'),
   lastNDays: (n: number) => `Last ${n} days`,
@@ -185,6 +190,8 @@ const ru: Strings = {
   archiveEmpty: 'Архив пуст.',
   restore: 'Восстановить',
   restoreConfirm: (name: string) => `Восстановить «${name}»?`,
+
+  loginStub: 'Вход по email появится в ближайших обновлениях.',
 
   historyAria: (name: string) => `История: ${name}`,
   daysSuffix: (n: number) => ruPlural(n, 'день', 'дня', 'дней'),

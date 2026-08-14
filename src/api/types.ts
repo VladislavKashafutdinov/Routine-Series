@@ -98,3 +98,10 @@ export interface ApiImportStats {
 export interface ApiError {
   error: string;
 }
+
+/** GET /api/v1/auth/me response — the authenticated user. */
+export interface ApiUser {
+  id: number;
+  email: string;
+  created_at: string;
+}

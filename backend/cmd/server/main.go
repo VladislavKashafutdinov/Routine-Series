@@ -23,6 +23,7 @@ import (
 	"routine-series/backend/internal/activity"
 	"routine-series/backend/internal/api"
 	"routine-series/backend/internal/app"
+	"routine-series/backend/internal/auth"
 	"routine-series/backend/internal/completion"
 	"routine-series/backend/internal/dataimport"
 	"routine-series/backend/internal/dbpool"
@@ -40,6 +41,11 @@ func main() {
 	corsCfg, err := api.LoadCORSConfig()
 	if err != nil {
 		log.Fatalf("cors config error: %v", err)
+	}
+
+	authCfg, err := auth.LoadConfig()
+	if err != nil {
+		log.Fatalf("auth config error: %v", err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -81,6 +87,10 @@ func main() {
 	// Health check
 	healthH := &health.Handlers{Pool: pool}
 	r.Get("/api/v1/health", healthH.HealthCheck)
+
+	// Auth
+	authH := &auth.Handlers{Pool: pool, Config: authCfg}
+	r.With(auth.RequireAuth(pool)).Get("/api/v1/auth/me", authH.Me)
 
 	// Activities
 	actH := &activity.Handlers{Pool: pool}
