@@ -60,6 +60,7 @@ Logical data model: [README.md § Структура данных](README.md#с�
 ## Workflow constraints
 
 - **Task-driven development** — code changes (add/modify/delete) are only allowed when there is a corresponding task in [TODO.md](TODO.md). Without a task, only documentation files may be edited: `CLAUDE.md`, `TODO.md`, `README.md`, `DONE.md`, `JOURNAL.md`.
+- **Сквозные фичи в планах** — при формировании планов задач организуй их не по слоям (не «весь бэк, потом весь фронт»), а сквозными фичами: сначала базовый шаг подготовки — фундамент для всего последующего, затем фича за фичей; внутри каждой фичи бэк и фронт идут вместе, каждый шаг зависит от предыдущего, и каждая фича заканчивается работающим юзкейсом. Апи без использующего его фронта — не законченная фича.
 - **Never read `.env` files** — `.env` contains real secrets (DB passwords, API keys). NEVER use Read, Grep, Bash (`cat`, `Get-Content`), or any other tool to read `.env` or `.env.*` files. If you need to know which environment variables exist, read `.env.example` instead — it has the same structure with placeholder values.
 - **Request validation in models** — each request struct that has validation rules must implement a `Validate() error` method. Handlers call `req.Validate()` instead of inline validation. Keeps handlers clean.
 - **Domain package = models + db + handlers** — everything about one domain lives in one package (e.g. `activity/` contains `models.go`, `db.go`, `handlers.go`). No layer-based packages (`handlers/`, `db/`, `models/`).
