@@ -43,9 +43,9 @@ User action
 main.tsx
 └── LocaleProvider
     └── VirtualTodayProvider
-        └── AuthProvider             (проверка сессии через /auth/me: loading | authenticated | unauthenticated)
+        └── AuthProvider             (проверка сессии через /auth/me, verify() — вход по коду, токены в localStorage)
             └── App                  (гейт: loading → пусто, unauthenticated → LoginPage; данные грузятся только для авторизованного)
-                ├── LoginPage        (форма email → запрос кода; заглушка формы кода до фичи 3)
+                ├── LoginPage        (вход по коду: форма email → форма кода → verify)
                 └── ActivitiesProvider       (общее хранилище данных: загрузка из API + все мутации)
                     └── SeriesProvider       (computeSeries для всех активностей)
                         └── MainApp

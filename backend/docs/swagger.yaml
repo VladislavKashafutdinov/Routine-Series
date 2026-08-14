@@ -48,6 +48,22 @@ definitions:
       id:
         type: integer
     type: object
+  auth.VerifyCodeRequest:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+    type: object
+  auth.VerifyResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+      user:
+        $ref: '#/definitions/auth.User'
+    type: object
   completion.Completion:
     properties:
       activity_id:
@@ -509,6 +525,37 @@ paths:
           schema:
             $ref: '#/definitions/api.ErrorResponse'
       summary: Current user
+      tags:
+      - auth
+  /auth/verify:
+    post:
+      consumes:
+      - application/json
+      description: Checks the login code, creates the user on first login and a new
+        session, and returns access/refresh tokens with the user.
+      parameters:
+      - description: Email and code
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.VerifyCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.VerifyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Verify login code
       tags:
       - auth
   /completions:

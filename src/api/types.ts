@@ -105,3 +105,10 @@ export interface ApiUser {
   email: string;
   created_at: string;
 }
+
+/** POST /api/v1/auth/verify response — tokens and the user. */
+export interface ApiVerifyResponse {
+  access_token: string;
+  refresh_token: string;
+  user: ApiUser;
+}

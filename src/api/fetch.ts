@@ -1,4 +1,5 @@
 import type { ApiError } from './types';
+import { getAccessToken } from './tokens';
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '');
 
@@ -19,10 +20,12 @@ export class ApiFetchError extends Error {
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   // FormData bodies must not get a Content-Type header (browser sets the boundary)
   const isFormData = init?.body instanceof FormData;
+  const token = getAccessToken();
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers: {
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...init?.headers,
     },
   });

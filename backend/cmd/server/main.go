@@ -91,6 +91,7 @@ func main() {
 	// Auth
 	authH := &auth.Handlers{Pool: pool, Config: authCfg}
 	r.Post("/api/v1/auth/code", authH.SendCode)
+	r.Post("/api/v1/auth/verify", authH.Verify)
 	r.With(auth.RequireAuth(pool)).Get("/api/v1/auth/me", authH.Me)
 
 	// Activities

@@ -72,7 +72,9 @@ export interface Strings {
   loginEmailError: string;
   loginSendError: string;
   loginSentTo: (email: string) => string;
-  loginCodeStub: string;
+  loginVerifyCode: string;
+  loginCodeError: string;
+  loginResendCode: string;
   loginChangeEmail: string;
 
   // HistoryModal
@@ -139,7 +141,9 @@ const en: Strings = {
   loginEmailError: 'Enter a valid email',
   loginSendError: 'Could not send the code. Try again later.',
   loginSentTo: (email: string) => `Code sent to ${email}`,
-  loginCodeStub: 'The code form is coming in the next update.',
+  loginVerifyCode: 'Sign in',
+  loginCodeError: 'Invalid or expired code',
+  loginResendCode: 'Resend code',
   loginChangeEmail: 'Change email',
 
   historyAria: (name: string) => `History for ${name}`,
@@ -205,7 +209,9 @@ const ru: Strings = {
   loginEmailError: 'Введите корректный email',
   loginSendError: 'Не удалось отправить код. Попробуйте позже.',
   loginSentTo: (email: string) => `Код отправлен на ${email}`,
-  loginCodeStub: 'Форма ввода кода появится в следующем обновлении.',
+  loginVerifyCode: 'Войти',
+  loginCodeError: 'Неверный или устаревший код',
+  loginResendCode: 'Отправить код ещё раз',
   loginChangeEmail: 'Сменить email',
 
   historyAria: (name: string) => `История: ${name}`,

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -74,4 +75,45 @@ func (h *Handlers) SendCode(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}
+
+// Verify godoc
+//
+//	@Summary		Verify login code
+//	@Description	Checks the login code, creates the user on first login and a new session, and returns access/refresh tokens with the user.
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		VerifyCodeRequest	true	"Email and code"
+//	@Success		200		{object}	VerifyResponse
+//	@Failure		400		{object}	api.ErrorResponse
+//	@Failure		500		{object}	api.ErrorResponse
+//	@Router			/auth/verify [post]
+func (h *Handlers) Verify(w http.ResponseWriter, r *http.Request) {
+	var req VerifyCodeRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		api.WriteError(w, http.StatusBadRequest, "invalid JSON body")
+		return
+	}
+	if err := req.Validate(); err != nil {
+		api.WriteError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	user, accessToken, refreshToken, err := VerifyCodeAndCreateSession(
+		r.Context(), h.Pool, req.Email, req.Code, h.Config.AccessTTL, h.Config.RefreshTTL)
+	if errors.Is(err, ErrInvalidCode) {
+		api.WriteError(w, http.StatusBadRequest, ErrInvalidCode.Error())
+		return
+	}
+	if err != nil {
+		api.WriteError(w, http.StatusInternalServerError, "failed to verify code")
+		return
+	}
+
+	json.NewEncoder(w).Encode(VerifyResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		User:         user,
+	})
 }

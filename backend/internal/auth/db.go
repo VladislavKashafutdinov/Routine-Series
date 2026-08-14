@@ -17,6 +17,13 @@ import (
 // ErrUnauthorized is returned when the token is unknown or expired.
 var ErrUnauthorized = errors.New("unauthorized")
 
+// ErrInvalidCode is returned when the login code is unknown, wrong, or expired.
+var ErrInvalidCode = errors.New("invalid or expired code")
+
+// maxCodeAttempts is the number of wrong-code attempts before the code
+// becomes invalid.
+const maxCodeAttempts = 5
+
 // loginCodeTTL is how long a login code stays valid.
 const loginCodeTTL = 10 * time.Minute
 
@@ -66,4 +73,103 @@ func FindUserByAccessToken(ctx context.Context, pool *pgxpool.Pool, token string
 		return User{}, err
 	}
 	return u, nil
+}
+
+// generateToken returns a random hex-encoded session token.
+func generateToken() (string, error) {
+	buf := make([]byte, 32)
+	if _, err := rand.Read(buf); err != nil {
+		return "", fmt.Errorf("generate token: %w", err)
+	}
+	return hex.EncodeToString(buf), nil
+}
+
+// VerifyCodeAndCreateSession checks the login code for the email in a
+// transaction: wrong codes count against the attempt limit (after which the
+// code is invalidated), a valid code is single-use, the user is created on
+// first login, and a new session returns fresh access/refresh tokens.
+func VerifyCodeAndCreateSession(ctx context.Context, pool *pgxpool.Pool, email, code string, accessTTL, refreshTTL time.Duration) (User, string, string, error) {
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		return User{}, "", "", err
+	}
+	defer tx.Rollback(ctx)
+
+	var (
+		codeHash  string
+		expiresAt time.Time
+		attempts  int
+	)
+	err = tx.QueryRow(ctx, `
+		SELECT code_hash, expires_at, attempts
+		FROM login_codes
+		WHERE email = $1
+		FOR UPDATE
+	`, email).Scan(&codeHash, &expiresAt, &attempts)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return User{}, "", "", ErrInvalidCode
+	}
+	if err != nil {
+		return User{}, "", "", err
+	}
+
+	if attempts >= maxCodeAttempts || time.Now().After(expiresAt) {
+		return User{}, "", "", ErrInvalidCode
+	}
+
+	if hashToken(code) != codeHash {
+		attempts++
+		if attempts >= maxCodeAttempts {
+			// Code exhausted — invalidate it.
+			if _, err := tx.Exec(ctx, `DELETE FROM login_codes WHERE email = $1`, email); err != nil {
+				return User{}, "", "", err
+			}
+		} else {
+			if _, err := tx.Exec(ctx, `UPDATE login_codes SET attempts = $1 WHERE email = $2`, attempts, email); err != nil {
+				return User{}, "", "", err
+			}
+		}
+		return User{}, "", "", ErrInvalidCode
+	}
+
+	// The code is single-use — remove it.
+	if _, err := tx.Exec(ctx, `DELETE FROM login_codes WHERE email = $1`, email); err != nil {
+		return User{}, "", "", err
+	}
+
+	// First login creates the user.
+	if _, err := tx.Exec(ctx, `
+		INSERT INTO users (email) VALUES ($1) ON CONFLICT (email) DO NOTHING
+	`, email); err != nil {
+		return User{}, "", "", err
+	}
+
+	var u User
+	if err := tx.QueryRow(ctx, `
+		SELECT id, email, created_at FROM users WHERE email = $1
+	`, email).Scan(&u.ID, &u.Email, &u.CreatedAt); err != nil {
+		return User{}, "", "", err
+	}
+
+	accessToken, err := generateToken()
+	if err != nil {
+		return User{}, "", "", err
+	}
+	refreshToken, err := generateToken()
+	if err != nil {
+		return User{}, "", "", err
+	}
+
+	if _, err := tx.Exec(ctx, `
+		INSERT INTO sessions (user_id, access_token_hash, refresh_token_hash, access_expires_at, refresh_expires_at)
+		VALUES ($1, $2, $3, now() + make_interval(secs => $4), now() + make_interval(secs => $5))
+	`, u.ID, hashToken(accessToken), hashToken(refreshToken), int(accessTTL.Seconds()), int(refreshTTL.Seconds())); err != nil {
+		return User{}, "", "", err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return User{}, "", "", err
+	}
+
+	return u, accessToken, refreshToken, nil
 }
