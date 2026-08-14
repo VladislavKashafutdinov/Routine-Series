@@ -10,17 +10,23 @@ import { LoginPage } from '@components/LoginPage/LoginPage';
 import { ActivitiesProvider } from '@/hooks/ActivitiesContext';
 import { SeriesProvider } from '@/hooks/SeriesContext';
 import { useAuth } from '@/hooks/AuthContext';
+import { useLocale } from '@/i18n/LocaleContext';
 import type { Page } from '@components/PageTabs/PageTabs';
 import './App.css';
 
 function MainApp() {
   const [page, setPage] = useState<Page>('dashboard');
+  const { logout } = useAuth();
+  const { t } = useLocale();
 
   return (
     <div className="app">
       <header className="app-header">
         <h1>Routine Series</h1>
         <LangSwitcher />
+        <button className="app-logout" type="button" onClick={() => void logout()}>
+          {t.logoutButton}
+        </button>
         <TimeTravel />
         <DataActions />
         <PageTabs page={page} onChange={setPage} />

@@ -34,6 +34,11 @@ definitions:
       error:
         type: string
     type: object
+  auth.RefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
   auth.SendCodeRequest:
     properties:
       email:
@@ -510,6 +515,32 @@ paths:
       summary: Request login code
       tags:
       - auth
+  /auth/logout:
+    post:
+      description: Deletes the session identified by the Bearer token. Always returns
+        200.
+      parameters:
+      - description: Bearer <access token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Logout
+      tags:
+      - auth
   /auth/me:
     get:
       description: Returns the authenticated user of the current session.
@@ -525,6 +556,40 @@ paths:
           schema:
             $ref: '#/definitions/api.ErrorResponse'
       summary: Current user
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Exchanges a valid refresh token for a new pair of tokens (rotation).
+      parameters:
+      - description: Refresh token
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.VerifyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Refresh session
       tags:
       - auth
   /auth/verify:

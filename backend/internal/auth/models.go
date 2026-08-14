@@ -56,6 +56,19 @@ type VerifyResponse struct {
 	User         User   `json:"user"`
 }
 
+// RefreshRequest is the request body for refreshing a session.
+type RefreshRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+// Validate checks that the refresh token is present.
+func (r *RefreshRequest) Validate() error {
+	if strings.TrimSpace(r.RefreshToken) == "" {
+		return fmt.Errorf("refresh_token is required")
+	}
+	return nil
+}
+
 // normalizeEmail trims and lowercases the email and checks its format.
 func normalizeEmail(email string) (string, error) {
 	email = strings.ToLower(strings.TrimSpace(email))

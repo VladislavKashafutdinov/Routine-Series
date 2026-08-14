@@ -1,8 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 
-import { fetchMe, verifyLoginCode } from '@/api/auth';
-import { saveTokens } from '@/api/tokens';
+import { fetchMe, logout as apiLogout, verifyLoginCode } from '@/api/auth';
+import { clearTokens, saveTokens, setUnauthorizedHandler } from '@/api/tokens';
 import type { ApiUser } from '@/api/types';
 
 export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
@@ -12,21 +12,27 @@ export interface AuthState {
   user: ApiUser | null;
   /** Verifies the login code; on success stores the tokens and switches to authenticated. */
   verify: (email: string, code: string) => Promise<void>;
+  /** Logs out: asks the server to delete the session and clears local tokens. */
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
 
 /**
  * Checks the session on app start by calling /auth/me (the access token from
- * localStorage is attached by apiFetch) and exposes the result: authenticated
- * (with user), unauthenticated, or loading. Any failure resolves to
- * unauthenticated — token refresh arrives in a later feature.
+ * localStorage is attached by apiFetch; an expired access token is refreshed
+ * transparently). Any unrecoverable failure resolves to unauthenticated.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<Omit<AuthState, 'verify'>>({ status: 'loading', user: null });
+  const [state, setState] = useState<Omit<AuthState, 'verify' | 'logout'>>({ status: 'loading', user: null });
 
   useEffect(() => {
     let cancelled = false;
+    // When a request can't be restored after a 401 (refresh failed), the
+    // session is gone — drop to unauthenticated.
+    setUnauthorizedHandler(() => {
+      if (!cancelled) setState({ status: 'unauthenticated', user: null });
+    });
     fetchMe()
       .then((user) => {
         if (!cancelled) setState({ status: 'authenticated', user });
@@ -36,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     return () => {
       cancelled = true;
+      setUnauthorizedHandler(null);
     };
   }, []);
 
@@ -45,7 +52,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState({ status: 'authenticated', user: res.user });
   }, []);
 
-  return <AuthContext.Provider value={{ ...state, verify }}>{children}</AuthContext.Provider>;
+  const logout = useCallback(async () => {
+    try {
+      await apiLogout();
+    } catch {
+      // Server unreachable — clear the local session anyway.
+    }
+    clearTokens();
+    setState({ status: 'unauthenticated', user: null });
+  }, []);
+
+  return <AuthContext.Provider value={{ ...state, verify, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthState {

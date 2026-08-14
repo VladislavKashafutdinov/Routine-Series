@@ -22,3 +22,15 @@ export function clearTokens(): void {
   localStorage.removeItem(ACCESS_KEY);
   localStorage.removeItem(REFRESH_KEY);
 }
+
+let unauthorizedHandler: (() => void) | null = null;
+
+/** Registers the callback invoked when the session can't be restored (AuthProvider). */
+export function setUnauthorizedHandler(handler: (() => void) | null): void {
+  unauthorizedHandler = handler;
+}
+
+/** Notifies that the session is gone (called by apiFetch after a failed refresh). */
+export function notifyUnauthorized(): void {
+  unauthorizedHandler?.();
+}

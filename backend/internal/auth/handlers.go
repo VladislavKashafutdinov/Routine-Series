@@ -117,3 +117,66 @@ func (h *Handlers) Verify(w http.ResponseWriter, r *http.Request) {
 		User:         user,
 	})
 }
+
+// Refresh godoc
+//
+//	@Summary		Refresh session
+//	@Description	Exchanges a valid refresh token for a new pair of tokens (rotation).
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		RefreshRequest	true	"Refresh token"
+//	@Success		200		{object}	VerifyResponse
+//	@Failure		400		{object}	api.ErrorResponse
+//	@Failure		401		{object}	api.ErrorResponse
+//	@Failure		500		{object}	api.ErrorResponse
+//	@Router			/auth/refresh [post]
+func (h *Handlers) Refresh(w http.ResponseWriter, r *http.Request) {
+	var req RefreshRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		api.WriteError(w, http.StatusBadRequest, "invalid JSON body")
+		return
+	}
+	if err := req.Validate(); err != nil {
+		api.WriteError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	user, accessToken, refreshToken, err := RotateSession(
+		r.Context(), h.Pool, req.RefreshToken, h.Config.AccessTTL, h.Config.RefreshTTL)
+	if errors.Is(err, ErrUnauthorized) {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	if err != nil {
+		api.WriteError(w, http.StatusInternalServerError, "failed to refresh session")
+		return
+	}
+
+	json.NewEncoder(w).Encode(VerifyResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		User:         user,
+	})
+}
+
+// Logout godoc
+//
+//	@Summary		Logout
+//	@Description	Deletes the session identified by the Bearer token. Always returns 200.
+//	@Tags			auth
+//	@Produce		json
+//	@Param			Authorization	header	string	true	"Bearer <access token>"
+//	@Success		200	{object}	map[string]string
+//	@Failure		500	{object}	api.ErrorResponse
+//	@Router			/auth/logout [post]
+func (h *Handlers) Logout(w http.ResponseWriter, r *http.Request) {
+	if token, ok := bearerToken(r.Header.Get("Authorization")); ok {
+		if err := DeleteSessionByAccessToken(r.Context(), h.Pool, token); err != nil {
+			api.WriteError(w, http.StatusInternalServerError, "failed to logout")
+			return
+		}
+	}
+
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}

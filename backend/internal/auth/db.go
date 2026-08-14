@@ -75,6 +75,73 @@ func FindUserByAccessToken(ctx context.Context, pool *pgxpool.Pool, token string
 	return u, nil
 }
 
+// RotateSession exchanges a valid refresh token for a new pair of tokens
+// (rotation); ErrUnauthorized when the token is unknown or expired.
+func RotateSession(ctx context.Context, pool *pgxpool.Pool, refreshToken string, accessTTL, refreshTTL time.Duration) (User, string, string, error) {
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		return User{}, "", "", err
+	}
+	defer tx.Rollback(ctx)
+
+	var (
+		sessionID int
+		userID    int
+	)
+	err = tx.QueryRow(ctx, `
+		SELECT s.id, s.user_id
+		FROM sessions s
+		WHERE s.refresh_token_hash = $1 AND s.refresh_expires_at > now()
+		FOR UPDATE
+	`, hashToken(refreshToken)).Scan(&sessionID, &userID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return User{}, "", "", ErrUnauthorized
+	}
+	if err != nil {
+		return User{}, "", "", err
+	}
+
+	var u User
+	if err := tx.QueryRow(ctx, `
+		SELECT id, email, created_at FROM users WHERE id = $1
+	`, userID).Scan(&u.ID, &u.Email, &u.CreatedAt); err != nil {
+		return User{}, "", "", err
+	}
+
+	accessToken, err := generateToken()
+	if err != nil {
+		return User{}, "", "", err
+	}
+	refreshNew, err := generateToken()
+	if err != nil {
+		return User{}, "", "", err
+	}
+
+	if _, err := tx.Exec(ctx, `
+		UPDATE sessions
+		SET access_token_hash = $1, refresh_token_hash = $2,
+		    access_expires_at = now() + make_interval(secs => $3),
+		    refresh_expires_at = now() + make_interval(secs => $4)
+		WHERE id = $5
+	`, hashToken(accessToken), hashToken(refreshNew), int(accessTTL.Seconds()), int(refreshTTL.Seconds()), sessionID); err != nil {
+		return User{}, "", "", err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return User{}, "", "", err
+	}
+
+	return u, accessToken, refreshNew, nil
+}
+
+// DeleteSessionByAccessToken removes the session identified by the token.
+func DeleteSessionByAccessToken(ctx context.Context, pool *pgxpool.Pool, token string) error {
+	_, err := pool.Exec(ctx, `
+		DELETE FROM sessions WHERE access_token_hash = $1
+	`, hashToken(token))
+	return err
+}
+
 // generateToken returns a random hex-encoded session token.
 func generateToken() (string, error) {
 	buf := make([]byte, 32)

@@ -21,3 +21,8 @@ export function verifyLoginCode(email: string, code: string): Promise<ApiVerifyR
     body: JSON.stringify({ email, code }),
   });
 }
+
+/** Deletes the current session on the server. */
+export function logout(): Promise<void> {
+  return apiFetch<void>('/api/v1/auth/logout', { method: 'POST' });
+}

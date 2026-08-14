@@ -77,6 +77,9 @@ export interface Strings {
   loginResendCode: string;
   loginChangeEmail: string;
 
+  // AppHeader
+  logoutButton: string;
+
   // HistoryModal
   historyAria: (name: string) => string;
   daysSuffix: (n: number) => string;
@@ -146,6 +149,8 @@ const en: Strings = {
   loginResendCode: 'Resend code',
   loginChangeEmail: 'Change email',
 
+  logoutButton: 'Sign out',
+
   historyAria: (name: string) => `History for ${name}`,
   daysSuffix: (n: number) => enPlural(n, 'day', 'days'),
   lastNDays: (n: number) => `Last ${n} days`,
@@ -213,6 +218,8 @@ const ru: Strings = {
   loginCodeError: 'Неверный или устаревший код',
   loginResendCode: 'Отправить код ещё раз',
   loginChangeEmail: 'Сменить email',
+
+  logoutButton: 'Выйти',
 
   historyAria: (name: string) => `История: ${name}`,
   daysSuffix: (n: number) => ruPlural(n, 'день', 'дня', 'дней'),

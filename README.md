@@ -51,6 +51,7 @@ main.tsx
                         └── MainApp
                             ├── AppHeader
                             │   ├── LangSwitcher
+                            │   ├── LogoutButton            («Выйти»: logout на сервер + очистка токенов)
                             │   ├── PageTabs                («Выполнение» | «Мониторинг» | «Архив»)
                             │   ├── DataActions             (⤓ экспорт / ⤒ импорт через API)
                             │   └── TimeTravel              (◀ YYYY-MM-DD ▶ «Сегодня», VirtualTodayContext)
