@@ -18,11 +18,73 @@
 }
 
 .login-page__title {
-  margin: 0 0 12px;
+  margin: 0 0 20px;
   font-size: 1.6rem;
+}
+
+.login-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-page__input {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.login-page__input:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.login-page__button {
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.login-page__button:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.login-page__button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.login-page__error {
+  margin: 0;
+  color: var(--danger);
+}
+
+.login-page__sent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-page__sent-to {
+  margin: 0;
 }
 
 .login-page__stub {
   margin: 0;
   color: var(--muted);
+}
+
+.login-page__link {
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-size: 0.9rem;
+  text-decoration: underline;
 }

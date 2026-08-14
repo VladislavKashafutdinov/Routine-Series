@@ -68,7 +68,12 @@ export interface Strings {
   restoreConfirm: (name: string) => string;
 
   // LoginPage
-  loginStub: string;
+  loginSendCode: string;
+  loginEmailError: string;
+  loginSendError: string;
+  loginSentTo: (email: string) => string;
+  loginCodeStub: string;
+  loginChangeEmail: string;
 
   // HistoryModal
   historyAria: (name: string) => string;
@@ -130,7 +135,12 @@ const en: Strings = {
   restore: 'Restore',
   restoreConfirm: (name: string) => `Restore "${name}"?`,
 
-  loginStub: 'Email login is coming soon.',
+  loginSendCode: 'Send code',
+  loginEmailError: 'Enter a valid email',
+  loginSendError: 'Could not send the code. Try again later.',
+  loginSentTo: (email: string) => `Code sent to ${email}`,
+  loginCodeStub: 'The code form is coming in the next update.',
+  loginChangeEmail: 'Change email',
 
   historyAria: (name: string) => `History for ${name}`,
   daysSuffix: (n: number) => enPlural(n, 'day', 'days'),
@@ -191,7 +201,12 @@ const ru: Strings = {
   restore: 'Восстановить',
   restoreConfirm: (name: string) => `Восстановить «${name}»?`,
 
-  loginStub: 'Вход по email появится в ближайших обновлениях.',
+  loginSendCode: 'Отправить код',
+  loginEmailError: 'Введите корректный email',
+  loginSendError: 'Не удалось отправить код. Попробуйте позже.',
+  loginSentTo: (email: string) => `Код отправлен на ${email}`,
+  loginCodeStub: 'Форма ввода кода появится в следующем обновлении.',
+  loginChangeEmail: 'Сменить email',
 
   historyAria: (name: string) => `История: ${name}`,
   daysSuffix: (n: number) => ruPlural(n, 'день', 'дня', 'дней'),

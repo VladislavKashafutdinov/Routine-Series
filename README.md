@@ -45,7 +45,7 @@ main.tsx
     └── VirtualTodayProvider
         └── AuthProvider             (проверка сессии через /auth/me: loading | authenticated | unauthenticated)
             └── App                  (гейт: loading → пусто, unauthenticated → LoginPage; данные грузятся только для авторизованного)
-                ├── LoginPage        (заглушка логина — до фичи 2/3)
+                ├── LoginPage        (форма email → запрос кода; заглушка формы кода до фичи 3)
                 └── ActivitiesProvider       (общее хранилище данных: загрузка из API + все мутации)
                     └── SeriesProvider       (computeSeries для всех активностей)
                         └── MainApp

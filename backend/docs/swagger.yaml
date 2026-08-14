@@ -34,6 +34,20 @@ definitions:
       error:
         type: string
     type: object
+  auth.SendCodeRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  auth.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+    type: object
   completion.Completion:
     properties:
       activity_id:
@@ -447,6 +461,56 @@ paths:
       summary: List archived activities
       tags:
       - activities
+  /auth/code:
+    post:
+      consumes:
+      - application/json
+      description: Sends a 6-digit login code to the given email. Always responds
+        200 for valid emails to not reveal whether the email is registered.
+      parameters:
+      - description: Email
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.SendCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Request login code
+      tags:
+      - auth
+  /auth/me:
+    get:
+      description: Returns the authenticated user of the current session.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.User'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Current user
+      tags:
+      - auth
   /completions:
     get:
       description: Returns completions for an activity within a date range.
