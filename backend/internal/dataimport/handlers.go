@@ -8,20 +8,21 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"routine-series/backend/internal/activity"
-	"routine-series/backend/internal/completion"
 	"routine-series/backend/internal/api"
+	"routine-series/backend/internal/completion"
 	"routine-series/backend/internal/reward"
 	"routine-series/backend/internal/seriesdefinition"
 )
 
-// Handlers holds shared dependencies.
-type Handlers struct {
-	Pool *pgxpool.Pool
+// Logger for logging in import endpoints
+type Logger interface {
+	Errorf(format string, args ...any)
 }
 
-func writeError(w http.ResponseWriter, status int, message string) {
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(api.ErrorResponse{Error: message})
+// Handlers holds shared dependencies.
+type Handlers struct {
+	Pool   *pgxpool.Pool
+	Logger Logger
 }
 
 // ImportData godoc
@@ -39,24 +40,24 @@ func (h *Handlers) ImportData(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
-		writeError(w, http.StatusBadRequest, "file too large (max 10 MB)")
+		api.WriteError(w, http.StatusBadRequest, "file too large (max 10 MB)")
 		return
 	}
 
 	file, _, err := r.FormFile("file")
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "missing 'file' field in form data")
+		api.WriteError(w, http.StatusBadRequest, "missing 'file' field in form data")
 		return
 	}
 	defer file.Close()
 
 	var payload Payload
 	if err := json.NewDecoder(file).Decode(&payload); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid JSON in uploaded file")
+		api.WriteError(w, http.StatusBadRequest, "invalid JSON in uploaded file")
 		return
 	}
 	if err := payload.Validate(); err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		api.WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -64,7 +65,7 @@ func (h *Handlers) ImportData(w http.ResponseWriter, r *http.Request) {
 	for _, a := range payload.Activities {
 		dbAct, err := a.ToDBActivity()
 		if err != nil {
-			writeError(w, http.StatusBadRequest, "invalid createdAt for activity "+fmt.Sprintf("%d", a.ID)+": "+err.Error())
+			api.WriteError(w, http.StatusBadRequest, "invalid createdAt for activity "+fmt.Sprintf("%d", a.ID)+": "+err.Error())
 			return
 		}
 		activities = append(activities, dbAct)
@@ -74,7 +75,7 @@ func (h *Handlers) ImportData(w http.ResponseWriter, r *http.Request) {
 	for _, d := range payload.SeriesDefinitions {
 		dbDef, err := d.ToDBSeriesDefinition()
 		if err != nil {
-			writeError(w, http.StatusBadRequest, "invalid createdAt for seriesDefinition "+fmt.Sprintf("%d", d.ID)+": "+err.Error())
+			api.WriteError(w, http.StatusBadRequest, "invalid createdAt for seriesDefinition "+fmt.Sprintf("%d", d.ID)+": "+err.Error())
 			return
 		}
 		definitions = append(definitions, dbDef)
@@ -97,7 +98,8 @@ func (h *Handlers) ImportData(w http.ResponseWriter, r *http.Request) {
 
 	stats, err := ImportAll(r.Context(), h.Pool, activities, definitions, completions, rewardIssues)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "import failed")
+		h.Logger.Errorf("import failed: %v", err)
+		api.WriteError(w, http.StatusInternalServerError, "import failed")
 		return
 	}
 

@@ -16,16 +16,16 @@ export const SeriesDefinitionTab = memo(function SeriesDefinitionTab({ activity 
   const { addSeriesDefinition, deleteSeriesDefinition } = useActivities();
   const { virtualToday } = useVirtualToday();
   const [page, setPage] = useState(0);
+  const def = latestDef(activity.seriesDefinitions, activity.id);
+  const [showForm, setShowForm] = useState(false);
+  const [length, setLength] = useState(def?.seriesLength ?? 0);
+  const [reward, setReward] = useState(def?.reward ?? 0);
+  const [currency, setCurrency] = useState(def?.currency ?? '₽');
 
-  // Show form for adding new definition
+  // Show placeholder while there are no series definitions
   if (activity.seriesDefinitions.length === 0) {
     return <div className="accordion__placeholder">{t.loading}</div>;
   }
-  const def = latestDef(activity.seriesDefinitions, activity.id);
-  const [showForm, setShowForm] = useState(false);
-  const [length, setLength] = useState(def.seriesLength);
-  const [reward, setReward] = useState(def.reward);
-  const [currency, setCurrency] = useState(def.currency);
 
   const defs = [...activity.seriesDefinitions].sort(
     (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
@@ -93,7 +93,7 @@ export const SeriesDefinitionTab = memo(function SeriesDefinitionTab({ activity 
                       className="sdef-tab__del"
                       onClick={() => {
                         if (confirm(t.deleteConfirm(t.seriesLengthLabel))) {
-                          deleteSeriesDefinition(d.id!);
+                          deleteSeriesDefinition(activity.id, d.id!);
                         }
                       }}
                       type="button"

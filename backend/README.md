@@ -18,7 +18,7 @@ go build -o server ./cmd/server   # Сборка бинарника
 |---|---|---|
 | `DATABASE_URL` | Строка подключения к PostgreSQL (Neon) | обязательная |
 | `PORT` | Порт HTTP-сервера | `8080` |
-| `ALLOWED_ORIGINS` | CORS origins через запятую | — |
+| `ALLOWED_ORIGINS` | CORS origins через запятую, паттерны path.Match (`*` — wildcard) | `http://localhost:*,https://*.github.io` |
 
 ## Структура
 
@@ -49,6 +49,7 @@ docs/               — сгенерированная OpenAPI-специфик�
    - **Start Command:** `./server`
 5. В разделе **Environment Variables** добавить:
    - `DATABASE_URL` — строка подключения к Neon PostgreSQL
+   - `ALLOWED_ORIGINS` — CORS origins через запятую (например: `https://routine-series.onrender.com,https://vladislavkashafutdinov.github.io,http://localhost:*`)
 6. Нажать **Deploy Web Service**
 
 ### Ручная настройка (без render.yaml)

@@ -35,7 +35,7 @@ func List(ctx context.Context, pool *pgxpool.Pool, activityID int) ([]SeriesDefi
 	}
 	defer rows.Close()
 
-	var results []SeriesDefinition
+	results := []SeriesDefinition{}
 	for rows.Next() {
 		var d SeriesDefinition
 		if err := rows.Scan(&d.ID, &d.ActivityID, &d.SeriesLength, &d.Reward, &d.Currency, &d.CreatedAt); err != nil {

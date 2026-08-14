@@ -15,7 +15,7 @@
 
 ---
 
-## 1. Ветка и конфигурация
+## 1. ✅ Ветка и конфигурация
 
 Ветка `front-backend-integration` уже создана. Переключиться на неё: `git checkout front-backend-integration`.
 
@@ -25,7 +25,7 @@
 
 ---
 
-## 2. CORS на бэкенде
+## 2. ✅ CORS на бэкенде
 
 Добавить CORS middleware в `backend/cmd/server/main.go` (разрешить origin GitHub Pages и localhost с любым портом). Задеплоить обновлённый бэкенд на хост.
 
@@ -33,7 +33,7 @@
 
 ---
 
-## 3. Создание активности через API (первая теневая мутация)
+## 3. ✅ Создание активности через API (первая теневая мутация)
 
 Создать три файла:
 - `src/api/types.ts` — интерфейсы `ApiActivity`, `ApiSeriesDefinition`, `ApiActivityWithDef`, `ApiError` (snake_case-поля, даты — строки)
@@ -46,7 +46,7 @@
 
 ---
 
-## 4. Отметка выполнения через API
+## 4. ✅ Отметка выполнения через API
 
 Добавить в `src/api/types.ts`: `ApiCompletion`, `ApiToggleResponse`. В `mapping.ts`: `toCompletion()`. В `client.ts`: `toggleCompletion(activityId, date)` → `POST /api/v1/completions/toggle`.
 
@@ -56,7 +56,7 @@
 
 ---
 
-## 5. Переименование активности через API
+## 5. ✅ Переименование активности через API
 
 Добавить в `client.ts`: `updateActivity(id, name)` → `PATCH /api/v1/activities/{id}`. В `useActivities.updateName`: после Dexie добавить вызов API.
 
@@ -64,7 +64,7 @@
 
 ---
 
-## 6. Архивирование, восстановление и удаление через API
+## 6. ✅ Архивирование, восстановление и удаление через API
 
 Добавить в `client.ts`:
 - `archiveActivity(id)` → `POST /api/v1/activities/{id}/archive`
@@ -80,7 +80,7 @@
 
 ---
 
-## 7. Параметры серии через API
+## 7. ✅ Параметры серии через API
 
 Добавить в `client.ts`:
 - `fetchSeriesDefinitions(activityId)` → `GET /api/v1/activities/{id}/series-definitions`
@@ -93,7 +93,7 @@
 
 ---
 
-## 8. Награды через API
+## 8. ✅ Награды через API
 
 Добавить в `src/api/types.ts`: `ApiRewardIssue`, `ApiPaginatedRewardIssues`. В `mapping.ts`: `toRewardIssue()`. В `client.ts`:
 - `createRewardIssue(activityId, amount, currency, date)` → `POST /api/v1/reward-issues`
@@ -106,7 +106,7 @@
 
 ---
 
-## 9. Переключение чтения с Dexie на API
+## 9. ✅ Переключение чтения с Dexie на API
 
 В `useActivities`:
 - Добавить в `client.ts` недостающие функции чтения: `fetchActivities()`, `fetchArchivedActivities()`, `fetchCompletions(activityId, from, to)`, `fetchRewardIssues(activityId, limit, offset)`. Функции `fetchSeriesDefinitions` уже есть с шага 7.
@@ -118,7 +118,7 @@
 
 ---
 
-## 10. Экспорт и импорт через API
+## 10. ✅ Экспорт и импорт через API
 
 Компонент `DataActions` (кнопки ⤓/⤒ в шапке) работает с Dexie напрямую, минуя `useActivities`.
 
@@ -132,7 +132,7 @@
 
 ---
 
-## 11. Удаление Dexie
+## 11. ✅ Удаление Dexie
 
 Удалить пакет `dexie` (`npm uninstall dexie`). Удалить `src/db/db.ts` и директорию `src/db/`. Убедиться что `npm run build` и `npm run test` проходят.
 

@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-// Logger logs each request: method, path, status, duration.
-func Logger(next http.Handler) http.Handler {
+// Log logs each request: method, path, status, duration.
+func Log(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		wr := &responseWriter{ResponseWriter: w, status: http.StatusOK}
@@ -16,7 +16,12 @@ func Logger(next http.Handler) http.Handler {
 	})
 }
 
-// responseWriter wraps http.ResponseWriter to capture the status code.
+type StdLogger struct{}
+
+func (StdLogger) Errorf(format string, args ...any) {
+	log.Printf(format, args...)
+}
+
 type responseWriter struct {
 	http.ResponseWriter
 	status int

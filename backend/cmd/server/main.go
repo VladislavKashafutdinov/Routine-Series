@@ -1,7 +1,6 @@
 // @title           Routine Series API
 // @version         0.1.0
 // @description     REST API for tracking daily activities, completions, and rewards.
-// @host            localhost:8080
 // @BasePath        /api/v1
 
 package main
@@ -25,10 +24,10 @@ import (
 	"routine-series/backend/internal/api"
 	"routine-series/backend/internal/app"
 	"routine-series/backend/internal/completion"
-	"routine-series/backend/internal/reward"
 	"routine-series/backend/internal/dataimport"
 	"routine-series/backend/internal/dbpool"
 	"routine-series/backend/internal/health"
+	"routine-series/backend/internal/reward"
 	"routine-series/backend/internal/seriesdefinition"
 )
 
@@ -36,6 +35,11 @@ func main() {
 	dbCfg, err := dbpool.LoadConfig()
 	if err != nil {
 		log.Fatalf("config error: %v", err)
+	}
+
+	corsCfg, err := api.LoadCORSConfig()
+	if err != nil {
+		log.Fatalf("cors config error: %v", err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -53,9 +57,12 @@ func main() {
 
 	r := chi.NewRouter()
 
+	logger := app.StdLogger{}
+
 	// Middleware stack
 	r.Use(chimw.Recoverer)
-	r.Use(app.Logger)
+	r.Use(api.CORS(corsCfg.AllowedOrigins))
+	r.Use(app.Log)
 	r.Use(api.ContentTypeJSON)
 
 	// Swagger
@@ -105,7 +112,7 @@ func main() {
 	r.Delete("/api/v1/reward-issues/{id}", rewardH.Delete)
 
 	// Import
-	importH := &dataimport.Handlers{Pool: pool}
+	importH := &dataimport.Handlers{Pool: pool, Logger: logger}
 	r.Post("/api/v1/import", importH.ImportData)
 
 	port := os.Getenv("PORT")

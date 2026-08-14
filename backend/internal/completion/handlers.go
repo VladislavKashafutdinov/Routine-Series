@@ -29,17 +29,17 @@ type Handlers struct {
 func (h *Handlers) Toggle(w http.ResponseWriter, r *http.Request) {
 	var req ToggleRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		api.WriteError(w, http.StatusBadRequest, "invalid JSON body")
 		return
 	}
 	if err := req.Validate(); err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		api.WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	result, err := Toggle(r.Context(), h.Pool, req.ActivityID, req.Date)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "toggle failed")
+		api.WriteError(w, http.StatusInternalServerError, "toggle failed")
 		return
 	}
 
@@ -68,20 +68,15 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 		To:         q.Get("to"),
 	}
 	if err := req.Validate(); err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		api.WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	completions, err := ListByDateRange(r.Context(), h.Pool, req.ActivityID, req.From, req.To)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to list completions")
+		api.WriteError(w, http.StatusInternalServerError, "failed to list completions")
 		return
 	}
 
 	json.NewEncoder(w).Encode(completions)
-}
-
-func writeError(w http.ResponseWriter, status int, message string) {
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(api.ErrorResponse{Error: message})
 }

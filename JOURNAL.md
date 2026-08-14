@@ -140,3 +140,25 @@
 - Реализовано редактирование наград: `PATCH /api/v1/reward-issues/{id}`
 - Реализовано удаление наград: `DELETE /api/v1/reward-issues/{id}`
 - Перенос выполненных задач из TODO.md в DONE.md
+- Фиксы API вне плана: `PATCH /api/v1/reward-issues/{id}` расширен на изменение currency и date; `DELETE /api/v1/activities/{id}` — жёсткое удаление активности без связанных записей
+- Составлен план BACKEND_2_FRONTEND_API_PLAN.md (подключение фронта к API), новые задачи добавлены в TODO
+- п.1 «Ветка и конфигурация»: подготовка фронта к API — ветка `front-backend-integration`, `VITE_API_BASE_URL`, Vite dev-прокси `/api`
+- п.2 «CORS на бэкенде»: CORS middleware для localhost и GitHub Pages
+
+## 2026-08-13
+
+- п.3 «Создание активности через API»: теневая мутация `createActivity` — `src/api/` (types, mapping, client, fetch), вызов после Dexie в `useActivities.addActivity`
+- п.4 «Отметка выполнения через API»: теневая мутация `toggleCompletion` — `ApiCompletion`, `ApiToggleResponse`, `toCompletion()`, вызовы в `toggleDone` и `toggleDate`
+- Фиксы вне TODO:
+  - CORS: разрешённые origins вынесены в env-переменную `ALLOWED_ORIGINS`
+  - Swagger: убран захардкоженный host, используется origin страницы
+  - Обработка ошибок в API: общий `api.WriteError` вместо дублей `writeError`, внедряемый Logger, логируется причина сбоя импорта
+
+## 2026-08-14
+
+- п.5 «Переименование активности через API»: теневая мутация `updateActivity` → `PATCH /api/v1/activities/{id}`, вызов после Dexie в `useActivities.updateName`
+- Фикс вне TODO: dataimport — `setval` только для непустых таблиц (пустой импорт падал с «value 0 is out of bounds for sequence»)
+- п.6 «Архивирование, восстановление и удаление через API»: теневые мутации archive/restore/hard-delete (409 → fallback на archive), `client.ts` разбит на per-section файлы (`activities.ts`, `completions.ts`)
+- п.7 «Параметры серии через API»: теневые мутации создания/удаления seriesDefinition (`seriesDefinitions.ts`), попутно исправлены conditional hooks в SeriesDefinitionTab
+- п.8 «Награды через API»: теневые мутации create/update/delete (`rewardIssues.ts`), типы `ApiRewardIssue`, `ApiPaginatedRewardIssues`, `toRewardIssue()`
+- п.9 «Переключение чтения с Dexie на API»: `ActivitiesProvider`/`ActivitiesContext` — данные загружаются через API, `useActivities` стал консьюмером контекста, `main.tsx` обёрнут в провайдер, Dexie-чтение (liveQuery) убрано

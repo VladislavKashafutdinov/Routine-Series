@@ -17,11 +17,6 @@ type Handlers struct {
 	Pool *pgxpool.Pool
 }
 
-func writeError(w http.ResponseWriter, status int, message string) {
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(api.ErrorResponse{Error: message})
-}
-
 // CreateActivity godoc
 //
 //	@Summary		Create activity
@@ -36,17 +31,17 @@ func writeError(w http.ResponseWriter, status int, message string) {
 func (h *Handlers) CreateActivity(w http.ResponseWriter, r *http.Request) {
 	var req CreateActivityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		api.WriteError(w, http.StatusBadRequest, "invalid JSON body")
 		return
 	}
 	if err := req.Validate(); err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		api.WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	result, err := Create(r.Context(), h.Pool, req.Name, req.SeriesLength, req.Reward, req.Currency)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to create activity")
+		api.WriteError(w, http.StatusInternalServerError, "failed to create activity")
 		return
 	}
 
@@ -65,7 +60,7 @@ func (h *Handlers) CreateActivity(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) ListActivities(w http.ResponseWriter, r *http.Request) {
 	activities, err := GetAllActive(r.Context(), h.Pool)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to list activities")
+		api.WriteError(w, http.StatusInternalServerError, "failed to list activities")
 		return
 	}
 	json.NewEncoder(w).Encode(activities)
@@ -82,7 +77,7 @@ func (h *Handlers) ListActivities(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) ListArchivedActivities(w http.ResponseWriter, r *http.Request) {
 	activities, err := GetAllArchived(r.Context(), h.Pool)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to list archived activities")
+		api.WriteError(w, http.StatusInternalServerError, "failed to list archived activities")
 		return
 	}
 	json.NewEncoder(w).Encode(activities)
@@ -102,17 +97,17 @@ func (h *Handlers) ListArchivedActivities(w http.ResponseWriter, r *http.Request
 func (h *Handlers) GetActivity(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
-		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
 	a, err := GetByID(r.Context(), h.Pool, id)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to get activity")
+		api.WriteError(w, http.StatusInternalServerError, "failed to get activity")
 		return
 	}
 	if a == nil {
-		writeError(w, http.StatusNotFound, "activity not found")
+		api.WriteError(w, http.StatusNotFound, "activity not found")
 		return
 	}
 
@@ -135,27 +130,27 @@ func (h *Handlers) GetActivity(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) UpdateActivity(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
-		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
 	var req UpdateActivityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid JSON body")
+		api.WriteError(w, http.StatusBadRequest, "invalid JSON body")
 		return
 	}
 	if err := req.Validate(); err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		api.WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	found, err := UpdateName(r.Context(), h.Pool, id, req.Name)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to update activity")
+		api.WriteError(w, http.StatusInternalServerError, "failed to update activity")
 		return
 	}
 	if !found {
-		writeError(w, http.StatusNotFound, "activity not found")
+		api.WriteError(w, http.StatusNotFound, "activity not found")
 		return
 	}
 
@@ -177,17 +172,17 @@ func (h *Handlers) UpdateActivity(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) ArchiveActivity(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
-		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
 	found, err := Archive(r.Context(), h.Pool, id)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to archive activity")
+		api.WriteError(w, http.StatusInternalServerError, "failed to archive activity")
 		return
 	}
 	if !found {
-		writeError(w, http.StatusNotFound, "activity not found")
+		api.WriteError(w, http.StatusNotFound, "activity not found")
 		return
 	}
 
@@ -208,17 +203,17 @@ func (h *Handlers) ArchiveActivity(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) RestoreActivity(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
-		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
 	found, err := Restore(r.Context(), h.Pool, id)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to restore activity")
+		api.WriteError(w, http.StatusInternalServerError, "failed to restore activity")
 		return
 	}
 	if !found {
-		writeError(w, http.StatusNotFound, "activity not found")
+		api.WriteError(w, http.StatusNotFound, "activity not found")
 		return
 	}
 
@@ -240,21 +235,21 @@ func (h *Handlers) RestoreActivity(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) DeleteActivity(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
-		writeError(w, http.StatusBadRequest, "id must be a positive integer")
+		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
 	deleted, err := HardDelete(r.Context(), h.Pool, id)
 	if err != nil {
 		if errors.Is(err, ErrHasDependents) {
-			writeError(w, http.StatusConflict, err.Error())
+			api.WriteError(w, http.StatusConflict, err.Error())
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "failed to delete activity")
+		api.WriteError(w, http.StatusInternalServerError, "failed to delete activity")
 		return
 	}
 	if !deleted {
-		writeError(w, http.StatusNotFound, "activity not found")
+		api.WriteError(w, http.StatusNotFound, "activity not found")
 		return
 	}
 

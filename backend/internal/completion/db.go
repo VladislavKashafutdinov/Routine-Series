@@ -65,7 +65,7 @@ func ListByDateRange(ctx context.Context, pool *pgxpool.Pool, activityID int, fr
 	}
 	defer rows.Close()
 
-	var results []Completion
+	results := []Completion{}
 	for rows.Next() {
 		var c Completion
 		if err := rows.Scan(&c.ID, &c.ActivityID, &c.Date); err != nil {
