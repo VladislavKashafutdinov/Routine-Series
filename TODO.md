@@ -3,7 +3,7 @@
 ## Взять в работу
 
 - [x] [Экспорт и импорт через API](BACKEND_2_FRONTEND_API_PLAN.md#10-экспорт-и-импорт-через-api)
-- [ ] [Удаление Dexie](BACKEND_2_FRONTEND_API_PLAN.md#11-удаление-dexie)
+- [x] [Удаление Dexie](BACKEND_2_FRONTEND_API_PLAN.md#11-удаление-dexie)
 
 ## Отложено
 

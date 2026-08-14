@@ -132,7 +132,7 @@
 
 ---
 
-## 11. Удаление Dexie
+## 11. ✅ Удаление Dexie
 
 Удалить пакет `dexie` (`npm uninstall dexie`). Удалить `src/db/db.ts` и директорию `src/db/`. Убедиться что `npm run build` и `npm run test` проходят.
 
