@@ -180,3 +180,15 @@ API отдаёт поля в snake_case (`created_at`, `series_length`, `activit
 - Изменение `SeriesDefinition` (поменяли длину или награду)
 - Изменение `RewardIssue` (добавили/удалили запись о выдаче)
 - Перемотка времени в целях тестирования
+
+## Деплой на GitHub Pages
+
+Фронтенд деплоится автоматически при пуше в `master` — workflow [.github/workflows/deploy.yml](.github/workflows/deploy.yml).
+
+Адрес бэкенда вшивается в бандл на этапе сборки из переменной `VITE_API_BASE_URL` ([src/api/fetch.ts](src/api/fetch.ts)). В CI значение берётся из GitHub-переменной репозитория:
+
+- Задать: GitHub → Settings → Secrets and variables → Actions → Variables → `VITE_API_BASE_URL` (например, `https://routine-series.onrender.com`)
+- Workflow передаёт её в шаг сборки: `VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}`
+- Если переменная не задана, фронт обращается к API по относительному пути `/api/...` — на GitHub Pages это работать не будет; локально такие запросы обслуживает Vite-прокси
+
+Бэкенд должен разрешать CORS с origin'а GitHub Pages — переменная `ALLOWED_ORIGINS` на бэке (по умолчанию включает `https://*.github.io`), см. [backend/README.md](backend/README.md).
