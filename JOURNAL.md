@@ -162,3 +162,8 @@
 - п.7 «Параметры серии через API»: теневые мутации создания/удаления seriesDefinition (`seriesDefinitions.ts`), попутно исправлены conditional hooks в SeriesDefinitionTab
 - п.8 «Награды через API»: теневые мутации create/update/delete (`rewardIssues.ts`), типы `ApiRewardIssue`, `ApiPaginatedRewardIssues`, `toRewardIssue()`
 - п.9 «Переключение чтения с Dexie на API»: `ActivitiesProvider`/`ActivitiesContext` — данные загружаются через API, `useActivities` стал консьюмером контекста, `main.tsx` обёрнут в провайдер, Dexie-чтение (liveQuery) убрано
+- п.10 «Экспорт и импорт через API»: DataActions переведён с Dexie на API — экспорт собирает данные через API-чтение, импорт через `POST /api/v1/import`; добавлены `dataimport.ts`, экспортные типы и обратный маппинг
+- п.11 «Удаление Dexie»: пакет `dexie` удалён, `src/db/db.ts` удалён
+- Обновлена документация после миграции: README.md, CLAUDE.md, BACKEND_DEVELOPING_PLAN.md
+- Ветка `front-backend-integration` влита в master (PR #1), фронт на GitHub Pages работает через API и БД на хосте
+- Деплой: адрес API задаётся переменной репозитория `VITE_API_BASE_URL`

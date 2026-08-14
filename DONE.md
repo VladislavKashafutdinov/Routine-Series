@@ -4,6 +4,13 @@
 
 ---
 
+### 2026-08-14 — Подключение фронта к API: завершение (п. 10–11)
+
+- **п. 10. Экспорт/импорт через API:** DataActions переведён с Dexie на API — экспорт собирает данные через API-чтение, импорт через `POST /api/v1/import`; добавлены `dataimport.ts`, экспортные типы, обратный маппинг
+- **п. 11. Удаление Dexie:** пакет `dexie` удалён, `src/db/db.ts` удалён
+- Обновлены README.md, CLAUDE.md, BACKEND_DEVELOPING_PLAN.md после миграции
+- Ветка влита в master (PR #1), фронт на GitHub Pages работает через API; `VITE_API_BASE_URL` задаётся переменной репозитория
+
 ### 2026-08-14 — Подключение фронта к API: чтение через API (п. 9)
 
 - `ActivitiesProvider`/`ActivitiesContext`: данные загружаются через API (активности, series-definitions, completions, reward-issues)
