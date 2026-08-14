@@ -27,7 +27,7 @@ gh run list --workflow=deploy.yml --limit=1 --json status,conclusion,displayTitl
 
 ## Architecture
 
-Single-page React app. No router, no server. Data lives in IndexedDB via Dexie.js (`src/db/db.ts`).
+Single-page React app. No router. Data lives in PostgreSQL behind a Go REST API (`backend/`); the frontend talks to it through `src/api/` and a shared `ActivitiesProvider` context. After every mutation the provider reloads the dataset from the API.
 
 ### Data flow
 
@@ -38,8 +38,12 @@ See [README.md § Data flow](README.md#data-flow) for the full diagram.
 | File | Role |
 |---|---|
 | `src/types/index.ts` | All TS interfaces (`Activity`, `SeriesDefinition`, `Completion`, `ActivityWithStreak`, `ComputedSeries`) |
-| `src/db/db.ts` | Dexie instance, schema v2 (activities, seriesDefinitions, completions, rewardIssues) |
-| `src/hooks/useActivities.ts` | Single data hook: `liveQuery`, mutations, `latestDef()` |
+| `src/api/types.ts` | API contract types (snake_case) + export/import payload types |
+| `src/api/mapping.ts` | snake_case ↔ camelCase conversion, date strings ↔ `Date` |
+| `src/api/fetch.ts` | `apiFetch()` wrapper + `ApiFetchError` (HTTP status) |
+| `src/api/*.ts` | Endpoint functions per API section (activities, completions, rewardIssues, seriesDefinitions, dataimport) |
+| `src/hooks/ActivitiesContext.tsx` | Shared data provider: API loading, all mutations, reload after change |
+| `src/hooks/useActivities.ts` | Thin wrapper: `useActivities()` (reads context) + `latestDef()` |
 | `src/hooks/VirtualTodayContext.tsx` | Virtual today — provider + `useVirtualToday` |
 | `src/utils/date.ts` | `today()`, `dayDiff()` |
 | `src/utils/series.ts` | `computeSeries()`, `isGapBreak()`, `findCurrentSeries()` |
@@ -51,7 +55,7 @@ See [README.md § Data flow](README.md#data-flow) for the full diagram.
 
 ### Database schema
 
-Current schema is described in [README.md § Структура данных](README.md#структура-данных).
+Logical data model: [README.md § Структура данных](README.md#структура-данных). PostgreSQL schema and migrations: `backend/migrations/` (see [backend/README.md](backend/README.md)).
 
 ## Workflow constraints
 
@@ -84,9 +88,9 @@ Current schema is described in [README.md § Структура данных](RE
 
 - **No routing** — page switching via `Page` state (`'dashboard' | 'monitoring' | 'archive'`).
 - **No CSS framework** — plain CSS with BEM-like naming. Themes via `prefers-color-scheme: dark` media query and CSS custom properties.
-- **No `dexie-react-hooks`** — uses Dexie's built-in `liveQuery()` + React `useEffect`/`useState` to avoid an extra dependency.
+- **API-first data** — no local storage: all reads/writes go through the REST API; after each mutation the shared `ActivitiesProvider` reloads the full dataset.
 - **`toggleDone` is an undo** — clicking "Mark done" adds a completion; clicking again on the same day removes it.
-- **Soft-delete** — `deleteActivity` sets `archived: true` if completions exist, otherwise hard-deletes. Archived activities are filtered out in `liveQuery`.
+- **Soft-delete** — deleting an activity with completions/reward issues archives it (`archived: true`); without them — hard delete. Same rule on the backend: `DELETE` returns 409 if dependents exist.
 - **Series are computed, not stored** — no Series table. Status, streak counts, and completion history are derived from `Completion` records + `SeriesDefinition` parameters. See [README § Как формируются серии](README.md#как-формируются-серии).
 - **SeriesDefinition versioning** — `seriesLength`, `reward`, `currency` are not on `Activity`. They live in `SeriesDefinition` with `createdAt`. Changing params creates a new version; old series keep their old params.
 - **Time travel** — `TimeOffsetContext` stores day offset; `today()` and `getDateRange()` accept optional offset parameter.

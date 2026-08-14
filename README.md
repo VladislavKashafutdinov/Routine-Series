@@ -11,9 +11,9 @@
 ```
 User action
   (add / toggle done / update name / delete / change virtual date)
-  → useActivities / VirtualTodayContext
-    → Dexie CRUD on IndexedDB tables
-      → liveQuery subscription fires (re-subscribes on virtualToday change)
+  → ActivitiesProvider (useActivities читает общий контекст)
+    → src/api/* → REST API (Go-бэкенд, PostgreSQL)
+      → после каждой мутации load() перечитывает все данные с API
         → build() for each activity:
           - collects completions, rewardIssues, seriesDefinitions per activity
           - checks today's completion → isDoneToday
@@ -23,72 +23,78 @@ User action
           → Components re-render with updated data
 ```
 
-Все мутации данных проходят через `useActivities()` — компоненты никогда не обращаются к `db` напрямую.
+Все мутации данных проходят через `useActivities()` (ActivitiesProvider); напрямую с API работают только функции чтения/импорта-экспорта в `src/api/` и `DataActions`.
 `computeSeries` вызывается в компонентах (ActivityAccordion, RewardCounters) с актуальным `virtualToday` из контекста — гарантирует консистентность при перемотке времени.
 Расчёт наград (`calcEarnedByCurrency`, `calcIssuedByCurrency`, `calcUnissuedByCurrency`) — в `utils/rewards.ts`.
 `TimeTravel` управляет `virtualToday` через `setVirtualToday`, вычисляя offset от реального `today()` только для отображения.
 
 ## Технологии
 
-- **Первый этап**: React SPA (Vite + TypeScript), без сервера
-- **Хранение данных**: IndexedDB (браузер), через Dexie.js
-- **Запуск**: `npm run dev` — единая точка входа
-- **В перспективе**: .NET backend API для синхронизации и доступа с любого устройства
+- **Фронтенд**: React SPA (Vite + TypeScript), без роутера
+- **Бэкенд**: Go REST API + PostgreSQL (Render) — см. [backend/README.md](backend/README.md)
+- **Связь**: fetch через `src/api/` — типы контракта (`types.ts`), маппинг snake_case → camelCase (`mapping.ts`), обёртка `apiFetch` (`fetch.ts`) и файлы функций по разделам API
+- **Запуск**: фронтенд — `npm run dev`; бэкенд — `go run ./cmd/server` (в `backend/`)
 
 ## Реализованная схема вложенности компонентов
 
 Актуально на момент последнего изменения кода. Обновляется после каждого выполненного пункта из TODO.md.
 
 ```
-App
-├── AppHeader
-│   ├── LangSwitcher
-│   ├── PageTabs                («Выполнение» | «Мониторинг» | «Архив»)
-│   └── TimeTravel              (◀ YYYY-MM-DD ▶ «Сегодня», VirtualTodayContext)
-│
-├── [«Выполнение»] Dashboard
-│   ├── AddActivity             (название + длина/награда/валюта)
-│   ├── Section «Не выполнено»
-│   │   └── ActivityCard[]
-│   │       ├── EditableName    (inline-редактирование)
-│   │       ├── SeriesProgress  (квадратики, без кликов)
-│   │       ├── ToggleDoneBtn   («Отметить»)
-│   │       └── DeleteButton    (×, с подтверждением)
-│   └── Section «Выполнено»
-│       └── ActivityCard[]
-│           ├── EditableName
-│           ├── SeriesProgress
-│           ├── ToggleDoneBtn   («Отменить»)
-│           └── DeleteButton
-│
-├── [«Мониторинг»] MonitoringPage
-│   └── ActivityAccordion[]     (один открыт одновременно, computeSeries на месте)
-│       ├── Header: activity.name + UnissuedRow[] (unissued > 0 per-currency) + текущая серия (SeriesWidget)
-│       ├── UnissuedRow          (currency, amount, кнопка → IssueRewardModal)
-│       ├── IssueRewardModal     (оверлей, initialCurrency + defaultAmount из пропсов)
-│       ├── TabSwitcher         («Параметры» / «История серий» / «История начислений» / «Календарь»)
-│       ├── [defs] SeriesDefinitionTab
-│       │   ├── Таблица всех SeriesDefinition (длина / награда / валюта / дата / удалить)
-│       │   └── Форма добавления нового (длина / награда / валюта)
-│       ├── [series] SeriesHistoryTab
-│       │   ├── Группы по SeriesDefinition (заголовок: длина · награда · дата)
-│       │   │   └── SeriesWidget[]  (swidget__progress: даты + квадратики; swidget__badge: статус)
-│       │   └── Paginator       (◀ N/M ▶)
-│       ├── [rewards] RewardHistoryTab
-│       │   ├── RewardCounters  (earned / issued / unissued по валютам)
-│       │   ├── Таблица (дата | сумма | валюта | действия)
-│       │   ├── EditableCell    (клик → input, Enter/blur → updateRewardIssue, Esc → отмена)
-│       │   ├── DeleteButton    (confirm → deleteRewardIssue)
-│       │   └── Paginator       (◀ N/M ▶)
-│       └── [completions] CompletionsTab
-│           ├── Календарь по месяцам (по 3 месяца, сетка)
-│           ├── Клик по дню → тоггл completion
-│           └── Пагинация (◀ ▶ по блокам)
-│
-└── [«Архив»] ArchivePage
-    └── ArchivedActivityRow[]
-        ├── Название + количество completions
-        └── RestoreButton      (confirm → unarchiveActivity)
+main.tsx
+└── LocaleProvider
+    └── VirtualTodayProvider
+        └── ActivitiesProvider       (общее хранилище данных: загрузка из API + все мутации)
+            └── SeriesProvider       (computeSeries для всех активностей)
+                └── App
+                    ├── AppHeader
+                    │   ├── LangSwitcher
+                    │   ├── PageTabs                («Выполнение» | «Мониторинг» | «Архив»)
+                    │   ├── DataActions             (⤓ экспорт / ⤒ импорт через API)
+                    │   └── TimeTravel              (◀ YYYY-MM-DD ▶ «Сегодня», VirtualTodayContext)
+                    │
+                    ├── [«Выполнение»] Dashboard
+                    │   ├── AddActivity             (название + длина/награда/валюта)
+                    │   ├── Section «Не выполнено»
+                    │   │   └── ActivityCard[]
+                    │   │       ├── EditableName    (inline-редактирование)
+                    │   │       ├── SeriesProgress  (квадратики, без кликов)
+                    │   │       ├── ToggleDoneBtn   («Отметить»)
+                    │   │       └── DeleteButton    (×, с подтверждением)
+                    │   └── Section «Выполнено»
+                    │       └── ActivityCard[]
+                    │           ├── EditableName
+                    │           ├── SeriesProgress
+                    │           ├── ToggleDoneBtn   («Отменить»)
+                    │           └── DeleteButton
+                    │
+                    ├── [«Мониторинг»] MonitoringPage
+                    │   └── ActivityAccordion[]     (один открыт одновременно, computeSeries на месте)
+                    │       ├── Header: activity.name + UnissuedRow[] (unissued > 0 per-currency) + текущая серия (SeriesWidget)
+                    │       ├── UnissuedRow          (currency, amount, кнопка → IssueRewardModal)
+                    │       ├── IssueRewardModal     (оверлей, initialCurrency + defaultAmount из пропсов)
+                    │       ├── TabSwitcher         («Параметры» / «История серий» / «История начислений» / «Календарь»)
+                    │       ├── [defs] SeriesDefinitionTab
+                    │       │   ├── Таблица всех SeriesDefinition (длина / награда / валюта / дата / удалить)
+                    │       │   └── Форма добавления нового (длина / награда / валюта)
+                    │       ├── [series] SeriesHistoryTab
+                    │       │   ├── Группы по SeriesDefinition (заголовок: длина · награда · дата)
+                    │       │   │   └── SeriesWidget[]  (swidget__progress: даты + квадратики; swidget__badge: статус)
+                    │       │   └── Paginator       (◀ N/M ▶)
+                    │       ├── [rewards] RewardHistoryTab
+                    │       │   ├── RewardCounters  (earned / issued / unissued по валютам)
+                    │       │   ├── Таблица (дата | сумма | валюта | действия)
+                    │       │   ├── EditableCell    (клик → input, Enter/blur → updateRewardIssue, Esc → отмена)
+                    │       │   ├── DeleteButton    (confirm → deleteRewardIssue)
+                    │       │   └── Paginator       (◀ N/M ▶)
+                    │       └── [completions] CompletionsTab
+                    │           ├── Календарь по месяцам (по 3 месяца, сетка)
+                    │           ├── Клик по дню → тоггл completion
+                    │           └── Пагинация (◀ ▶ по блокам)
+                    │
+                    └── [«Архив»] ArchivePage
+                        └── ArchivedActivityRow[]
+                            ├── Название + количество completions
+                            └── RestoreButton      (confirm → unarchiveActivity)
 ```
 
 ## Структура данных
@@ -131,20 +137,12 @@ RewardIssue {
 }
 ```
 
-### Индексы и миграции (Dexie)
+### Хранение
 
-Текущая версия БД: **v2**.
+Данные хранятся в PostgreSQL через REST API (Go-бэкенд, см. [backend/README.md](backend/README.md)).
+Логическая модель та же, что описана выше; таблицы и миграции — в `backend/migrations/`.
 
-| Таблица | Первичный ключ | Индексы |
-|---|---|---|
-| `activities` | `++id` (auto) | `name`, `createdAt` |
-| `seriesDefinitions` | `++id` (auto) | `activityId`, `createdAt` |
-| `completions` | `++id` (auto) | `activityId`, `date`, `[activityId+date]` (compound) |
-| `rewardIssues` | `++id` (auto) | `activityId`, `date` |
-
-Составной индекс `[activityId+date]` в `completions` обеспечивает эффективную проверку «была ли эта активность выполнена в эту дату» — одна операция `.where({activityId, date})` вместо перебора.
-
-**Миграция v1 → v2:** при обновлении для каждой существующей активности создаётся `SeriesDefinition` с копией её старых параметров (`seriesLength`, `reward`, `currency`) и датой создания, равной дате создания активности.
+API отдаёт поля в snake_case (`created_at`, `series_length`, `activity_id`, …), даты — строки RFC3339 / `YYYY-MM-DD`. Фронт конвертирует их в доменные типы через [src/api/mapping.ts](src/api/mapping.ts). Формат экспорта/импорта (`POST /api/v1/import`) — camelCase, совпадает с прежним форматом выгрузки.
 
 ### SeriesDefinition — версионирование параметров
 
