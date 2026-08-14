@@ -167,3 +167,5 @@
 - Обновлена документация после миграции: README.md, CLAUDE.md, BACKEND_DEVELOPING_PLAN.md
 - Ветка `front-backend-integration` влита в master (PR #1), фронт на GitHub Pages работает через API и БД на хосте
 - Деплой: адрес API задаётся переменной репозитория `VITE_API_BASE_URL`
+- Составлен план email-авторизации EMAIL_AUTH_DEV_PLAN.md, добавлено правило сквозных фич
+- 0. Первоначальная подготовка: создана ветка `dev`, создана dev-БД (бранч Neon dev), локальный бэк настроен на dev-БД, `http://localhost:5173` добавлен в CORS, локальный фронт настроен на локальный бэк
