@@ -12,8 +12,14 @@ import (
 
 // Handlers holds shared dependencies for auth endpoints.
 type Handlers struct {
-	Pool   *pgxpool.Pool
-	Config Config
+	Pool    *pgxpool.Pool
+	Config  Config
+	limiter *rateLimiter
+}
+
+// NewHandlers creates Handlers with an in-memory code rate limiter.
+func NewHandlers(pool *pgxpool.Pool, cfg Config) *Handlers {
+	return &Handlers{Pool: pool, Config: cfg, limiter: newRateLimiter()}
 }
 
 // Me godoc
@@ -45,6 +51,7 @@ func (h *Handlers) Me(w http.ResponseWriter, r *http.Request) {
 //	@Param			body	body		SendCodeRequest	true	"Email"
 //	@Success		200		{object}	map[string]string
 //	@Failure		400		{object}	api.ErrorResponse
+//	@Failure		429		{object}	api.ErrorResponse
 //	@Failure		500		{object}	api.ErrorResponse
 //	@Router			/auth/code [post]
 func (h *Handlers) SendCode(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +62,12 @@ func (h *Handlers) SendCode(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := req.Validate(); err != nil {
 		api.WriteError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if !h.limiter.allow("email:"+req.Email, limit{window: codeEmailWindow, max: codeLimitPerEmail}) ||
+		!h.limiter.allow("ip:"+clientIP(r), limit{window: codeIPWindow, max: codeLimitPerIP}) {
+		api.WriteError(w, http.StatusTooManyRequests, "too many requests, try again later")
 		return
 	}
 

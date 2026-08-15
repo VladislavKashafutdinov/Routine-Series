@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 
 import { requestLoginCode } from '@/api/auth';
@@ -9,6 +9,10 @@ import './LoginPage.css';
 
 type Step = 'email' | 'code';
 
+// Resend cooldown after a 429 from the server (matches the backend's
+// 1-code-per-minute-per-email window).
+const RATE_LIMIT_COOLDOWN_SECONDS = 60;
+
 /** Login screen: email → code → session (the app gates on AuthContext). */
 export function LoginPage() {
   const { t } = useLocale();
@@ -17,7 +21,14 @@ export function LoginPage() {
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [sending, setSending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(id);
+  }, [cooldown]);
 
   const sendCode = async () => {
     setError('');
@@ -26,7 +37,10 @@ export function LoginPage() {
       await requestLoginCode(email);
       setStep('code');
     } catch (err) {
-      if (err instanceof ApiFetchError && err.status === 400) {
+      if (err instanceof ApiFetchError && err.status === 429) {
+        setError(t.loginRateLimit);
+        setCooldown(RATE_LIMIT_COOLDOWN_SECONDS);
+      } else if (err instanceof ApiFetchError && err.status === 400) {
         setError(t.loginEmailError);
       } else {
         setError(t.loginSendError);
@@ -74,8 +88,8 @@ export function LoginPage() {
               autoFocus
             />
             {error && <p className="login-page__error">{error}</p>}
-            <button className="login-page__button" type="submit" disabled={sending}>
-              {sending ? t.loading : t.loginSendCode}
+            <button className="login-page__button" type="submit" disabled={sending || cooldown > 0}>
+              {cooldown > 0 ? t.loginWait(cooldown) : sending ? t.loading : t.loginSendCode}
             </button>
           </form>
         ) : (
@@ -96,7 +110,12 @@ export function LoginPage() {
             <button className="login-page__button" type="submit" disabled={sending || code.length !== 6}>
               {sending ? t.loading : t.loginVerifyCode}
             </button>
-            <button className="login-page__link" type="button" disabled={sending} onClick={() => void sendCode()}>
+            <button
+              className="login-page__link"
+              type="button"
+              disabled={sending || cooldown > 0}
+              onClick={() => void sendCode()}
+            >
               {t.loginResendCode}
             </button>
             <button

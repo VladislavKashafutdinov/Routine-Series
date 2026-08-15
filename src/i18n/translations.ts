@@ -76,6 +76,8 @@ export interface Strings {
   loginCodeError: string;
   loginResendCode: string;
   loginChangeEmail: string;
+  loginRateLimit: string;
+  loginWait: (n: number) => string;
 
   // AppHeader
   logoutButton: string;
@@ -148,6 +150,8 @@ const en: Strings = {
   loginCodeError: 'Invalid or expired code',
   loginResendCode: 'Resend code',
   loginChangeEmail: 'Change email',
+  loginRateLimit: 'Too many requests. Try again later.',
+  loginWait: (n: number) => `Wait ${n}s`,
 
   logoutButton: 'Sign out',
 
@@ -218,6 +222,8 @@ const ru: Strings = {
   loginCodeError: 'Неверный или устаревший код',
   loginResendCode: 'Отправить код ещё раз',
   loginChangeEmail: 'Сменить email',
+  loginRateLimit: 'Слишком много запросов. Попробуйте позже.',
+  loginWait: (n: number) => `Подождите ${n} с`,
 
   logoutButton: 'Выйти',
 

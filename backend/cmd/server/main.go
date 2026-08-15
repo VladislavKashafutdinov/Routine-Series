@@ -89,7 +89,7 @@ func main() {
 	r.Get("/api/v1/health", healthH.HealthCheck)
 
 	// Auth
-	authH := &auth.Handlers{Pool: pool, Config: authCfg}
+	authH := auth.NewHandlers(pool, authCfg)
 	r.Post("/api/v1/auth/code", authH.SendCode)
 	r.Post("/api/v1/auth/verify", authH.Verify)
 	r.Post("/api/v1/auth/refresh", authH.Refresh)
