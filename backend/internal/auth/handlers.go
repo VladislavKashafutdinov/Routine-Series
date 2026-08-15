@@ -10,16 +10,22 @@ import (
 	"routine-series/backend/internal/api"
 )
 
+// Logger for logging internal errors in auth handlers.
+type Logger interface {
+	Errorf(format string, args ...any)
+}
+
 // Handlers holds shared dependencies for auth endpoints.
 type Handlers struct {
 	Pool    *pgxpool.Pool
 	Config  Config
+	Logger  Logger
 	limiter *rateLimiter
 }
 
 // NewHandlers creates Handlers with an in-memory code rate limiter.
-func NewHandlers(pool *pgxpool.Pool, cfg Config) *Handlers {
-	return &Handlers{Pool: pool, Config: cfg, limiter: newRateLimiter()}
+func NewHandlers(pool *pgxpool.Pool, cfg Config, logger Logger) *Handlers {
+	return &Handlers{Pool: pool, Config: cfg, Logger: logger, limiter: newRateLimiter()}
 }
 
 // Me godoc
@@ -73,16 +79,19 @@ func (h *Handlers) SendCode(w http.ResponseWriter, r *http.Request) {
 
 	code, err := generateCode()
 	if err != nil {
+		h.Logger.Errorf("generate login code: %v", err)
 		api.WriteError(w, http.StatusInternalServerError, "failed to generate code")
 		return
 	}
 
 	if err := UpsertLoginCode(r.Context(), h.Pool, req.Email, hashToken(code), loginCodeTTL); err != nil {
+		h.Logger.Errorf("store login code for %s: %v", req.Email, err)
 		api.WriteError(w, http.StatusInternalServerError, "failed to store code")
 		return
 	}
 
 	if err := h.Config.sendCodeEmail(req.Email, code); err != nil {
+		h.Logger.Errorf("send login code to %s: %v", req.Email, err)
 		api.WriteError(w, http.StatusInternalServerError, "failed to send code")
 		return
 	}
