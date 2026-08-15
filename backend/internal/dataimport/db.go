@@ -13,9 +13,9 @@ import (
 	"routine-series/backend/internal/seriesdefinition"
 )
 
-// ImportAll clears all tables and inserts the given data in a single transaction.
+// ImportAll clears the user's data and inserts the given data in a single transaction.
 func ImportAll(
-	ctx context.Context, pool *pgxpool.Pool,
+	ctx context.Context, pool *pgxpool.Pool, userID int,
 	activities []activity.Activity,
 	definitions []seriesdefinition.SeriesDefinition,
 	completions []completion.Completion,
@@ -29,18 +29,22 @@ func ImportAll(
 	}
 	defer tx.Rollback(ctx)
 
-	_, err = tx.Exec(ctx, `TRUNCATE activities, series_definitions, completions, reward_issues RESTART IDENTITY CASCADE`)
+	_, err = tx.Exec(ctx, `
+		DELETE FROM completions c USING activities a WHERE c.activity_id = a.id AND a.user_id = $1;
+		DELETE FROM reward_issues ri USING activities a WHERE ri.activity_id = a.id AND a.user_id = $1;
+		DELETE FROM series_definitions sd USING activities a WHERE sd.activity_id = a.id AND a.user_id = $1;
+		DELETE FROM activities WHERE user_id = $1`, userID)
 	if err != nil {
-		return stats, fmt.Errorf("truncate: %w", err)
+		return stats, fmt.Errorf("clear user data: %w", err)
 	}
 
 	if len(activities) > 0 {
 		n, err := tx.CopyFrom(ctx,
 			pgx.Identifier{"activities"},
-			[]string{"id", "name", "archived", "created_at"},
+			[]string{"id", "name", "archived", "created_at", "user_id"},
 			pgx.CopyFromSlice(len(activities), func(i int) ([]any, error) {
 				a := activities[i]
-				return []any{a.ID, a.Name, a.Archived, a.CreatedAt}, nil
+				return []any{a.ID, a.Name, a.Archived, a.CreatedAt, userID}, nil
 			}),
 		)
 		if err != nil {

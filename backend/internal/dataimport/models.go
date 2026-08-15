@@ -12,10 +12,10 @@ import (
 
 // Payload is the structure of an imported JSON file.
 type Payload struct {
-	Activities        []Activity        `json:"activities"`
+	Activities        []Activity         `json:"activities"`
 	SeriesDefinitions []SeriesDefinition `json:"seriesDefinitions"`
-	Completions       []Completion      `json:"completions"`
-	RewardIssues      []RewardIssue     `json:"rewardIssues"`
+	Completions       []Completion       `json:"completions"`
+	RewardIssues      []RewardIssue      `json:"rewardIssues"`
 }
 
 // Activity matches the frontend activity export format.
@@ -28,12 +28,12 @@ type Activity struct {
 
 // SeriesDefinition matches the frontend seriesDefinition export format.
 type SeriesDefinition struct {
-	ID           int    `json:"id"`
-	ActivityID   int    `json:"activityId"`
-	SeriesLength int    `json:"seriesLength"`
+	ID           int     `json:"id"`
+	ActivityID   int     `json:"activityId"`
+	SeriesLength int     `json:"seriesLength"`
 	Reward       float64 `json:"reward"`
-	Currency     string `json:"currency"`
-	CreatedAt    string `json:"createdAt"`
+	Currency     string  `json:"currency"`
+	CreatedAt    string  `json:"createdAt"`
 }
 
 // Completion matches the frontend completion export format.

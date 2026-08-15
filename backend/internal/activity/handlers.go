@@ -10,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"routine-series/backend/internal/api"
+	"routine-series/backend/internal/auth"
 )
 
 // Handlers holds shared dependencies.
@@ -27,8 +28,15 @@ type Handlers struct {
 //	@Param			body	body		CreateActivityRequest	true	"Activity data"
 //	@Success		201		{object}	ActivityWithDef
 //	@Failure		400		{object}	api.ErrorResponse
+//	@Failure		401		{object}	api.ErrorResponse
 //	@Router			/activities [post]
 func (h *Handlers) CreateActivity(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	var req CreateActivityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		api.WriteError(w, http.StatusBadRequest, "invalid JSON body")
@@ -39,7 +47,7 @@ func (h *Handlers) CreateActivity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := Create(r.Context(), h.Pool, req.Name, req.SeriesLength, req.Reward, req.Currency)
+	result, err := Create(r.Context(), h.Pool, userID, req.Name, req.SeriesLength, req.Reward, req.Currency)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to create activity")
 		return
@@ -56,9 +64,16 @@ func (h *Handlers) CreateActivity(w http.ResponseWriter, r *http.Request) {
 //	@Tags			activities
 //	@Produce		json
 //	@Success		200	{array}		ActivityWithDef
+//	@Failure		401	{object}	api.ErrorResponse
 //	@Router			/activities [get]
 func (h *Handlers) ListActivities(w http.ResponseWriter, r *http.Request) {
-	activities, err := GetAllActive(r.Context(), h.Pool)
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	activities, err := GetAllActive(r.Context(), h.Pool, userID)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to list activities")
 		return
@@ -73,9 +88,16 @@ func (h *Handlers) ListActivities(w http.ResponseWriter, r *http.Request) {
 //	@Tags			activities
 //	@Produce		json
 //	@Success		200	{array}		ActivityWithDef
+//	@Failure		401	{object}	api.ErrorResponse
 //	@Router			/activities/archived [get]
 func (h *Handlers) ListArchivedActivities(w http.ResponseWriter, r *http.Request) {
-	activities, err := GetAllArchived(r.Context(), h.Pool)
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	activities, err := GetAllArchived(r.Context(), h.Pool, userID)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to list archived activities")
 		return
@@ -92,16 +114,23 @@ func (h *Handlers) ListArchivedActivities(w http.ResponseWriter, r *http.Request
 //	@Param			id	path		int	true	"Activity ID"
 //	@Success		200	{object}	ActivityWithDef
 //	@Failure		400	{object}	api.ErrorResponse
+//	@Failure		401	{object}	api.ErrorResponse
 //	@Failure		404	{object}	api.ErrorResponse
 //	@Router			/activities/{id} [get]
 func (h *Handlers) GetActivity(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
 		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
-	a, err := GetByID(r.Context(), h.Pool, id)
+	a, err := GetByID(r.Context(), h.Pool, userID, id)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to get activity")
 		return
@@ -125,9 +154,16 @@ func (h *Handlers) GetActivity(w http.ResponseWriter, r *http.Request) {
 //	@Param			body	body		UpdateActivityRequest	true	"New name"
 //	@Success		200		{object}	ActivityWithDef
 //	@Failure		400		{object}	api.ErrorResponse
+//	@Failure		401		{object}	api.ErrorResponse
 //	@Failure		404		{object}	api.ErrorResponse
 //	@Router			/activities/{id} [patch]
 func (h *Handlers) UpdateActivity(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
 		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
@@ -144,7 +180,7 @@ func (h *Handlers) UpdateActivity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	found, err := UpdateName(r.Context(), h.Pool, id, req.Name)
+	found, err := UpdateName(r.Context(), h.Pool, userID, id, req.Name)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to update activity")
 		return
@@ -154,7 +190,7 @@ func (h *Handlers) UpdateActivity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a, _ := GetByID(r.Context(), h.Pool, id)
+	a, _ := GetByID(r.Context(), h.Pool, userID, id)
 	json.NewEncoder(w).Encode(a)
 }
 
@@ -167,16 +203,23 @@ func (h *Handlers) UpdateActivity(w http.ResponseWriter, r *http.Request) {
 //	@Param			id	path		int	true	"Activity ID"
 //	@Success		204
 //	@Failure		400	{object}	api.ErrorResponse
+//	@Failure		401	{object}	api.ErrorResponse
 //	@Failure		404	{object}	api.ErrorResponse
 //	@Router			/activities/{id}/archive [post]
 func (h *Handlers) ArchiveActivity(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
 		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
-	found, err := Archive(r.Context(), h.Pool, id)
+	found, err := Archive(r.Context(), h.Pool, userID, id)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to archive activity")
 		return
@@ -198,16 +241,23 @@ func (h *Handlers) ArchiveActivity(w http.ResponseWriter, r *http.Request) {
 //	@Param			id	path		int	true	"Activity ID"
 //	@Success		204
 //	@Failure		400	{object}	api.ErrorResponse
+//	@Failure		401	{object}	api.ErrorResponse
 //	@Failure		404	{object}	api.ErrorResponse
 //	@Router			/activities/{id}/restore [post]
 func (h *Handlers) RestoreActivity(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
 		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
-	found, err := Restore(r.Context(), h.Pool, id)
+	found, err := Restore(r.Context(), h.Pool, userID, id)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to restore activity")
 		return
@@ -229,17 +279,24 @@ func (h *Handlers) RestoreActivity(w http.ResponseWriter, r *http.Request) {
 //	@Param			id	path		int	true	"Activity ID"
 //	@Success		204
 //	@Failure		400	{object}	api.ErrorResponse
+//	@Failure		401	{object}	api.ErrorResponse
 //	@Failure		404	{object}	api.ErrorResponse
 //	@Failure		409	{object}	api.ErrorResponse
 //	@Router			/activities/{id} [delete]
 func (h *Handlers) DeleteActivity(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
 		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
-	deleted, err := HardDelete(r.Context(), h.Pool, id)
+	deleted, err := HardDelete(r.Context(), h.Pool, userID, id)
 	if err != nil {
 		if errors.Is(err, ErrHasDependents) {
 			api.WriteError(w, http.StatusConflict, err.Error())

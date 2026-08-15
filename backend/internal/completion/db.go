@@ -2,20 +2,38 @@ package completion
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// Toggle toggles a completion mark: if one exists for the date, deletes it; otherwise creates it.
+// ErrActivityNotFound is returned when the activity doesn't exist or doesn't
+// belong to the user.
+var ErrActivityNotFound = errors.New("activity not found")
+
+// Toggle toggles a completion mark for the user's activity: if one exists for
+// the date, deletes it; otherwise creates it.
 // Returns whether the mark was created (true) or deleted (false), and the affected completion.
-func Toggle(ctx context.Context, pool *pgxpool.Pool, activityID int, date string) (*ToggleResponse, error) {
+func Toggle(ctx context.Context, pool *pgxpool.Pool, userID, activityID int, date string) (*ToggleResponse, error) {
 	tx, err := pool.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("begin tx: %w", err)
 	}
 	defer tx.Rollback(ctx)
+
+	var owned int
+	err = tx.QueryRow(ctx,
+		`SELECT 1 FROM activities WHERE id = $1 AND user_id = $2`,
+		activityID, userID,
+	).Scan(&owned)
+	if err == pgx.ErrNoRows {
+		return nil, ErrActivityNotFound
+	}
+	if err != nil {
+		return nil, fmt.Errorf("check activity %d: %w", activityID, err)
+	}
 
 	var existingID int
 	err = tx.QueryRow(ctx,
@@ -52,13 +70,15 @@ func Toggle(ctx context.Context, pool *pgxpool.Pool, activityID int, date string
 	return &ToggleResponse{Created: false}, nil
 }
 
-// ListByDateRange returns all completions for an activity within the given date range.
-func ListByDateRange(ctx context.Context, pool *pgxpool.Pool, activityID int, from, to string) ([]Completion, error) {
+// ListByDateRange returns all completions of the user's activity within the given date range.
+func ListByDateRange(ctx context.Context, pool *pgxpool.Pool, userID, activityID int, from, to string) ([]Completion, error) {
 	rows, err := pool.Query(ctx,
-		`SELECT id, activity_id, date::text FROM completions
-		 WHERE activity_id = $1 AND date >= $2 AND date <= $3
-		 ORDER BY date`,
-		activityID, from, to,
+		`SELECT c.id, c.activity_id, c.date::text
+		 FROM completions c
+		 JOIN activities a ON a.id = c.activity_id
+		 WHERE c.activity_id = $1 AND a.user_id = $2 AND c.date >= $3 AND c.date <= $4
+		 ORDER BY c.date`,
+		activityID, userID, from, to,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("query completions: %w", err)

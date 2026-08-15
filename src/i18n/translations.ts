@@ -67,6 +67,21 @@ export interface Strings {
   restore: string;
   restoreConfirm: (name: string) => string;
 
+  // LoginPage
+  loginSendCode: string;
+  loginEmailError: string;
+  loginSendError: string;
+  loginSentTo: (email: string) => string;
+  loginVerifyCode: string;
+  loginCodeError: string;
+  loginResendCode: string;
+  loginChangeEmail: string;
+  loginRateLimit: string;
+  loginWait: (n: number) => string;
+
+  // AppHeader
+  logoutButton: string;
+
   // HistoryModal
   historyAria: (name: string) => string;
   daysSuffix: (n: number) => string;
@@ -127,6 +142,19 @@ const en: Strings = {
   restore: 'Restore',
   restoreConfirm: (name: string) => `Restore "${name}"?`,
 
+  loginSendCode: 'Send code',
+  loginEmailError: 'Enter a valid email',
+  loginSendError: 'Could not send the code. Try again later.',
+  loginSentTo: (email: string) => `Code sent to ${email}`,
+  loginVerifyCode: 'Sign in',
+  loginCodeError: 'Invalid or expired code',
+  loginResendCode: 'Resend code',
+  loginChangeEmail: 'Change email',
+  loginRateLimit: 'Too many requests. Try again later.',
+  loginWait: (n: number) => `Wait ${n}s`,
+
+  logoutButton: 'Sign out',
+
   historyAria: (name: string) => `History for ${name}`,
   daysSuffix: (n: number) => enPlural(n, 'day', 'days'),
   lastNDays: (n: number) => `Last ${n} days`,
@@ -185,6 +213,19 @@ const ru: Strings = {
   archiveEmpty: 'Архив пуст.',
   restore: 'Восстановить',
   restoreConfirm: (name: string) => `Восстановить «${name}»?`,
+
+  loginSendCode: 'Отправить код',
+  loginEmailError: 'Введите корректный email',
+  loginSendError: 'Не удалось отправить код. Попробуйте позже.',
+  loginSentTo: (email: string) => `Код отправлен на ${email}`,
+  loginVerifyCode: 'Войти',
+  loginCodeError: 'Неверный или устаревший код',
+  loginResendCode: 'Отправить код ещё раз',
+  loginChangeEmail: 'Сменить email',
+  loginRateLimit: 'Слишком много запросов. Попробуйте позже.',
+  loginWait: (n: number) => `Подождите ${n} с`,
+
+  logoutButton: 'Выйти',
 
   historyAria: (name: string) => `История: ${name}`,
   daysSuffix: (n: number) => ruPlural(n, 'день', 'дня', 'дней'),

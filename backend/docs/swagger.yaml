@@ -34,6 +34,41 @@ definitions:
       error:
         type: string
     type: object
+  auth.RefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  auth.SendCodeRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  auth.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+    type: object
+  auth.VerifyCodeRequest:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+    type: object
+  auth.VerifyResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+      user:
+        $ref: '#/definitions/auth.User'
+    type: object
   completion.Completion:
     properties:
       activity_id:
@@ -168,6 +203,10 @@ paths:
             items:
               $ref: '#/definitions/activity.ActivityWithDef'
             type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: List active activities
       tags:
       - activities
@@ -194,6 +233,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: Create activity
       tags:
       - activities
@@ -214,6 +257,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":
@@ -244,6 +291,10 @@ paths:
             $ref: '#/definitions/activity.ActivityWithDef'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":
@@ -280,6 +331,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -305,6 +360,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -328,6 +387,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":
@@ -360,6 +423,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: List series definitions
       tags:
       - series-definitions
@@ -388,6 +455,10 @@ paths:
             $ref: '#/definitions/seriesdefinition.SeriesDefinition'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":
@@ -421,6 +492,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -444,9 +519,158 @@ paths:
             items:
               $ref: '#/definitions/activity.ActivityWithDef'
             type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: List archived activities
       tags:
       - activities
+  /auth/code:
+    post:
+      consumes:
+      - application/json
+      description: Sends a 6-digit login code to the given email. Always responds
+        200 for valid emails to not reveal whether the email is registered.
+      parameters:
+      - description: Email
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.SendCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Request login code
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      description: Deletes the session identified by the Bearer token. Always returns
+        200.
+      parameters:
+      - description: Bearer <access token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Logout
+      tags:
+      - auth
+  /auth/me:
+    get:
+      description: Returns the authenticated user of the current session.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.User'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Current user
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Exchanges a valid refresh token for a new pair of tokens (rotation).
+      parameters:
+      - description: Refresh token
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.VerifyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Refresh session
+      tags:
+      - auth
+  /auth/verify:
+    post:
+      consumes:
+      - application/json
+      description: Checks the login code, creates the user on first login and a new
+        session, and returns access/refresh tokens with the user.
+      parameters:
+      - description: Email and code
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.VerifyCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.VerifyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Verify login code
+      tags:
+      - auth
   /completions:
     get:
       description: Returns completions for an activity within a date range.
@@ -479,6 +703,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: List completions
       tags:
       - completions
@@ -504,6 +732,14 @@ paths:
             $ref: '#/definitions/completion.ToggleResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/api.ErrorResponse'
       summary: Toggle completion
@@ -545,6 +781,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: Import data
       tags:
       - import
@@ -576,6 +816,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: List reward issues
       tags:
       - rewards
@@ -601,6 +845,14 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: Create reward issue
       tags:
       - rewards
@@ -620,6 +872,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":
@@ -655,6 +911,10 @@ paths:
             $ref: '#/definitions/reward.RewardIssue'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":

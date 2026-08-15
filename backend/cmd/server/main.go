@@ -23,6 +23,7 @@ import (
 	"routine-series/backend/internal/activity"
 	"routine-series/backend/internal/api"
 	"routine-series/backend/internal/app"
+	"routine-series/backend/internal/auth"
 	"routine-series/backend/internal/completion"
 	"routine-series/backend/internal/dataimport"
 	"routine-series/backend/internal/dbpool"
@@ -40,6 +41,11 @@ func main() {
 	corsCfg, err := api.LoadCORSConfig()
 	if err != nil {
 		log.Fatalf("cors config error: %v", err)
+	}
+
+	authCfg, err := auth.LoadConfig()
+	if err != nil {
+		log.Fatalf("auth config error: %v", err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -82,38 +88,51 @@ func main() {
 	healthH := &health.Handlers{Pool: pool}
 	r.Get("/api/v1/health", healthH.HealthCheck)
 
-	// Activities
-	actH := &activity.Handlers{Pool: pool}
-	r.Get("/api/v1/activities", actH.ListActivities)
-	r.Get("/api/v1/activities/archived", actH.ListArchivedActivities)
-	r.Get("/api/v1/activities/{id}", actH.GetActivity)
-	r.Patch("/api/v1/activities/{id}", actH.UpdateActivity)
-	r.Delete("/api/v1/activities/{id}", actH.DeleteActivity)
-	r.Post("/api/v1/activities/{id}/archive", actH.ArchiveActivity)
-	r.Post("/api/v1/activities/{id}/restore", actH.RestoreActivity)
-	r.Post("/api/v1/activities", actH.CreateActivity)
+	// Auth
+	authH := auth.NewHandlers(pool, authCfg)
+	r.Post("/api/v1/auth/code", authH.SendCode)
+	r.Post("/api/v1/auth/verify", authH.Verify)
+	r.Post("/api/v1/auth/refresh", authH.Refresh)
+	r.Post("/api/v1/auth/logout", authH.Logout)
+	r.With(auth.RequireAuth(pool)).Get("/api/v1/auth/me", authH.Me)
 
-	// Series definitions
-	sdefH := &seriesdefinition.Handlers{Pool: pool}
-	r.Post("/api/v1/activities/{id}/series-definitions", sdefH.Create)
-	r.Get("/api/v1/activities/{id}/series-definitions", sdefH.List)
-	r.Delete("/api/v1/activities/{id}/series-definitions/{defId}", sdefH.Delete)
+	// Data API — everything under RequireAuth (health stays public for the host)
+	r.Group(func(r chi.Router) {
+		r.Use(auth.RequireAuth(pool))
 
-	// Completions
-	complH := &completion.Handlers{Pool: pool}
-	r.Get("/api/v1/completions", complH.List)
-	r.Post("/api/v1/completions/toggle", complH.Toggle)
+		// Activities
+		actH := &activity.Handlers{Pool: pool}
+		r.Get("/api/v1/activities", actH.ListActivities)
+		r.Get("/api/v1/activities/archived", actH.ListArchivedActivities)
+		r.Get("/api/v1/activities/{id}", actH.GetActivity)
+		r.Patch("/api/v1/activities/{id}", actH.UpdateActivity)
+		r.Delete("/api/v1/activities/{id}", actH.DeleteActivity)
+		r.Post("/api/v1/activities/{id}/archive", actH.ArchiveActivity)
+		r.Post("/api/v1/activities/{id}/restore", actH.RestoreActivity)
+		r.Post("/api/v1/activities", actH.CreateActivity)
 
-	// Rewards
-	rewardH := &reward.Handlers{Pool: pool}
-	r.Get("/api/v1/reward-issues", rewardH.List)
-	r.Post("/api/v1/reward-issues", rewardH.Create)
-	r.Patch("/api/v1/reward-issues/{id}", rewardH.Update)
-	r.Delete("/api/v1/reward-issues/{id}", rewardH.Delete)
+		// Series definitions
+		sdefH := &seriesdefinition.Handlers{Pool: pool}
+		r.Post("/api/v1/activities/{id}/series-definitions", sdefH.Create)
+		r.Get("/api/v1/activities/{id}/series-definitions", sdefH.List)
+		r.Delete("/api/v1/activities/{id}/series-definitions/{defId}", sdefH.Delete)
 
-	// Import
-	importH := &dataimport.Handlers{Pool: pool, Logger: logger}
-	r.Post("/api/v1/import", importH.ImportData)
+		// Completions
+		complH := &completion.Handlers{Pool: pool}
+		r.Get("/api/v1/completions", complH.List)
+		r.Post("/api/v1/completions/toggle", complH.Toggle)
+
+		// Rewards
+		rewardH := &reward.Handlers{Pool: pool}
+		r.Get("/api/v1/reward-issues", rewardH.List)
+		r.Post("/api/v1/reward-issues", rewardH.Create)
+		r.Patch("/api/v1/reward-issues/{id}", rewardH.Update)
+		r.Delete("/api/v1/reward-issues/{id}", rewardH.Delete)
+
+		// Import
+		importH := &dataimport.Handlers{Pool: pool, Logger: logger}
+		r.Post("/api/v1/import", importH.ImportData)
+	})
 
 	port := os.Getenv("PORT")
 	if port == "" {

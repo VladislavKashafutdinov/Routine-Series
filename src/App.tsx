@@ -6,17 +6,27 @@ import { Dashboard } from '@components/Dashboard/Dashboard';
 import { MonitoringPage } from '@components/MonitoringPage/MonitoringPage';
 import { ArchivePage } from '@components/ArchivePage/ArchivePage';
 import { DataActions } from '@components/DataActions/DataActions';
+import { LoginPage } from '@components/LoginPage/LoginPage';
+import { ActivitiesProvider } from '@/hooks/ActivitiesContext';
+import { SeriesProvider } from '@/hooks/SeriesContext';
+import { useAuth } from '@/hooks/AuthContext';
+import { useLocale } from '@/i18n/LocaleContext';
 import type { Page } from '@components/PageTabs/PageTabs';
 import './App.css';
 
-export default function App() {
+function MainApp() {
   const [page, setPage] = useState<Page>('dashboard');
+  const { logout } = useAuth();
+  const { t } = useLocale();
 
   return (
     <div className="app">
       <header className="app-header">
         <h1>Routine Series</h1>
         <LangSwitcher />
+        <button className="app-logout" type="button" onClick={() => void logout()}>
+          {t.logoutButton}
+        </button>
         <TimeTravel />
         <DataActions />
         <PageTabs page={page} onChange={setPage} />
@@ -27,5 +37,22 @@ export default function App() {
         {page === 'archive' && <ArchivePage />}
       </main>
     </div>
+  );
+}
+
+export default function App() {
+  const { status } = useAuth();
+
+  // Unauthenticated users see only the login screen; data providers mount
+  // (and load from the API) only once authenticated.
+  if (status === 'unauthenticated') return <LoginPage />;
+  if (status === 'loading') return null;
+
+  return (
+    <ActivitiesProvider>
+      <SeriesProvider>
+        <MainApp />
+      </SeriesProvider>
+    </ActivitiesProvider>
   );
 }

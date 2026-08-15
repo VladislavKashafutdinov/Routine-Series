@@ -43,58 +43,62 @@ User action
 main.tsx
 └── LocaleProvider
     └── VirtualTodayProvider
-        └── ActivitiesProvider       (общее хранилище данных: загрузка из API + все мутации)
-            └── SeriesProvider       (computeSeries для всех активностей)
-                └── App
-                    ├── AppHeader
-                    │   ├── LangSwitcher
-                    │   ├── PageTabs                («Выполнение» | «Мониторинг» | «Архив»)
-                    │   ├── DataActions             (⤓ экспорт / ⤒ импорт через API)
-                    │   └── TimeTravel              (◀ YYYY-MM-DD ▶ «Сегодня», VirtualTodayContext)
-                    │
-                    ├── [«Выполнение»] Dashboard
-                    │   ├── AddActivity             (название + длина/награда/валюта)
-                    │   ├── Section «Не выполнено»
-                    │   │   └── ActivityCard[]
-                    │   │       ├── EditableName    (inline-редактирование)
-                    │   │       ├── SeriesProgress  (квадратики, без кликов)
-                    │   │       ├── ToggleDoneBtn   («Отметить»)
-                    │   │       └── DeleteButton    (×, с подтверждением)
-                    │   └── Section «Выполнено»
-                    │       └── ActivityCard[]
-                    │           ├── EditableName
-                    │           ├── SeriesProgress
-                    │           ├── ToggleDoneBtn   («Отменить»)
-                    │           └── DeleteButton
-                    │
-                    ├── [«Мониторинг»] MonitoringPage
-                    │   └── ActivityAccordion[]     (один открыт одновременно, computeSeries на месте)
-                    │       ├── Header: activity.name + UnissuedRow[] (unissued > 0 per-currency) + текущая серия (SeriesWidget)
-                    │       ├── UnissuedRow          (currency, amount, кнопка → IssueRewardModal)
-                    │       ├── IssueRewardModal     (оверлей, initialCurrency + defaultAmount из пропсов)
-                    │       ├── TabSwitcher         («Параметры» / «История серий» / «История начислений» / «Календарь»)
-                    │       ├── [defs] SeriesDefinitionTab
-                    │       │   ├── Таблица всех SeriesDefinition (длина / награда / валюта / дата / удалить)
-                    │       │   └── Форма добавления нового (длина / награда / валюта)
-                    │       ├── [series] SeriesHistoryTab
-                    │       │   ├── Группы по SeriesDefinition (заголовок: длина · награда · дата)
-                    │       │   │   └── SeriesWidget[]  (swidget__progress: даты + квадратики; swidget__badge: статус)
-                    │       │   └── Paginator       (◀ N/M ▶)
-                    │       ├── [rewards] RewardHistoryTab
-                    │       │   ├── RewardCounters  (earned / issued / unissued по валютам)
-                    │       │   ├── Таблица (дата | сумма | валюта | действия)
-                    │       │   ├── EditableCell    (клик → input, Enter/blur → updateRewardIssue, Esc → отмена)
-                    │       │   ├── DeleteButton    (confirm → deleteRewardIssue)
-                    │       │   └── Paginator       (◀ N/M ▶)
-                    │       └── [completions] CompletionsTab
-                    │           ├── Календарь по месяцам (по 3 месяца, сетка)
-                    │           ├── Клик по дню → тоггл completion
-                    │           └── Пагинация (◀ ▶ по блокам)
-                    │
-                    └── [«Архив»] ArchivePage
-                        └── ArchivedActivityRow[]
-                            ├── Название + количество completions
-                            └── RestoreButton      (confirm → unarchiveActivity)
+        └── AuthProvider             (проверка сессии через /auth/me, verify() — вход по коду, токены в localStorage)
+            └── App                  (гейт: loading → пусто, unauthenticated → LoginPage; данные грузятся только для авторизованного)
+                ├── LoginPage        (вход по коду: форма email → форма кода → verify)
+                └── ActivitiesProvider       (общее хранилище данных: загрузка из API + все мутации)
+                    └── SeriesProvider       (computeSeries для всех активностей)
+                        └── MainApp
+                            ├── AppHeader
+                            │   ├── LangSwitcher
+                            │   ├── LogoutButton            («Выйти»: logout на сервер + очистка токенов)
+                            │   ├── PageTabs                («Выполнение» | «Мониторинг» | «Архив»)
+                            │   ├── DataActions             (⤓ экспорт / ⤒ импорт через API)
+                            │   └── TimeTravel              (◀ YYYY-MM-DD ▶ «Сегодня», VirtualTodayContext)
+                            │
+                            ├── [«Выполнение»] Dashboard
+                            │   ├── AddActivity             (название + длина/награда/валюта)
+                            │   ├── Section «Не выполнено»
+                            │   │   └── ActivityCard[]
+                            │   │       ├── EditableName    (inline-редактирование)
+                            │   │       ├── SeriesProgress  (квадратики, без кликов)
+                            │   │       ├── ToggleDoneBtn   («Отметить»)
+                            │   │       └── DeleteButton    (×, с подтверждением)
+                            │   └── Section «Выполнено»
+                            │       └── ActivityCard[]
+                            │           ├── EditableName
+                            │           ├── SeriesProgress
+                            │           ├── ToggleDoneBtn   («Отменить»)
+                            │           └── DeleteButton
+                            │
+                            ├── [«Мониторинг»] MonitoringPage
+                            │   └── ActivityAccordion[]     (один открыт одновременно, computeSeries на месте)
+                            │       ├── Header: activity.name + UnissuedRow[] (unissued > 0 per-currency) + текущая серия (SeriesWidget)
+                            │       ├── UnissuedRow          (currency, amount, кнопка → IssueRewardModal)
+                            │       ├── IssueRewardModal     (оверлей, initialCurrency + defaultAmount из пропсов)
+                            │       ├── TabSwitcher         («Параметры» / «История серий» / «История начислений» / «Календарь»)
+                            │       ├── [defs] SeriesDefinitionTab
+                            │       │   ├── Таблица всех SeriesDefinition (длина / награда / валюта / дата / удалить)
+                            │       │   └── Форма добавления нового (длина / награда / валюта)
+                            │       ├── [series] SeriesHistoryTab
+                            │       │   ├── Группы по SeriesDefinition (заголовок: длина · награда · дата)
+                            │       │   │   └── SeriesWidget[]  (swidget__progress: даты + квадратики; swidget__badge: статус)
+                            │       │   └── Paginator       (◀ N/M ▶)
+                            │       ├── [rewards] RewardHistoryTab
+                            │       │   ├── RewardCounters  (earned / issued / unissued по валютам)
+                            │       │   ├── Таблица (дата | сумма | валюта | действия)
+                            │       │   ├── EditableCell    (клик → input, Enter/blur → updateRewardIssue, Esc → отмена)
+                            │       │   ├── DeleteButton    (confirm → deleteRewardIssue)
+                            │       │   └── Paginator       (◀ N/M ▶)
+                            │       └── [completions] CompletionsTab
+                            │           ├── Календарь по месяцам (по 3 месяца, сетка)
+                            │           ├── Клик по дню → тоггл completion
+                            │           └── Пагинация (◀ ▶ по блокам)
+                            │
+                            └── [«Архив»] ArchivePage
+                                └── ArchivedActivityRow[]
+                                    ├── Название + количество completions
+                                    └── RestoreButton      (confirm → unarchiveActivity)
 ```
 
 ## Структура данных
