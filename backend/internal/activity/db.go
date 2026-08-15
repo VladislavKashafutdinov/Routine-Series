@@ -11,7 +11,7 @@ import (
 )
 
 // Create inserts an activity and its first series definition in a single transaction.
-func Create(ctx context.Context, pool *pgxpool.Pool, name string, seriesLength int, reward float64, currency string) (*ActivityWithDef, error) {
+func Create(ctx context.Context, pool *pgxpool.Pool, userID int, name string, seriesLength int, reward float64, currency string) (*ActivityWithDef, error) {
 	tx, err := pool.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("begin tx: %w", err)
@@ -20,8 +20,8 @@ func Create(ctx context.Context, pool *pgxpool.Pool, name string, seriesLength i
 
 	var a Activity
 	err = tx.QueryRow(ctx,
-		`INSERT INTO activities (name) VALUES ($1) RETURNING id, name, archived, created_at`,
-		name,
+		`INSERT INTO activities (name, user_id) VALUES ($1, $2) RETURNING id, name, archived, created_at`,
+		name, userID,
 	).Scan(&a.ID, &a.Name, &a.Archived, &a.CreatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("insert activity: %w", err)
@@ -57,9 +57,9 @@ LEFT JOIN LATERAL (
 ) sd ON true
 `
 
-// GetAllActive returns all non-archived activities with their latest series definition.
-func GetAllActive(ctx context.Context, pool *pgxpool.Pool) ([]ActivityWithDef, error) {
-	rows, err := pool.Query(ctx, withDefQuery+` WHERE a.archived = false ORDER BY a.id`)
+// GetAllActive returns all non-archived activities of the user with their latest series definition.
+func GetAllActive(ctx context.Context, pool *pgxpool.Pool, userID int) ([]ActivityWithDef, error) {
+	rows, err := pool.Query(ctx, withDefQuery+` WHERE a.user_id = $1 AND a.archived = false ORDER BY a.id`, userID)
 	if err != nil {
 		return nil, fmt.Errorf("query activities: %w", err)
 	}
@@ -67,9 +67,9 @@ func GetAllActive(ctx context.Context, pool *pgxpool.Pool) ([]ActivityWithDef, e
 	return scanWithDefs(rows)
 }
 
-// GetAllArchived returns all archived activities with their latest series definition.
-func GetAllArchived(ctx context.Context, pool *pgxpool.Pool) ([]ActivityWithDef, error) {
-	rows, err := pool.Query(ctx, withDefQuery+` WHERE a.archived = true ORDER BY a.id`)
+// GetAllArchived returns all archived activities of the user with their latest series definition.
+func GetAllArchived(ctx context.Context, pool *pgxpool.Pool, userID int) ([]ActivityWithDef, error) {
+	rows, err := pool.Query(ctx, withDefQuery+` WHERE a.user_id = $1 AND a.archived = true ORDER BY a.id`, userID)
 	if err != nil {
 		return nil, fmt.Errorf("query archived activities: %w", err)
 	}
@@ -77,9 +77,9 @@ func GetAllArchived(ctx context.Context, pool *pgxpool.Pool) ([]ActivityWithDef,
 	return scanWithDefs(rows)
 }
 
-// GetByID returns a single activity with its latest series definition, or nil if not found.
-func GetByID(ctx context.Context, pool *pgxpool.Pool, id int) (*ActivityWithDef, error) {
-	row := pool.QueryRow(ctx, withDefQuery+` WHERE a.id = $1`, id)
+// GetByID returns a single activity of the user with its latest series definition, or nil if not found.
+func GetByID(ctx context.Context, pool *pgxpool.Pool, userID, id int) (*ActivityWithDef, error) {
+	row := pool.QueryRow(ctx, withDefQuery+` WHERE a.user_id = $1 AND a.id = $2`, userID, id)
 
 	var a Activity
 	var d seriesdefinition.SeriesDefinition
@@ -96,40 +96,43 @@ func GetByID(ctx context.Context, pool *pgxpool.Pool, id int) (*ActivityWithDef,
 	return &ActivityWithDef{Activity: a, Definition: &d}, nil
 }
 
-// UpdateName updates the name of an activity by ID. Returns false if not found.
-func UpdateName(ctx context.Context, pool *pgxpool.Pool, id int, name string) (bool, error) {
-	tag, err := pool.Exec(ctx, `UPDATE activities SET name = $2 WHERE id = $1`, id, name)
+// UpdateName updates the name of the user's activity by ID. Returns false if not found.
+func UpdateName(ctx context.Context, pool *pgxpool.Pool, userID, id int, name string) (bool, error) {
+	tag, err := pool.Exec(ctx, `UPDATE activities SET name = $2 WHERE id = $1 AND user_id = $3`, id, name, userID)
 	if err != nil {
 		return false, fmt.Errorf("update activity %d: %w", id, err)
 	}
 	return tag.RowsAffected() > 0, nil
 }
 
-// Archive sets archived = true for an activity. Returns false if not found.
-func Archive(ctx context.Context, pool *pgxpool.Pool, id int) (bool, error) {
-	tag, err := pool.Exec(ctx, `UPDATE activities SET archived = true WHERE id = $1`, id)
+// Archive sets archived = true for the user's activity. Returns false if not found.
+func Archive(ctx context.Context, pool *pgxpool.Pool, userID, id int) (bool, error) {
+	tag, err := pool.Exec(ctx, `UPDATE activities SET archived = true WHERE id = $1 AND user_id = $2`, id, userID)
 	if err != nil {
 		return false, fmt.Errorf("archive activity %d: %w", id, err)
 	}
 	return tag.RowsAffected() > 0, nil
 }
 
-// Restore sets archived = false for an activity. Returns false if not found.
-func Restore(ctx context.Context, pool *pgxpool.Pool, id int) (bool, error) {
-	tag, err := pool.Exec(ctx, `UPDATE activities SET archived = false WHERE id = $1`, id)
+// Restore sets archived = false for the user's activity. Returns false if not found.
+func Restore(ctx context.Context, pool *pgxpool.Pool, userID, id int) (bool, error) {
+	tag, err := pool.Exec(ctx, `UPDATE activities SET archived = false WHERE id = $1 AND user_id = $2`, id, userID)
 	if err != nil {
 		return false, fmt.Errorf("restore activity %d: %w", id, err)
 	}
 	return tag.RowsAffected() > 0, nil
 }
 
-// HardDelete permanently deletes an activity and its series definitions.
+// HardDelete permanently deletes the user's activity and its series definitions.
 // Refuses to delete if completions or reward issues exist (returns false, ErrHasDependents).
 // Returns (true, nil) on success, (false, nil) if activity not found.
-func HardDelete(ctx context.Context, pool *pgxpool.Pool, id int) (bool, error) {
+func HardDelete(ctx context.Context, pool *pgxpool.Pool, userID, id int) (bool, error) {
 	// Check for dependents.
 	var count int
-	err := pool.QueryRow(ctx, `SELECT COUNT(*) FROM completions WHERE activity_id = $1`, id).Scan(&count)
+	err := pool.QueryRow(ctx, `
+		SELECT COUNT(*) FROM completions c
+		JOIN activities a ON a.id = c.activity_id
+		WHERE c.activity_id = $1 AND a.user_id = $2`, id, userID).Scan(&count)
 	if err != nil {
 		return false, fmt.Errorf("check completions for activity %d: %w", id, err)
 	}
@@ -137,7 +140,10 @@ func HardDelete(ctx context.Context, pool *pgxpool.Pool, id int) (bool, error) {
 		return false, ErrHasDependents
 	}
 
-	err = pool.QueryRow(ctx, `SELECT COUNT(*) FROM reward_issues WHERE activity_id = $1`, id).Scan(&count)
+	err = pool.QueryRow(ctx, `
+		SELECT COUNT(*) FROM reward_issues ri
+		JOIN activities a ON a.id = ri.activity_id
+		WHERE ri.activity_id = $1 AND a.user_id = $2`, id, userID).Scan(&count)
 	if err != nil {
 		return false, fmt.Errorf("check reward_issues for activity %d: %w", id, err)
 	}
@@ -152,12 +158,22 @@ func HardDelete(ctx context.Context, pool *pgxpool.Pool, id int) (bool, error) {
 	}
 	defer tx.Rollback(ctx)
 
+	// Make sure the activity belongs to the user before deleting dependents.
+	var owned int
+	err = tx.QueryRow(ctx, `SELECT 1 FROM activities WHERE id = $1 AND user_id = $2`, id, userID).Scan(&owned)
+	if err == pgx.ErrNoRows {
+		return false, nil
+	}
+	if err != nil {
+		return false, fmt.Errorf("check activity %d: %w", id, err)
+	}
+
 	_, err = tx.Exec(ctx, `DELETE FROM series_definitions WHERE activity_id = $1`, id)
 	if err != nil {
 		return false, fmt.Errorf("delete series_definitions for activity %d: %w", id, err)
 	}
 
-	tag, err := tx.Exec(ctx, `DELETE FROM activities WHERE id = $1`, id)
+	tag, err := tx.Exec(ctx, `DELETE FROM activities WHERE id = $1 AND user_id = $2`, id, userID)
 	if err != nil {
 		return false, fmt.Errorf("delete activity %d: %w", id, err)
 	}

@@ -203,6 +203,10 @@ paths:
             items:
               $ref: '#/definitions/activity.ActivityWithDef'
             type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: List active activities
       tags:
       - activities
@@ -229,6 +233,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: Create activity
       tags:
       - activities
@@ -249,6 +257,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":
@@ -279,6 +291,10 @@ paths:
             $ref: '#/definitions/activity.ActivityWithDef'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":
@@ -315,6 +331,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -340,6 +360,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -363,6 +387,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":
@@ -395,6 +423,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: List series definitions
       tags:
       - series-definitions
@@ -423,6 +455,10 @@ paths:
             $ref: '#/definitions/seriesdefinition.SeriesDefinition'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":
@@ -456,6 +492,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -479,6 +519,10 @@ paths:
             items:
               $ref: '#/definitions/activity.ActivityWithDef'
             type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: List archived activities
       tags:
       - activities
@@ -659,6 +703,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: List completions
       tags:
       - completions
@@ -684,6 +732,14 @@ paths:
             $ref: '#/definitions/completion.ToggleResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/api.ErrorResponse'
       summary: Toggle completion
@@ -725,6 +781,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: Import data
       tags:
       - import
@@ -756,6 +816,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: List reward issues
       tags:
       - rewards
@@ -781,6 +845,14 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
       summary: Create reward issue
       tags:
       - rewards
@@ -800,6 +872,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":
@@ -835,6 +911,10 @@ paths:
             $ref: '#/definitions/reward.RewardIssue'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/api.ErrorResponse'
         "404":

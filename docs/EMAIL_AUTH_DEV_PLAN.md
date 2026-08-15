@@ -71,7 +71,7 @@
 
 Модифицируем апи манипуляций с данными на привязку к пользователю. Фронт не меняется — токен уже отправляется в каждом запросе.
 
-- [ ] Привязать всё апи данных к пользователю за один заход: RequireAuth на все маршруты /activities, /completions, /reward-issues, /series-definitions, /import (кроме /health — он нужен хосту); скопинг по user_id во всех db-запросах (activities напрямую, completions/reward_issues/series_definitions через JOIN с activities); create/update-хендлеры пишут user_id из контекста; swagger-аннотации 401
+- [x] Привязать всё апи данных к пользователю за один заход: RequireAuth на все маршруты /activities, /completions, /reward-issues, /series-definitions, /import (кроме /health — он нужен хосту); скопинг по user_id во всех db-запросах (activities напрямую, completions/reward_issues/series_definitions через JOIN с activities); create/update-хендлеры пишут user_id из контекста; swagger-аннотации 401
 - [ ] После деплоя: привязать старые данные вручную в БД и проверить, что приложение видит только данные своего пользователя:
 
 ```sql

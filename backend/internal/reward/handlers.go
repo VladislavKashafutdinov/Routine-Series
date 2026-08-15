@@ -2,6 +2,7 @@ package reward
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"routine-series/backend/internal/api"
+	"routine-series/backend/internal/auth"
 )
 
 // Handlers holds shared dependencies.
@@ -26,8 +28,16 @@ type Handlers struct {
 //	@Param			body	body		CreateRequest	true	"Reward data"
 //	@Success		201		{object}	RewardIssue
 //	@Failure		400		{object}	api.ErrorResponse
+//	@Failure		401		{object}	api.ErrorResponse
+//	@Failure		404		{object}	api.ErrorResponse
 //	@Router			/reward-issues [post]
 func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	var req CreateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		api.WriteError(w, http.StatusBadRequest, "invalid JSON body")
@@ -38,8 +48,12 @@ func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	issue, err := Create(r.Context(), h.Pool, req.ActivityID, req.Date, req.Amount, req.Currency)
+	issue, err := Create(r.Context(), h.Pool, userID, req.ActivityID, req.Date, req.Amount, req.Currency)
 	if err != nil {
+		if errors.Is(err, ErrActivityNotFound) {
+			api.WriteError(w, http.StatusNotFound, err.Error())
+			return
+		}
 		api.WriteError(w, http.StatusInternalServerError, "failed to create reward issue")
 		return
 	}
@@ -59,8 +73,15 @@ func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
 //	@Param			offset		query		int		false	"Offset (default 0)"
 //	@Success		200			{object}	PaginatedResponse
 //	@Failure		400			{object}	api.ErrorResponse
+//	@Failure		401			{object}	api.ErrorResponse
 //	@Router			/reward-issues [get]
 func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	q := r.URL.Query()
 
 	activityID, _ := strconv.Atoi(q.Get("activity_id"))
@@ -75,7 +96,7 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 		limit = 20
 	}
 
-	result, err := ListByActivity(r.Context(), h.Pool, activityID, limit, offset)
+	result, err := ListByActivity(r.Context(), h.Pool, userID, activityID, limit, offset)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to list reward issues")
 		return
@@ -95,9 +116,16 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 //	@Param			body	body		UpdateRequest	true	"Fields to update"
 //	@Success		200		{object}	RewardIssue
 //	@Failure		400		{object}	api.ErrorResponse
+//	@Failure		401		{object}	api.ErrorResponse
 //	@Failure		404		{object}	api.ErrorResponse
 //	@Router			/reward-issues/{id} [patch]
 func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
 		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
@@ -114,7 +142,7 @@ func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updated, err := Update(r.Context(), h.Pool, id, req)
+	updated, err := Update(r.Context(), h.Pool, userID, id, req)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to update reward issue")
 		return
@@ -136,16 +164,23 @@ func (h *Handlers) Update(w http.ResponseWriter, r *http.Request) {
 //	@Param			id	path		int	true	"Reward Issue ID"
 //	@Success		204
 //	@Failure		400	{object}	api.ErrorResponse
+//	@Failure		401	{object}	api.ErrorResponse
 //	@Failure		404	{object}	api.ErrorResponse
 //	@Router			/reward-issues/{id} [delete]
 func (h *Handlers) Delete(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
 		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
-	found, err := DeleteByID(r.Context(), h.Pool, id)
+	found, err := DeleteByID(r.Context(), h.Pool, userID, id)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to delete reward issue")
 		return

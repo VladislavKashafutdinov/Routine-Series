@@ -14,3 +14,12 @@ func UserFromContext(ctx context.Context) (User, bool) {
 	u, ok := ctx.Value(userContextKey{}).(User)
 	return u, ok
 }
+
+// CurrentUserID returns the authenticated user's ID from the request context.
+func CurrentUserID(ctx context.Context) (int, bool) {
+	u, ok := UserFromContext(ctx)
+	if !ok {
+		return 0, false
+	}
+	return u.ID, true
+}

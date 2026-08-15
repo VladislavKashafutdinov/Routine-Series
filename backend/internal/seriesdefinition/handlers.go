@@ -2,6 +2,7 @@ package seriesdefinition
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"routine-series/backend/internal/api"
+	"routine-series/backend/internal/auth"
 )
 
 // Handlers holds shared dependencies.
@@ -27,9 +29,16 @@ type Handlers struct {
 //	@Param			body	body		CreateRequest	true	"Series parameters"
 //	@Success		201		{object}	SeriesDefinition
 //	@Failure		400		{object}	api.ErrorResponse
+//	@Failure		401		{object}	api.ErrorResponse
 //	@Failure		404		{object}	api.ErrorResponse
 //	@Router			/activities/{id}/series-definitions [post]
 func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
 		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
@@ -46,8 +55,12 @@ func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	def, err := Create(r.Context(), h.Pool, id, req.SeriesLength, req.Reward, req.Currency)
+	def, err := Create(r.Context(), h.Pool, userID, id, req.SeriesLength, req.Reward, req.Currency)
 	if err != nil {
+		if errors.Is(err, ErrActivityNotFound) {
+			api.WriteError(w, http.StatusNotFound, err.Error())
+			return
+		}
 		api.WriteError(w, http.StatusInternalServerError, "failed to create series definition")
 		return
 	}
@@ -65,15 +78,22 @@ func (h *Handlers) Create(w http.ResponseWriter, r *http.Request) {
 //	@Param			id	path		int	true	"Activity ID"
 //	@Success		200	{array}		SeriesDefinition
 //	@Failure		400	{object}	api.ErrorResponse
+//	@Failure		401	{object}	api.ErrorResponse
 //	@Router			/activities/{id}/series-definitions [get]
 func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil || id <= 0 {
 		api.WriteError(w, http.StatusBadRequest, "id must be a positive integer")
 		return
 	}
 
-	defs, err := List(r.Context(), h.Pool, id)
+	defs, err := List(r.Context(), h.Pool, userID, id)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to list series definitions")
 		return
@@ -91,17 +111,24 @@ func (h *Handlers) List(w http.ResponseWriter, r *http.Request) {
 //	@Param			defId	path		int	true	"Series Definition ID"
 //	@Success		204
 //	@Failure		400	{object}	api.ErrorResponse
+//	@Failure		401	{object}	api.ErrorResponse
 //	@Failure		404	{object}	api.ErrorResponse
 //	@Failure		409	{object}	api.ErrorResponse
 //	@Router			/activities/{id}/series-definitions/{defId} [delete]
 func (h *Handlers) Delete(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	defID, err := strconv.Atoi(chi.URLParam(r, "defId"))
 	if err != nil || defID <= 0 {
 		api.WriteError(w, http.StatusBadRequest, "defId must be a positive integer")
 		return
 	}
 
-	found, isLast, err := Delete(r.Context(), h.Pool, defID)
+	found, isLast, err := Delete(r.Context(), h.Pool, userID, defID)
 	if err != nil {
 		api.WriteError(w, http.StatusInternalServerError, "failed to delete series definition")
 		return

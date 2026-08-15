@@ -9,6 +9,7 @@ import (
 
 	"routine-series/backend/internal/activity"
 	"routine-series/backend/internal/api"
+	"routine-series/backend/internal/auth"
 	"routine-series/backend/internal/completion"
 	"routine-series/backend/internal/reward"
 	"routine-series/backend/internal/seriesdefinition"
@@ -35,8 +36,15 @@ type Handlers struct {
 //	@Param			file	formData	file	true	"JSON data dump"
 //	@Success		200		{object}	Stats
 //	@Failure		400		{object}	api.ErrorResponse
+//	@Failure		401		{object}	api.ErrorResponse
 //	@Router			/import [post]
 func (h *Handlers) ImportData(w http.ResponseWriter, r *http.Request) {
+	userID, ok := auth.CurrentUserID(r.Context())
+	if !ok {
+		api.WriteError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
 	r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
@@ -96,7 +104,7 @@ func (h *Handlers) ImportData(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	stats, err := ImportAll(r.Context(), h.Pool, activities, definitions, completions, rewardIssues)
+	stats, err := ImportAll(r.Context(), h.Pool, userID, activities, definitions, completions, rewardIssues)
 	if err != nil {
 		h.Logger.Errorf("import failed: %v", err)
 		api.WriteError(w, http.StatusInternalServerError, "import failed")
