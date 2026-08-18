@@ -90,7 +90,7 @@ func (h *Handlers) SendCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.Config.sendCodeEmail(req.Email, code); err != nil {
+	if err := h.Config.sendMail(req.Email, code); err != nil {
 		h.Logger.Errorf("send login code to %s: %v", req.Email, err)
 		api.WriteError(w, http.StatusInternalServerError, "failed to send code")
 		return

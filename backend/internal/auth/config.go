@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -17,6 +18,9 @@ const (
 
 // Config holds SMTP and session lifetime configuration.
 type Config struct {
+	// MailProvider selects the code-delivery implementation, set explicitly
+	// via MAIL_PROVIDER: "smtp" (Gmail SMTP, default), "sendgrid", "gmailapi".
+	MailProvider string
 	// SMTPHost and SMTPPort point at the mail relay (Gmail by default).
 	SMTPHost string
 	SMTPPort int
@@ -30,9 +34,19 @@ type Config struct {
 }
 
 // LoadConfig reads auth configuration from environment variables.
-// SMTP_HOST/SMTP_PORT fall back to Gmail's relay; GMAIL_ADDRESS and
-// GMAIL_APP_PASSWORD are required.
+// GMAIL_ADDRESS is required (the From address for all providers);
+// GMAIL_APP_PASSWORD is required only for the "smtp" provider.
 func LoadConfig() (Config, error) {
+	provider := strings.ToLower(strings.TrimSpace(os.Getenv("MAIL_PROVIDER")))
+	if provider == "" {
+		provider = "smtp"
+	}
+	switch provider {
+	case "smtp", "sendgrid", "gmailapi":
+	default:
+		return Config{}, fmt.Errorf("MAIL_PROVIDER must be one of smtp, sendgrid, gmailapi; got %q", provider)
+	}
+
 	host := os.Getenv("SMTP_HOST")
 	if host == "" {
 		host = defaultSMTPHost
@@ -53,8 +67,8 @@ func LoadConfig() (Config, error) {
 	}
 
 	pass := os.Getenv("GMAIL_APP_PASSWORD")
-	if pass == "" {
-		return Config{}, fmt.Errorf("GMAIL_APP_PASSWORD environment variable is required")
+	if pass == "" && provider == "smtp" {
+		return Config{}, fmt.Errorf("GMAIL_APP_PASSWORD environment variable is required for the smtp provider")
 	}
 
 	accessTTL, err := ttlFromEnv("SESSION_ACCESS_TTL", defaultAccessTTL)
@@ -68,12 +82,13 @@ func LoadConfig() (Config, error) {
 	}
 
 	return Config{
-		SMTPHost:   host,
-		SMTPPort:   port,
-		SMTPUser:   user,
-		SMTPPass:   pass,
-		AccessTTL:  accessTTL,
-		RefreshTTL: refreshTTL,
+		MailProvider: provider,
+		SMTPHost:     host,
+		SMTPPort:     port,
+		SMTPUser:     user,
+		SMTPPass:     pass,
+		AccessTTL:    accessTTL,
+		RefreshTTL:   refreshTTL,
 	}, nil
 }
 
