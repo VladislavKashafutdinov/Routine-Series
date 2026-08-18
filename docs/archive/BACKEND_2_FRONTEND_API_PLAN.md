@@ -1,6 +1,6 @@
 # План пункта 2: Подключение фронта к API
 
-Ссылка на родительский план: [BACKEND_DEVELOPING_PLAN.md](BACKEND_DEVELOPING_PLAN.md) → п. 2
+Ссылка на родительский план: [BACKEND_DEVELOPING_PLAN.md](../BACKEND_DEVELOPING_PLAN.md) → п. 2
 
 Ветка: `front-backend-integration` (отдельная от master, чтобы не затронуть работающую версию на GitHub Pages).
 

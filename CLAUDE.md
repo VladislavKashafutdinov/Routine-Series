@@ -24,7 +24,8 @@ gh run list --workflow=deploy.yml --limit=1 --json status,conclusion,displayTitl
 
 - [README.md](README.md) — цели, функциональность, модель данных, схема компонентов
 - [TODO.md](TODO.md) — план задач и отложенные
-- [docs/](docs/) — планы разработки (BACKEND_*, EMAIL_AUTH_*), архивы ([DONE.md](docs/DONE.md), [JOURNAL.md](docs/JOURNAL.md)), видение (VISION.md, TARGET_SCHEMA.md)
+- [docs/](docs/) — актуальные планы, архивы ([DONE.md](docs/DONE.md), [JOURNAL.md](docs/JOURNAL.md)), видение (VISION.md, TARGET_SCHEMA.md)
+- [docs/archive/](docs/archive/) — планы реализованных задач
 
 ## Architecture
 
@@ -62,6 +63,7 @@ Logical data model: [README.md § Структура данных](README.md#с�
 
 - **Task-driven development** — code changes (add/modify/delete) are only allowed when there is a corresponding task in [TODO.md](TODO.md). Without a task, only documentation files may be edited: `CLAUDE.md`, `TODO.md`, `README.md`, `docs/DONE.md`, `docs/JOURNAL.md` and files in `docs/`.
 - **Сквозные фичи в планах** — при формировании планов задач организуй их не по слоям (не «весь бэк, потом весь фронт»), а сквозными фичами: сначала базовый шаг подготовки — фундамент для всего последующего, затем фича за фичей; внутри каждой фичи бэк и фронт идут вместе, каждый шаг зависит от предыдущего, и каждая фича заканчивается работающим юзкейсом. Апи без использующего его фронта — не законченная фича.
+- **Планы завершённых задач** — некоторые крупные задачи имеют собственный план реализации в отдельном документе (например, `EMAIL_AUTH_DEV_PLAN.md`). После реализации такой задачи документ плана перемещается в `docs/archive/`. Перемещение происходит только по явному запросу пользователя — без запроса планы остаются в `docs/`.
 - **Never read `.env` files** — `.env` contains real secrets (DB passwords, API keys). NEVER use Read, Grep, Bash (`cat`, `Get-Content`), or any other tool to read `.env` or `.env.*` files. If you need to know which environment variables exist, read `.env.example` instead — it has the same structure with placeholder values.
 - **Request validation in models** — each request struct that has validation rules must implement a `Validate() error` method. Handlers call `req.Validate()` instead of inline validation. Keeps handlers clean.
 - **Domain package = models + db + handlers** — everything about one domain lives in one package (e.g. `activity/` contains `models.go`, `db.go`, `handlers.go`). No layer-based packages (`handlers/`, `db/`, `models/`).
