@@ -10,7 +10,7 @@ import { useVirtualToday } from '@/hooks/VirtualTodayContext';
 export function Dashboard() {
   const { t } = useLocale();
   const { virtualToday } = useVirtualToday();
-  const { activities, loading } = useActivities();
+  const { activities } = useActivities();
 
   const pending = activities.filter((a) => !a.completions.some((c) => c.date === virtualToday));
   const done = activities.filter((a) => a.completions.some((c) => c.date === virtualToday));
@@ -19,11 +19,9 @@ export function Dashboard() {
     <div className="dashboard">
       <AddActivity />
 
-      {!loading && <IssueBanner activities={activities} />}
+      <IssueBanner activities={activities} />
 
-      {loading && <div className="dash-msg">{t.loading}</div>}
-
-      {!loading && activities.length === 0 && (
+      {activities.length === 0 && (
         <div className="dash-msg">{t.empty}</div>
       )}
 

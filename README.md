@@ -44,7 +44,7 @@ main.tsx
 └── LocaleProvider
     └── VirtualTodayProvider
         └── AuthProvider             (проверка сессии через /auth/me, verify() — вход по коду, токены в localStorage)
-            └── App                  (гейт: loading → пусто, unauthenticated → LoginPage; данные грузятся только для авторизованного)
+            └── App                  (гейт: loading → LoadingOverlay, unauthenticated → LoginPage; данные грузятся только для авторизованного)
                 ├── LoginPage        (вход по коду: форма email → форма кода → verify)
                 └── ActivitiesProvider       (общее хранилище данных: загрузка из API + все мутации)
                     └── SeriesProvider       (computeSeries для всех активностей)
@@ -95,10 +95,12 @@ main.tsx
                             │           ├── Клик по дню → тоггл completion
                             │           └── Пагинация (◀ ▶ по блокам)
                             │
-                            └── [«Архив»] ArchivePage
-                                └── ArchivedActivityRow[]
-                                    ├── Название + количество completions
-                                    └── RestoreButton      (confirm → unarchiveActivity)
+                            ├── [«Архив»] ArchivePage
+                            │   └── ArchivedActivityRow[]
+                            │       ├── Название + количество completions
+                            │       └── RestoreButton      (confirm → unarchiveActivity)
+                            │
+                            └── LoadingOverlay            (оверлей со спиннером при полной загрузке: auth/me или первичная загрузка данных)
 ```
 
 ## Структура данных

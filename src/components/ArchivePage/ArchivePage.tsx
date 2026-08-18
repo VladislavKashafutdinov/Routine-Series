@@ -5,9 +5,7 @@ import './ArchivePage.css';
 
 export const ArchivePage = memo(function ArchivePage() {
   const { t } = useLocale();
-  const { archivedActivities, loading, unarchiveActivity } = useActivities();
-
-  if (loading) return <p className="app-placeholder">{t.loading}</p>;
+  const { archivedActivities, unarchiveActivity } = useActivities();
 
   return (
     <div className="archive">

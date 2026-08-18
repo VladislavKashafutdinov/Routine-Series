@@ -8,10 +8,9 @@ import { useLocale } from '@/i18n/LocaleContext';
 
 export const MonitoringPage = memo(function MonitoringPage() {
   const { t } = useLocale();
-  const { activities, loading } = useActivities();
+  const { activities } = useActivities();
   const [openId, setOpenId] = useState<number | null>(null);
 
-  if (loading) return <p className="app-placeholder">{t.loading}</p>;
   if (activities.length === 0) return <p className="app-placeholder">{t.empty}</p>;
 
   return (
