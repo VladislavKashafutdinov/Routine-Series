@@ -73,16 +73,16 @@
 
 - [x] Привязать всё апи данных к пользователю за один заход: RequireAuth на все маршруты /activities, /completions, /reward-issues, /series-definitions, /import (кроме /health — он нужен хосту); скопинг по user_id во всех db-запросах (activities напрямую, completions/reward_issues/series_definitions через JOIN с activities); create/update-хендлеры пишут user_id из контекста; swagger-аннотации 401 (привязка старых данных на dev-БД для проверки выполнена вручную)
 
-## 4. Вливание в мастер и тестирование на master
+## 4. ✅ Вливание в мастер и тестирование на master
 
 Единственная проверка задеплоенного приложения — после вливания в master.
 
 - [x] Настроить env-переменные на хосте: SMTP Gmail, сроки сессий, CORS-конфиг (продовый origin) — **итог по почте**: SMTP Gmail из Render заблокирован (dial i/o timeout, порты 587/465); Brevo отпал (телефон), SendGrid/Twilio отпал (регион) → отправка переводится на **Gmail API** (env: `GMAIL_API_CLIENT_ID`/`GMAIL_API_CLIENT_SECRET`/`GMAIL_API_REFRESH_TOKEN`, scope `gmail.send`, app в production без верификации). SendGrid-реализация оставлена в коде как запасная
 - [x] Влить dev в master и дождаться деплоя бэка и фронта
 - [x] Убедиться, что миграция 000002 накатилась автоматически при старте бэка
-- [ ] Привязать старые данные к своему пользователю:
+- [x] Привязать старые данные к своему пользователю:
 
 ```sql
 UPDATE activities SET user_id = (SELECT id FROM users WHERE email = '<ваш email>') WHERE user_id IS NULL;
 ```
-- [ ] Проверить полный флоу на задеплоенном приложении: вход по коду, восстановление сессии, выход, защита от перебора
+- [x] Проверить полный флоу на задеплоенном приложении: вход по коду, восстановление сессии, выход, защита от перебора
