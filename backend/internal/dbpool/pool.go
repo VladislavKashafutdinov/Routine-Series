@@ -19,6 +19,7 @@ func NewPool(ctx context.Context, cfg Config) (*pgxpool.Pool, error) {
 	poolCfg.ConnConfig.ConnectTimeout = cfg.ConnectTimeout
 	poolCfg.ConnConfig.Tracer = logTracer{}
 	poolCfg.HealthCheckPeriod = cfg.HealthCheckPeriod
+	poolCfg.PingTimeout = cfg.PingTimeout
 
 	pool, err := pgxpool.NewWithConfig(ctx, poolCfg)
 	if err != nil {

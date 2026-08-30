@@ -15,6 +15,8 @@ type Config struct {
 	ConnectTimeout time.Duration
 	// HealthCheckPeriod is how often idle connections are pinged and broken ones replaced.
 	HealthCheckPeriod time.Duration
+	// PingTimeout bounds the liveness ping pgxpool runs on acquire; 0 means no timeout.
+	PingTimeout time.Duration
 }
 
 // LoadConfig reads database configuration from environment variables.
@@ -29,5 +31,6 @@ func LoadConfig() (Config, error) {
 		MinConns:          1,
 		ConnectTimeout:    5 * time.Second,
 		HealthCheckPeriod: 30 * time.Second,
+		PingTimeout:       5 * time.Second,
 	}, nil
 }

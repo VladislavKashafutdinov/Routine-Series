@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // slowQueryThreshold controls which queries get logged: slower than this
@@ -71,5 +72,25 @@ func (logTracer) TraceConnectEnd(ctx context.Context, data pgx.TraceConnectEndDa
 		tracerErrorLog.Printf("%s err=%v", line, data.Err)
 	} else {
 		tracerInfoLog.Println(line)
+	}
+}
+
+// AcquireTracer: pool.Acquire includes a liveness ping of idle connections
+// that is invisible to QueryTracer — trace it so hidden waits show up in logs.
+func (logTracer) TraceAcquireStart(ctx context.Context, _ *pgxpool.Pool, _ pgxpool.TraceAcquireStartData) context.Context {
+	return context.WithValue(ctx, tracerCtxKey{}, tracerState{start: time.Now()})
+}
+
+func (logTracer) TraceAcquireEnd(ctx context.Context, _ *pgxpool.Pool, data pgxpool.TraceAcquireEndData) {
+	state, ok := ctx.Value(tracerCtxKey{}).(tracerState)
+	if !ok {
+		return
+	}
+	took := time.Since(state.start)
+	switch {
+	case data.Err != nil:
+		tracerErrorLog.Printf("pgx acquire: took=%s err=%v", took, data.Err)
+	case took >= slowQueryThreshold:
+		tracerWarnLog.Printf("pgx acquire: took=%s", took)
 	}
 }
