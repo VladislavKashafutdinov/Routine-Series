@@ -140,10 +140,14 @@ func main() {
 	}
 
 	srv := &http.Server{
-		Addr:         ":" + port,
-		Handler:      r,
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 30 * time.Second,
+		Addr:        ":" + port,
+		Handler:     r,
+		ReadTimeout: 30 * time.Second,
+		// Raised during the Neon investigation: a slow DB call must still be
+		// able to deliver its real 5xx. A shorter WriteTimeout drops the
+		// response, the gateway retries, and the client sees a misleading 200.
+		// Revisit after a DB-level query timeout is in place.
+		WriteTimeout: 5 * time.Minute,
 	}
 
 	// Graceful shutdown
