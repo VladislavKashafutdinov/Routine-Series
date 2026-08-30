@@ -94,11 +94,11 @@ func main() {
 	r.Post("/api/v1/auth/verify", authH.Verify)
 	r.Post("/api/v1/auth/refresh", authH.Refresh)
 	r.Post("/api/v1/auth/logout", authH.Logout)
-	r.With(auth.RequireAuth(pool)).Get("/api/v1/auth/me", authH.Me)
+	r.With(auth.RequireAuth(pool, logger)).Get("/api/v1/auth/me", authH.Me)
 
 	// Data API — everything under RequireAuth (health stays public for the host)
 	r.Group(func(r chi.Router) {
-		r.Use(auth.RequireAuth(pool))
+		r.Use(auth.RequireAuth(pool, logger))
 
 		// Activities
 		actH := &activity.Handlers{Pool: pool}
