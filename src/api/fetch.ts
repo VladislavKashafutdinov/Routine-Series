@@ -6,6 +6,11 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '
 const REFRESH_PATH = '/api/v1/auth/refresh';
 const LOGOUT_PATH = '/api/v1/auth/logout';
 
+/** Backend status for "request timed out waiting for the DB". */
+const TIMEOUT_STATUS = 504;
+/** Backoff between retries of a timed-out GET. */
+const RETRY_DELAYS_MS = [500, 1500];
+
 /** Error thrown by apiFetch on non-2xx responses; carries the HTTP status. */
 export class ApiFetchError extends Error {
   status: number;
@@ -47,16 +52,18 @@ async function refreshTokens(): Promise<boolean> {
   }
 }
 
-/**
- * fetch wrapper: adds JSON headers and the Authorization header when a token
- * exists. On 401 it refreshes the tokens once and retries (except for the
- * token endpoints themselves); if the session can't be restored, it clears
- * the tokens and notifies AuthContext. Throws ApiFetchError on non-2xx
- * with the API error message; resolves undefined for empty (204) bodies.
- */
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+/** A GET may be retried on a backend timeout; mutations must not (not idempotent). */
+function canRetryOnTimeout(init: RequestInit | undefined, path: string): boolean {
+  const method = (init?.method ?? 'GET').toUpperCase();
+  return method === 'GET' && path !== REFRESH_PATH && path !== LOGOUT_PATH;
+}
+
+/** Single fetch attempt with auth headers, 401 refresh, and error parsing. */
+async function requestOnce<T>(path: string, init?: RequestInit): Promise<T> {
   // FormData bodies must not get a Content-Type header (browser sets the boundary)
-  const isFormData = init?.body instanceof FormData;
+  const isFormData = typeof FormData !== 'undefined' && init?.body instanceof FormData;
   const buildHeaders = () => ({
     ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...(getAccessToken() ? { Authorization: `Bearer ${getAccessToken()}` } : {}),
@@ -100,4 +107,39 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   }
 
   return res.json() as Promise<T>;
+}
+
+/**
+ * fetch wrapper: adds JSON headers and the Authorization header when a token
+ * exists. On 401 it refreshes the tokens once and retries (except for the
+ * token endpoints themselves); if the session can't be restored, it clears
+ * the tokens and notifies AuthContext. GET requests that get a 504 (backend
+ * timed out waiting for the DB) are retried with a limited backoff. Throws
+ * ApiFetchError on non-2xx with the API error message; resolves undefined
+ * for empty (204) bodies.
+ */
+export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const retryable = canRetryOnTimeout(init, path);
+  let attempt = 0;
+
+  for (;;) {
+    try {
+      return await requestOnce<T>(path, init);
+    } catch (err) {
+      if (
+        !retryable ||
+        !(err instanceof ApiFetchError) ||
+        err.status !== TIMEOUT_STATUS ||
+        attempt >= RETRY_DELAYS_MS.length
+      ) {
+        throw err;
+      }
+      const delay = RETRY_DELAYS_MS[attempt];
+      attempt += 1;
+      console.warn(
+        `apiFetch: GET ${path} returned 504, retrying in ${delay}ms (attempt ${attempt}/${RETRY_DELAYS_MS.length})`,
+      );
+      await sleep(delay);
+    }
+  }
 }
