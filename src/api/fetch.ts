@@ -8,7 +8,7 @@ const LOGOUT_PATH = '/api/v1/auth/logout';
 
 /** Backend status for "request timed out waiting for the DB". */
 const TIMEOUT_STATUS = 504;
-/** Backoff between retries of a timed-out GET. */
+/** Base backoff between retries of a timed-out GET. */
 const RETRY_DELAYS_MS = [1000, 2000];
 
 /** Error thrown by apiFetch on non-2xx responses; carries the HTTP status. */
@@ -134,10 +134,13 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
       ) {
         throw err;
       }
-      const delay = RETRY_DELAYS_MS[attempt];
+      const base = RETRY_DELAYS_MS[attempt];
       attempt += 1;
+      // Random addition of the same size spreads retries of parallel GETs
+      // over time instead of letting them all fire together.
+      const delay = base + Math.random() * base;
       console.warn(
-        `apiFetch: GET ${path} returned 504, retrying in ${delay}ms (attempt ${attempt}/${RETRY_DELAYS_MS.length})`,
+        `apiFetch: GET ${path} returned 504, retrying in ${Math.round(delay)}ms (attempt ${attempt}/${RETRY_DELAYS_MS.length})`,
       );
       await sleep(delay);
     }

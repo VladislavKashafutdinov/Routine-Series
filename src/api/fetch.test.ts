@@ -59,5 +59,5 @@ describe('apiFetch retry on 504', () => {
 
     await expect(apiFetch('/api/v1/activities')).rejects.toMatchObject({ status: 504 });
     expect(fetchMock).toHaveBeenCalledTimes(3);
-  }, 5000);
+  }, 10000);
 });
