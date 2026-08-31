@@ -9,7 +9,7 @@ const LOGOUT_PATH = '/api/v1/auth/logout';
 /** Backend status for "request timed out waiting for the DB". */
 const TIMEOUT_STATUS = 504;
 /** Backoff between retries of a timed-out GET. */
-const RETRY_DELAYS_MS = [500, 1500];
+const RETRY_DELAYS_MS = [1000, 2000];
 
 /** Error thrown by apiFetch on non-2xx responses; carries the HTTP status. */
 export class ApiFetchError extends Error {
