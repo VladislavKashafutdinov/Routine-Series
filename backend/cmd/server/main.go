@@ -32,6 +32,10 @@ import (
 	"routine-series/backend/internal/seriesdefinition"
 )
 
+// requestTimeout caps how long an authenticated request may run. A stalled
+// DB query fails within this window instead of hanging until TCP gives up.
+const requestTimeout = 15 * time.Second
+
 func main() {
 	dbCfg, err := dbpool.LoadConfig()
 	if err != nil {
@@ -94,44 +98,50 @@ func main() {
 	r.Post("/api/v1/auth/verify", authH.Verify)
 	r.Post("/api/v1/auth/refresh", authH.Refresh)
 	r.Post("/api/v1/auth/logout", authH.Logout)
-	r.With(auth.RequireAuth(pool, logger)).Get("/api/v1/auth/me", authH.Me)
+	r.With(auth.RequireAuth(pool, logger), api.RequestTimeout(requestTimeout)).Get("/api/v1/auth/me", authH.Me)
 
 	// Data API — everything under RequireAuth (health stays public for the host)
 	r.Group(func(r chi.Router) {
 		r.Use(auth.RequireAuth(pool, logger))
 
+		// All data routes get a request deadline so a stalled DB query fails
+		// fast instead of hanging until the network resets the connection.
+		timed := r.Group(func(r chi.Router) {
+			r.Use(api.RequestTimeout(requestTimeout))
+		})
+
 		// Activities
 		actH := &activity.Handlers{Pool: pool}
-		r.Get("/api/v1/activities", actH.ListActivities)
-		r.Get("/api/v1/activities/archived", actH.ListArchivedActivities)
-		r.Get("/api/v1/activities/{id}", actH.GetActivity)
-		r.Patch("/api/v1/activities/{id}", actH.UpdateActivity)
-		r.Delete("/api/v1/activities/{id}", actH.DeleteActivity)
-		r.Post("/api/v1/activities/{id}/archive", actH.ArchiveActivity)
-		r.Post("/api/v1/activities/{id}/restore", actH.RestoreActivity)
-		r.Post("/api/v1/activities", actH.CreateActivity)
+		timed.Get("/api/v1/activities", actH.ListActivities)
+		timed.Get("/api/v1/activities/archived", actH.ListArchivedActivities)
+		timed.Get("/api/v1/activities/{id}", actH.GetActivity)
+		timed.Patch("/api/v1/activities/{id}", actH.UpdateActivity)
+		timed.Delete("/api/v1/activities/{id}", actH.DeleteActivity)
+		timed.Post("/api/v1/activities/{id}/archive", actH.ArchiveActivity)
+		timed.Post("/api/v1/activities/{id}/restore", actH.RestoreActivity)
+		timed.Post("/api/v1/activities", actH.CreateActivity)
 
 		// Series definitions
 		sdefH := &seriesdefinition.Handlers{Pool: pool}
-		r.Post("/api/v1/activities/{id}/series-definitions", sdefH.Create)
-		r.Get("/api/v1/activities/{id}/series-definitions", sdefH.List)
-		r.Delete("/api/v1/activities/{id}/series-definitions/{defId}", sdefH.Delete)
+		timed.Post("/api/v1/activities/{id}/series-definitions", sdefH.Create)
+		timed.Get("/api/v1/activities/{id}/series-definitions", sdefH.List)
+		timed.Delete("/api/v1/activities/{id}/series-definitions/{defId}", sdefH.Delete)
 
 		// Completions
 		complH := &completion.Handlers{Pool: pool}
-		r.Get("/api/v1/completions", complH.List)
-		r.Post("/api/v1/completions/toggle", complH.Toggle)
+		timed.Get("/api/v1/completions", complH.List)
+		timed.Post("/api/v1/completions/toggle", complH.Toggle)
 
 		// Rewards
 		rewardH := &reward.Handlers{Pool: pool}
-		r.Get("/api/v1/reward-issues", rewardH.List)
-		r.Post("/api/v1/reward-issues", rewardH.Create)
-		r.Patch("/api/v1/reward-issues/{id}", rewardH.Update)
-		r.Delete("/api/v1/reward-issues/{id}", rewardH.Delete)
+		timed.Get("/api/v1/reward-issues", rewardH.List)
+		timed.Post("/api/v1/reward-issues", rewardH.Create)
+		timed.Patch("/api/v1/reward-issues/{id}", rewardH.Update)
+		timed.Delete("/api/v1/reward-issues/{id}", rewardH.Delete)
 
-		// Import
+		// Import may legitimately take longer than a regular request.
 		importH := &dataimport.Handlers{Pool: pool, Logger: logger}
-		r.Post("/api/v1/import", importH.ImportData)
+		r.With(api.RequestTimeout(time.Minute)).Post("/api/v1/import", importH.ImportData)
 	})
 
 	port := os.Getenv("PORT")
