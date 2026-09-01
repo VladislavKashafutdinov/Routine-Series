@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocale } from '@/i18n/LocaleContext';
 import { useActivities } from '@/hooks/useActivities';
+import { Spinner } from '@components/Spinner/Spinner';
 import './AddActivity.css';
 
 const DEFAULTS = { length: 7, reward: 0, currency: '₽' };
@@ -14,6 +15,7 @@ export function AddActivity() {
   const [reward, setReward] = useState(DEFAULTS.reward);
   const [currency, setCurrency] = useState(DEFAULTS.currency);
   const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const reset = () => {
     setName('');
@@ -25,11 +27,17 @@ export function AddActivity() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (saving) return;
     if (!name.trim()) { setError(t.addError); return; }
     if (length < 1) { setError(t.addErrorLength); return; }
-    await addActivity(name.trim(), length, reward, currency);
-    reset();
-    setOpen(false);
+    setSaving(true);
+    try {
+      await addActivity(name.trim(), length, reward, currency);
+      reset();
+      setOpen(false);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -38,7 +46,7 @@ export function AddActivity() {
         <span className="add-activity-card__plus">＋</span>
       </button>
       {open && (
-        <div className="modal-overlay" onClick={() => setOpen(false)}>
+        <div className="modal-overlay" onClick={() => { if (!saving) setOpen(false); }}>
           <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
             <h3 className="modal__title">{t.addButton}</h3>
             <label className="modal__field">
@@ -84,10 +92,13 @@ export function AddActivity() {
             </label>
             {error && <span className="add-activity__error">{error}</span>}
             <div className="modal__actions">
-              <button className="modal__btn modal__btn--submit" type="submit">{t.addButton}</button>
+              <button className="modal__btn modal__btn--submit" type="submit" disabled={saving}>
+                {saving ? <Spinner /> : t.addButton}
+              </button>
               <button
                 className="modal__btn modal__btn--cancel"
                 type="button"
+                disabled={saving}
                 onClick={() => { reset(); setOpen(false); }}
               >
                 {lang === 'en' ? 'Cancel' : 'Отмена'}

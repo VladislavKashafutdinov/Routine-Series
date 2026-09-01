@@ -5,6 +5,7 @@ import { memo, useMemo, useState } from 'react';
 
 import type { ActivityWithStreak } from '@/types';
 import { IssueRewardModal } from '@components/IssueRewardModal/IssueRewardModal';
+import { Spinner } from '@components/Spinner/Spinner';
 import { UnissuedRewardBanner } from '@components/UnissuedRewardBanner/UnissuedRewardBanner';
 import { useAllSeries } from '@/hooks/SeriesContext';
 import { useActivities } from '@/hooks/useActivities';
@@ -56,7 +57,7 @@ export const RewardsPage = memo(function RewardsPage() {
               disabled={issuingAll}
               type="button"
             >
-              {issuingAll ? t.loading : t.issueAllRewards}
+              {issuingAll ? <Spinner /> : t.issueAllRewards}
             </button>
           </div>
           <div className="rewards-page__list">
@@ -64,6 +65,7 @@ export const RewardsPage = memo(function RewardsPage() {
               <UnissuedRewardBanner
                 key={`${e.activity.id}-${e.currency}`}
                 entry={e}
+                disabled={issuingAll}
                 onIssue={setIssueInfo}
               />
             ))}

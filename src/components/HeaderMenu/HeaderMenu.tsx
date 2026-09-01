@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { DataActions } from '@components/DataActions/DataActions';
 import { LangSwitcher } from '@components/LangSwitcher/LangSwitcher';
+import { Spinner } from '@components/Spinner/Spinner';
 import { TimeTravel } from '@components/TimeTravel/TimeTravel';
 import { useAuth } from '@/hooks/AuthContext';
 import { useLocale } from '@/i18n/LocaleContext';
@@ -16,6 +17,7 @@ export function HeaderMenu({ onOpenArchive }: Props) {
   const { logout } = useAuth();
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -72,8 +74,16 @@ export function HeaderMenu({ onOpenArchive }: Props) {
             <TimeTravel />
           </div>
           <div className="header-menu__row">
-            <button className="header-menu__logout" type="button" onClick={() => void logout()}>
-              {t.logoutButton}
+            <button
+              className="header-menu__logout"
+              type="button"
+              disabled={loggingOut}
+              onClick={() => {
+                setLoggingOut(true);
+                void logout().finally(() => setLoggingOut(false));
+              }}
+            >
+              {loggingOut ? <Spinner /> : t.logoutButton}
             </button>
           </div>
         </div>

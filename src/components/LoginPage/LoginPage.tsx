@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 
 import { requestLoginCode } from '@/api/auth';
 import { ApiFetchError } from '@/api/fetch';
+import { Spinner } from '@components/Spinner/Spinner';
 import { useAuth } from '@/hooks/AuthContext';
 import { useLocale } from '@/i18n/LocaleContext';
 import './LoginPage.css';
@@ -89,7 +90,7 @@ export function LoginPage() {
             />
             {error && <p className="login-page__error">{error}</p>}
             <button className="login-page__button" type="submit" disabled={sending || cooldown > 0}>
-              {cooldown > 0 ? t.loginWait(cooldown) : sending ? t.loading : t.loginSendCode}
+              {cooldown > 0 ? t.loginWait(cooldown) : sending ? <Spinner /> : t.loginSendCode}
             </button>
           </form>
         ) : (
@@ -108,7 +109,7 @@ export function LoginPage() {
             />
             {error && <p className="login-page__error">{error}</p>}
             <button className="login-page__button" type="submit" disabled={sending || code.length !== 6}>
-              {sending ? t.loading : t.loginVerifyCode}
+              {sending ? <Spinner /> : t.loginVerifyCode}
             </button>
             <button
               className="login-page__link"

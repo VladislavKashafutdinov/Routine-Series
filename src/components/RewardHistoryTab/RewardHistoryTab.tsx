@@ -5,6 +5,7 @@ import { memo, useState } from 'react';
 
 import { Paginator } from '@components/Paginator/Paginator';
 import { RewardCounters } from '@components/RewardCounters/RewardCounters';
+import { Spinner } from '@components/Spinner/Spinner';
 import { useActivities } from '@/hooks/useActivities';
 import { useLocale } from '@/i18n/LocaleContext';
 
@@ -24,12 +25,14 @@ function EditableCell({
   issue,
   field,
   editing,
+  saving,
   onEdit,
   onSave,
 }: {
   issue: RewardIssue;
   field: EditState['field'];
   editing: boolean;
+  saving: boolean;
   onEdit: () => void;
   onSave: (value: string) => void;
 }) {
@@ -40,6 +43,14 @@ function EditableCell({
     return (
       <td className="rtable__cell" onClick={onEdit} title="Click to edit">
         {display}
+      </td>
+    );
+  }
+
+  if (saving) {
+    return (
+      <td>
+        <Spinner />
       </td>
     );
   }
@@ -68,6 +79,8 @@ export const RewardHistoryTab = memo(function RewardHistoryTab({ activity, onIss
   const { updateRewardIssue, deleteRewardIssue } = useActivities();
   const [page, setPage] = useState(0);
   const [edit, setEdit] = useState<EditState | null>(null);
+  const [savingCell, setSavingCell] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const issues = [...activity.rewardIssues].sort((a, b) => b.date.localeCompare(a.date));
   const total = issues.length;
@@ -83,8 +96,13 @@ export const RewardHistoryTab = memo(function RewardHistoryTab({ activity, onIss
     else if (field === 'amount') updates.amount = Number(trimmed) || 0;
     else updates.currency = trimmed;
 
-    await updateRewardIssue(issue.id!, updates.amount ?? issue.amount, updates.currency ?? issue.currency, updates.date ?? issue.date);
-    setEdit(null);
+    setSavingCell(true);
+    try {
+      await updateRewardIssue(issue.id!, updates.amount ?? issue.amount, updates.currency ?? issue.currency, updates.date ?? issue.date);
+      setEdit(null);
+    } finally {
+      setSavingCell(false);
+    }
   };
 
   if (total === 0) {
@@ -115,6 +133,7 @@ export const RewardHistoryTab = memo(function RewardHistoryTab({ activity, onIss
                 issue={r}
                 field="date"
                 editing={edit?.id === r.id && edit?.field === 'date'}
+                saving={savingCell}
                 onEdit={() => setEdit({ id: r.id!, field: 'date' })}
                 onSave={(v) => handleSave(r, 'date', v)}
               />
@@ -122,6 +141,7 @@ export const RewardHistoryTab = memo(function RewardHistoryTab({ activity, onIss
                 issue={r}
                 field="amount"
                 editing={edit?.id === r.id && edit?.field === 'amount'}
+                saving={savingCell}
                 onEdit={() => setEdit({ id: r.id!, field: 'amount' })}
                 onSave={(v) => handleSave(r, 'amount', v)}
               />
@@ -129,16 +149,23 @@ export const RewardHistoryTab = memo(function RewardHistoryTab({ activity, onIss
                 issue={r}
                 field="currency"
                 editing={edit?.id === r.id && edit?.field === 'currency'}
+                saving={savingCell}
                 onEdit={() => setEdit({ id: r.id!, field: 'currency' })}
                 onSave={(v) => handleSave(r, 'currency', v)}
               />
               <td>
-                <button className="rtable__del-btn" onClick={() => {
-                  if (confirm(t.deleteConfirm(String(r.amount) + r.currency))) {
-                    deleteRewardIssue(r.id!);
-                  }
-                }} type="button">
-                  {t.deleteTitle}
+                <button
+                  className="rtable__del-btn"
+                  disabled={deletingId !== null}
+                  onClick={() => {
+                    if (confirm(t.deleteConfirm(String(r.amount) + r.currency))) {
+                      setDeletingId(r.id!);
+                      deleteRewardIssue(r.id!).finally(() => setDeletingId(null));
+                    }
+                  }}
+                  type="button"
+                >
+                  {deletingId === r.id ? <Spinner /> : t.deleteTitle}
                 </button>
               </td>
             </tr>

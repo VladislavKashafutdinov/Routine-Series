@@ -1,5 +1,6 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useLocale } from '@/i18n/LocaleContext';
+import { Spinner } from '@components/Spinner/Spinner';
 import { fetchActivities, fetchArchivedActivities } from '@/api/activities';
 import { fetchCompletions } from '@/api/completions';
 import { importData } from '@/api/dataimport';
@@ -17,6 +18,7 @@ const REWARD_ISSUES_LIMIT = 1000;
 export function DataActions() {
   const { t, lang } = useLocale();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [importing, setImporting] = useState(false);
 
   const handleExport = async () => {
     try {
@@ -66,6 +68,7 @@ export function DataActions() {
       : 'Это заменит ВСЕ существующие данные. Продолжить?';
     if (!confirm(msg)) { e.target.value = ''; return; }
 
+    setImporting(true);
     try {
       // Validate structure before upload
       const text = await file.text();
@@ -81,18 +84,20 @@ export function DataActions() {
     } catch (err) {
       console.error('Import failed:', err);
       alert(lang === 'en' ? 'Invalid file format' : 'Неверный формат файла');
+    } finally {
+      setImporting(false);
+      e.target.value = '';
     }
-    e.target.value = '';
   };
 
   return (
     <div className="data-actions">
       <input ref={fileRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleFile} />
-      <button className="data-actions__btn" onClick={handleExport} title={t.exportButton}>
+      <button className="data-actions__btn" onClick={handleExport} disabled={importing} title={t.exportButton}>
         ⤓ {t.exportButton}
       </button>
-      <button className="data-actions__btn" onClick={handleImport} title={t.importButton}>
-        ⤒ {t.importButton}
+      <button className="data-actions__btn" onClick={handleImport} disabled={importing} title={t.importButton}>
+        {importing ? <Spinner /> : <>⤒ {t.importButton}</>}
       </button>
     </div>
   );

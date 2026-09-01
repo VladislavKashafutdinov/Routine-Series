@@ -2,6 +2,7 @@ import { memo, useState } from 'react';
 import { useLocale } from '@/i18n/LocaleContext';
 import { useActivities, latestDef } from '@/hooks/useActivities';
 import { useVirtualToday } from '@/hooks/VirtualTodayContext';
+import { Spinner } from '@components/Spinner/Spinner';
 import type { ActivityWithStreak } from '@/types';
 import './SeriesDefinitionTab.css';
 
@@ -21,6 +22,8 @@ export const SeriesDefinitionTab = memo(function SeriesDefinitionTab({ activity 
   const [length, setLength] = useState(def?.seriesLength ?? 0);
   const [reward, setReward] = useState(def?.reward ?? 0);
   const [currency, setCurrency] = useState(def?.currency ?? '₽');
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   // Show placeholder while there are no series definitions
   if (activity.seriesDefinitions.length === 0) {
@@ -36,9 +39,14 @@ export const SeriesDefinitionTab = memo(function SeriesDefinitionTab({ activity 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (length < 1) return;
-    await addSeriesDefinition(activity.id, length, reward, currency || '₽');
-    setShowForm(false);
+    if (saving || length < 1) return;
+    setSaving(true);
+    try {
+      await addSeriesDefinition(activity.id, length, reward, currency || '₽');
+      setShowForm(false);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -62,8 +70,10 @@ export const SeriesDefinitionTab = memo(function SeriesDefinitionTab({ activity 
             {t.currencyLabel}
             <input className="sdef-tab__num" type="text" maxLength={10} value={currency} onChange={(e) => setCurrency(e.target.value || '₽')} />
           </label>
-          <button className="sdef-tab__save" type="submit">{t.editSeriesSave}</button>
-          <button className="sdef-tab__cancel" type="button" onClick={() => setShowForm(false)}>{t.editSeriesCancel}</button>
+          <button className="sdef-tab__save" type="submit" disabled={saving}>
+            {saving ? <Spinner /> : t.editSeriesSave}
+          </button>
+          <button className="sdef-tab__cancel" type="button" disabled={saving} onClick={() => setShowForm(false)}>{t.editSeriesCancel}</button>
         </form>
       )}
 
@@ -91,14 +101,16 @@ export const SeriesDefinitionTab = memo(function SeriesDefinitionTab({ activity 
                   {d.createdAt.toISOString().slice(0, 10) >= virtualToday && defs.length > 1 && (
                     <button
                       className="sdef-tab__del"
+                      disabled={deletingId !== null}
                       onClick={() => {
                         if (confirm(t.deleteConfirm(t.seriesLengthLabel))) {
-                          deleteSeriesDefinition(activity.id, d.id!);
+                          setDeletingId(d.id!);
+                          deleteSeriesDefinition(activity.id, d.id!).finally(() => setDeletingId(null));
                         }
                       }}
                       type="button"
                     >
-                      {t.deleteTitle}
+                      {deletingId === d.id ? <Spinner /> : t.deleteTitle}
                     </button>
                   )}
                 </td>

@@ -78,6 +78,12 @@
 
 .card__done--yes:hover { background: var(--primary-hover); }
 
+.card__done:disabled,
+.card__del:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .card__name-input {
   font-size: 0.95rem;
   font-weight: 600;

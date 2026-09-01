@@ -5,6 +5,7 @@ import { memo, useState } from 'react';
 
 import type { ActivityWithStreak } from '@/types';
 import { SeriesProgress } from '@components/SeriesProgress/SeriesProgress';
+import { Spinner } from '@components/Spinner/Spinner';
 import { findCurrentSeries } from '@/utils/series';
 import { useLocale } from '@/i18n/LocaleContext';
 import { useSeries } from '@/hooks/SeriesContext';
@@ -24,15 +25,41 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
   const currentSeries = findCurrentSeries(series, virtualToday);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(activity.name);
+  const [busy, setBusy] = useState(false);
 
   const isDoneToday = activity.completions.some((c) => c.date === virtualToday);
 
-  const save = () => {
+  const save = async () => {
     const trimmed = name.trim();
-    if (trimmed && trimmed !== activity.name) {
-      updateName(activity.id, trimmed);
-    }
     setEditing(false);
+    if (trimmed && trimmed !== activity.name) {
+      setBusy(true);
+      try {
+        await updateName(activity.id, trimmed);
+      } finally {
+        setBusy(false);
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    if (busy || !confirm(t.deleteConfirm(activity.name))) return;
+    setBusy(true);
+    try {
+      await deleteActivity(activity.id);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleToggle = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await toggleDone(activity.id);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -58,10 +85,11 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
         )}
         <button
           className="card__del"
-          onClick={() => { if (confirm(t.deleteConfirm(activity.name))) deleteActivity(activity.id); }}
+          disabled={busy}
+          onClick={handleDelete}
           title={t.deleteTitle}
         >
-          ×
+          {busy ? <Spinner /> : '×'}
         </button>
       </div>
       {activity.seriesDefinitions.length > 0 && (
@@ -78,9 +106,10 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
       )}
       <button
         className={`card__done ${isDoneToday ? 'card__done--yes' : 'card__done--no'}`}
-        onClick={() => toggleDone(activity.id)}
+        disabled={busy}
+        onClick={handleToggle}
       >
-        {isDoneToday ? t.doneToday : t.markDone}
+        {busy ? <Spinner /> : isDoneToday ? t.doneToday : t.markDone}
       </button>
     </div>
   );

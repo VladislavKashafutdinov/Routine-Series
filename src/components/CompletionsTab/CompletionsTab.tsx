@@ -1,6 +1,7 @@
 import { memo, useState } from 'react';
 import { useVirtualToday } from '@/hooks/VirtualTodayContext';
 import { useActivities } from '@/hooks/useActivities';
+import { Spinner } from '@components/Spinner/Spinner';
 import type { ActivityWithStreak } from '@/types';
 import './CompletionsTab.css';
 
@@ -43,6 +44,7 @@ export const CompletionsTab = memo(function CompletionsTab({ activity }: Props) 
   const { virtualToday } = useVirtualToday();
   const { toggleDate } = useActivities();
   const [page, setPage] = useState(0);
+  const [pendingDate, setPendingDate] = useState<string | null>(null);
 
   const doneSet = new Set(activity.completions.map((c) => c.date));
   const todayDate = virtualToday;
@@ -88,14 +90,18 @@ export const CompletionsTab = memo(function CompletionsTab({ activity }: Props) 
                 if (!d) return <span key={`e${i}`} className="ctab__day ctab__day--empty" />;
                 const done = doneSet.has(d);
                 const future = d > todayDate;
+                const pending = pendingDate === d;
                 return (
                   <span
                     key={d}
-                    className={`ctab__day${done ? ' ctab__day--done' : ''}${future ? ' ctab__day--future' : ''}`}
-                    onClick={!future ? () => toggleDate(activity.id, d) : undefined}
+                    className={`ctab__day${done ? ' ctab__day--done' : ''}${future ? ' ctab__day--future' : ''}${pending ? ' ctab__day--pending' : ''}`}
+                    onClick={!future && !pendingDate ? () => {
+                      setPendingDate(d);
+                      toggleDate(activity.id, d).finally(() => setPendingDate(null));
+                    } : undefined}
                     title={d}
                   >
-                    {d.slice(8)}
+                    {pending ? <Spinner /> : d.slice(8)}
                   </span>
                 );
               })}

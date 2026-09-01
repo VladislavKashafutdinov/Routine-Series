@@ -2,6 +2,7 @@ import { memo, useState } from 'react';
 import { useLocale } from '@/i18n/LocaleContext';
 import { useVirtualToday } from '@/hooks/VirtualTodayContext';
 import { useActivities } from '@/hooks/useActivities';
+import { Spinner } from '@components/Spinner/Spinner';
 import type { ActivityWithStreak } from '@/types';
 import './IssueRewardModal.css';
 
@@ -20,17 +21,24 @@ export const IssueRewardModal = memo(function IssueRewardModal({ activity, onClo
   const [date, setDate] = useState(virtualToday);
   const [amount, setAmount] = useState(String(defaultAmount));
   const [currency, setCurrency] = useState(initialCurrency);
+  const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (saving) return;
     const num = Number(amount);
     if (!date || isNaN(num)) return;
-    await addRewardIssue(activity.id, num, currency || '₽', date);
-    onClose();
+    setSaving(true);
+    try {
+      await addRewardIssue(activity.id, num, currency || '₽', date);
+      onClose();
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={() => { if (!saving) onClose(); }}>
       <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
         <h3 className="modal__title">«{activity.name}» — {t.issueReward}</h3>
         <label className="modal__field">
@@ -46,8 +54,10 @@ export const IssueRewardModal = memo(function IssueRewardModal({ activity, onClo
           <input className="modal__input modal__input--short" type="text" maxLength={10} value={currency} onChange={(e) => setCurrency(e.target.value || '₽')} />
         </label>
         <div className="modal__actions">
-          <button className="modal__btn modal__btn--submit" type="submit">{t.issueReward}</button>
-          <button className="modal__btn modal__btn--cancel" type="button" onClick={onClose}>
+          <button className="modal__btn modal__btn--submit" type="submit" disabled={saving}>
+            {saving ? <Spinner /> : t.issueReward}
+          </button>
+          <button className="modal__btn modal__btn--cancel" type="button" disabled={saving} onClick={onClose}>
           {lang === 'en' ? 'Cancel' : 'Отмена'}
         </button>
         </div>
