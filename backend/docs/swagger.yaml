@@ -780,11 +780,10 @@ paths:
       description: Returns all activities of the user with their series definitions,
         completions and reward issues in a single payload.
       parameters:
-      - description: Completions up to this date (YYYY-MM-DD)
+      - description: Filter to a single activity
         in: query
-        name: to
-        required: true
-        type: string
+        name: activity_id
+        type: integer
       produces:
       - application/json
       responses:

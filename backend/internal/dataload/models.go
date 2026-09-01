@@ -2,7 +2,6 @@ package dataload
 
 import (
 	"fmt"
-	"regexp"
 	"time"
 
 	"routine-series/backend/internal/completion"
@@ -26,17 +25,16 @@ type Response struct {
 	Activities []ActivityData `json:"activities"`
 }
 
-// LoadRequest holds the query parameter of the aggregated data endpoint.
+// LoadRequest holds the query parameters of the aggregated data endpoint.
 type LoadRequest struct {
-	To string
+	// ActivityID filters the payload to a single activity; 0 means all.
+	ActivityID int
 }
-
-var dateRe = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
 
 // Validate checks the request fields and returns an error if invalid.
 func (r LoadRequest) Validate() error {
-	if !dateRe.MatchString(r.To) {
-		return fmt.Errorf("to must be in YYYY-MM-DD format")
+	if r.ActivityID < 0 {
+		return fmt.Errorf("activity_id must be a positive integer")
 	}
 	return nil
 }

@@ -109,7 +109,7 @@ func main() {
 		r.Use(auth.RequireAuth(pool, logger))
 
 		// Activities
-		actH := &activity.Handlers{Pool: pool}
+		actH := &activity.Handlers{Pool: pool, Logger: logger}
 		r.Get("/api/v1/activities", actH.ListActivities)
 		r.Get("/api/v1/activities/archived", actH.ListArchivedActivities)
 		r.Get("/api/v1/activities/{id}", actH.GetActivity)

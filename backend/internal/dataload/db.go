@@ -19,34 +19,48 @@ type activityRow struct {
 	CreatedAt time.Time
 }
 
-// Load returns all activities of the user with their series definitions,
-// completions up to `to`, and reward issues — the whole dataset in one payload.
-func Load(ctx context.Context, pool *pgxpool.Pool, userID int, to string) (*Response, error) {
-	activities, err := queryActivities(ctx, pool, userID)
+// Load returns the user's activities with all their series definitions,
+// completions and reward issues — the whole dataset in one payload,
+// optionally filtered to a single activity by req.ActivityID.
+// Completions are returned unfiltered by date: series computation on the
+// frontend ignores future marks itself, and the client needs them to pick
+// the right delete mode (archive vs hard delete) like the backend does.
+func Load(ctx context.Context, pool *pgxpool.Pool, userID int, req LoadRequest) (*Response, error) {
+	activityID := nullableActivityID(req.ActivityID)
+	activities, err := queryActivities(ctx, pool, userID, activityID)
 	if err != nil {
 		return nil, err
 	}
-	defs, err := queryDefinitions(ctx, pool, userID)
+	defs, err := queryDefinitions(ctx, pool, userID, activityID)
 	if err != nil {
 		return nil, err
 	}
-	comps, err := queryCompletions(ctx, pool, userID, to)
+	comps, err := queryCompletions(ctx, pool, userID, activityID)
 	if err != nil {
 		return nil, err
 	}
-	issues, err := queryRewardIssues(ctx, pool, userID)
+	issues, err := queryRewardIssues(ctx, pool, userID, activityID)
 	if err != nil {
 		return nil, err
 	}
 	return assemble(activities, defs, comps, issues), nil
 }
 
-func queryActivities(ctx context.Context, pool *pgxpool.Pool, userID int) ([]activityRow, error) {
+// nullableActivityID converts 0 ("all activities") to SQL NULL for the
+// activity_id filters.
+func nullableActivityID(activityID int) any {
+	if activityID > 0 {
+		return activityID
+	}
+	return nil
+}
+
+func queryActivities(ctx context.Context, pool *pgxpool.Pool, userID int, activityID any) ([]activityRow, error) {
 	rows, err := pool.Query(ctx, `
 		SELECT a.id, a.name, a.archived, a.created_at
 		FROM activities a
-		WHERE a.user_id = $1
-		ORDER BY a.id`, userID)
+		WHERE a.user_id = $1 AND ($2::int IS NULL OR a.id = $2)
+		ORDER BY a.id`, userID, activityID)
 	if err != nil {
 		return nil, fmt.Errorf("query activities: %w", err)
 	}
@@ -63,13 +77,13 @@ func queryActivities(ctx context.Context, pool *pgxpool.Pool, userID int) ([]act
 	return results, rows.Err()
 }
 
-func queryDefinitions(ctx context.Context, pool *pgxpool.Pool, userID int) ([]seriesdefinition.SeriesDefinition, error) {
+func queryDefinitions(ctx context.Context, pool *pgxpool.Pool, userID int, activityID any) ([]seriesdefinition.SeriesDefinition, error) {
 	rows, err := pool.Query(ctx, `
 		SELECT sd.id, sd.activity_id, sd.series_length, sd.reward, sd.currency, sd.created_at
 		FROM series_definitions sd
 		JOIN activities a ON a.id = sd.activity_id
-		WHERE a.user_id = $1
-		ORDER BY sd.created_at DESC`, userID)
+		WHERE a.user_id = $1 AND ($2::int IS NULL OR sd.activity_id = $2)
+		ORDER BY sd.created_at DESC`, userID, activityID)
 	if err != nil {
 		return nil, fmt.Errorf("query series definitions: %w", err)
 	}
@@ -86,13 +100,13 @@ func queryDefinitions(ctx context.Context, pool *pgxpool.Pool, userID int) ([]se
 	return results, rows.Err()
 }
 
-func queryCompletions(ctx context.Context, pool *pgxpool.Pool, userID int, to string) ([]completion.Completion, error) {
+func queryCompletions(ctx context.Context, pool *pgxpool.Pool, userID int, activityID any) ([]completion.Completion, error) {
 	rows, err := pool.Query(ctx, `
 		SELECT c.id, c.activity_id, c.date::text
 		FROM completions c
 		JOIN activities a ON a.id = c.activity_id
-		WHERE a.user_id = $1 AND c.date <= $2
-		ORDER BY c.date`, userID, to)
+		WHERE a.user_id = $1 AND ($2::int IS NULL OR c.activity_id = $2)
+		ORDER BY c.date`, userID, activityID)
 	if err != nil {
 		return nil, fmt.Errorf("query completions: %w", err)
 	}
@@ -109,13 +123,13 @@ func queryCompletions(ctx context.Context, pool *pgxpool.Pool, userID int, to st
 	return results, rows.Err()
 }
 
-func queryRewardIssues(ctx context.Context, pool *pgxpool.Pool, userID int) ([]reward.RewardIssue, error) {
+func queryRewardIssues(ctx context.Context, pool *pgxpool.Pool, userID int, activityID any) ([]reward.RewardIssue, error) {
 	rows, err := pool.Query(ctx, `
 		SELECT ri.id, ri.activity_id, ri.date::text, ri.amount, ri.currency
 		FROM reward_issues ri
 		JOIN activities a ON a.id = ri.activity_id
-		WHERE a.user_id = $1
-		ORDER BY ri.date DESC`, userID)
+		WHERE a.user_id = $1 AND ($2::int IS NULL OR ri.activity_id = $2)
+		ORDER BY ri.date DESC`, userID, activityID)
 	if err != nil {
 		return nil, fmt.Errorf("query reward issues: %w", err)
 	}

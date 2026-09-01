@@ -854,11 +854,10 @@ const docTemplate = `{
                 "summary": "Load all data",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Completions up to this date (YYYY-MM-DD)",
-                        "name": "to",
-                        "in": "query",
-                        "required": true
+                        "type": "integer",
+                        "description": "Filter to a single activity",
+                        "name": "activity_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {

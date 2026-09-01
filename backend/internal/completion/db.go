@@ -76,7 +76,7 @@ func ListByDateRange(ctx context.Context, pool *pgxpool.Pool, userID, activityID
 		`SELECT c.id, c.activity_id, c.date::text
 		 FROM completions c
 		 JOIN activities a ON a.id = c.activity_id
-		 WHERE c.activity_id = $1 AND a.user_id = $2 AND c.date >= $3 AND c.date <= $4
+		 WHERE c.activity_id = $1 AND a.user_id = $2 AND c.date >= $3::date AND c.date < $4::date + 1
 		 ORDER BY c.date`,
 		activityID, userID, from, to,
 	)

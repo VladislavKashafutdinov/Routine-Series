@@ -9,6 +9,15 @@ import (
 	"routine-series/backend/internal/seriesdefinition"
 )
 
+func TestNullableActivityID(t *testing.T) {
+	if nullableActivityID(0) != nil {
+		t.Fatal("expected nil for 0 (all activities)")
+	}
+	if nullableActivityID(3) != 3 {
+		t.Fatal("expected the id itself for a positive id")
+	}
+}
+
 func TestAssembleGroupsDataByActivity(t *testing.T) {
 	now := time.Now()
 

@@ -124,31 +124,29 @@ func Restore(ctx context.Context, pool *pgxpool.Pool, userID, id int) (bool, err
 }
 
 // HardDelete permanently deletes the user's activity and its series definitions.
-// Refuses to delete if completions or reward issues exist (returns false, ErrHasDependents).
+// Refuses to delete if completions or reward issues exist (returns false, *DependentsError).
 // Returns (true, nil) on success, (false, nil) if activity not found.
 func HardDelete(ctx context.Context, pool *pgxpool.Pool, userID, id int) (bool, error) {
-	// Check for dependents.
-	var count int
+	// Check for dependents — count both so the error reports the full picture.
+	var completions int
 	err := pool.QueryRow(ctx, `
 		SELECT COUNT(*) FROM completions c
 		JOIN activities a ON a.id = c.activity_id
-		WHERE c.activity_id = $1 AND a.user_id = $2`, id, userID).Scan(&count)
+		WHERE c.activity_id = $1 AND a.user_id = $2`, id, userID).Scan(&completions)
 	if err != nil {
 		return false, fmt.Errorf("check completions for activity %d: %w", id, err)
 	}
-	if count > 0 {
-		return false, ErrHasDependents
-	}
 
+	var rewardIssues int
 	err = pool.QueryRow(ctx, `
 		SELECT COUNT(*) FROM reward_issues ri
 		JOIN activities a ON a.id = ri.activity_id
-		WHERE ri.activity_id = $1 AND a.user_id = $2`, id, userID).Scan(&count)
+		WHERE ri.activity_id = $1 AND a.user_id = $2`, id, userID).Scan(&rewardIssues)
 	if err != nil {
 		return false, fmt.Errorf("check reward_issues for activity %d: %w", id, err)
 	}
-	if count > 0 {
-		return false, ErrHasDependents
+	if completions > 0 || rewardIssues > 0 {
+		return false, &DependentsError{Completions: completions, RewardIssues: rewardIssues}
 	}
 
 	// Delete series definitions first, then the activity itself.

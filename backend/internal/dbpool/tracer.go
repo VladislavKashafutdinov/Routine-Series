@@ -37,6 +37,11 @@ type tracerState struct {
 type logTracer struct{}
 
 func (logTracer) TraceQueryStart(ctx context.Context, _ *pgx.Conn, data pgx.TraceQueryStartData) context.Context {
+	// Opt-in debug hook: run with DEBUG_PGX_QUERIES set to see every query
+	// with its arguments exactly as sent to the server.
+	if os.Getenv("DEBUG_PGX_QUERIES") != "" {
+		tracerInfoLog.Printf("pgx query start: sql=%q args=%v", data.SQL, data.Args)
+	}
 	return context.WithValue(ctx, tracerCtxKey{}, tracerState{start: time.Now(), sql: data.SQL})
 }
 

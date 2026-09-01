@@ -71,7 +71,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
     setLoading(true);
     setLoadError(false);
     try {
-      const data = await fetchAllData(virtualToday);
+      const data = await fetchAllData();
       const all = (data.activities ?? []).map((a) =>
         build(
           toActivity(a),
@@ -88,7 +88,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
     } finally {
       setLoading(false);
     }
-  }, [virtualToday]);
+  }, []);
 
   useEffect(() => {
     load();

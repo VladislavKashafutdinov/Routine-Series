@@ -13,9 +13,15 @@ import (
 	"routine-series/backend/internal/auth"
 )
 
+// Logger logs internal errors in activity handlers.
+type Logger interface {
+	Errorf(format string, args ...any)
+}
+
 // Handlers holds shared dependencies.
 type Handlers struct {
-	Pool *pgxpool.Pool
+	Pool   *pgxpool.Pool
+	Logger Logger
 }
 
 // CreateActivity godoc
@@ -299,6 +305,9 @@ func (h *Handlers) DeleteActivity(w http.ResponseWriter, r *http.Request) {
 	deleted, err := HardDelete(r.Context(), h.Pool, userID, id)
 	if err != nil {
 		if errors.Is(err, ErrHasDependents) {
+			if h.Logger != nil {
+				h.Logger.Errorf("delete activity %d: %v", id, err)
+			}
 			api.WriteError(w, http.StatusConflict, err.Error())
 			return
 		}

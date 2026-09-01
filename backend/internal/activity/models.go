@@ -13,6 +13,20 @@ import (
 // because it has completions or reward issues.
 var ErrHasDependents = errors.New("activity has completions or reward issues, archive instead")
 
+// DependentsError reports which dependents block the hard delete — the counts
+// make the 409 cause visible in logs.
+type DependentsError struct {
+	Completions  int
+	RewardIssues int
+}
+
+func (e *DependentsError) Error() string {
+	return fmt.Sprintf("activity has completions or reward issues (completions=%d, reward_issues=%d), archive instead", e.Completions, e.RewardIssues)
+}
+
+// Unwrap keeps errors.Is(err, ErrHasDependents) working.
+func (e *DependentsError) Unwrap() error { return ErrHasDependents }
+
 // Activity represents a tracked activity.
 type Activity struct {
 	ID        int       `json:"id"`
