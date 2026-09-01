@@ -6,13 +6,18 @@ import { toggleCompletion } from '@/api/completions';
 import { createRewardIssue, deleteRewardIssue as apiDeleteRewardIssue, updateRewardIssue as apiUpdateRewardIssue } from '@/api/rewardIssues';
 import { createSeriesDefinition as apiCreateSeriesDefinition, deleteSeriesDefinition as apiDeleteSeriesDefinition } from '@/api/seriesDefinitions';
 import { fetchAllData } from '@/api/data';
+import { ApiFetchError } from '@/api/fetch';
 import { toActivity, toCompletion, toRewardIssue, toSeriesDefinition } from '@/api/mapping';
+import { useToast } from '@components/Toast/Toast';
+import { useLocale } from '@/i18n/LocaleContext';
 import { useVirtualToday } from './VirtualTodayContext';
 
 export interface ActivitiesValue {
   activities: ActivityWithStreak[];
   archivedActivities: ActivityWithStreak[];
   loading: boolean;
+  loadError: boolean;
+  retryLoad: () => void;
   addActivity: (name: string, seriesLength: number, reward: number, currency: string) => Promise<void>;
   updateName: (activityId: number, name: string) => Promise<void>;
   toggleDone: (activityId: number) => Promise<void>;
@@ -53,9 +58,18 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
   const [activities, setActivities] = useState<ActivityWithStreak[]>([]);
   const [archivedActivities, setArchivedActivities] = useState<ActivityWithStreak[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const { virtualToday } = useVirtualToday();
+  const { t } = useLocale();
+  const { showError } = useToast();
+
+  const reportMutationError = (err: unknown) => {
+    showError(err instanceof ApiFetchError && err.status === 504 ? t.mutationTimeout : t.mutationError);
+  };
 
   const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError(false);
     try {
       const data = await fetchAllData(virtualToday);
       const all = (data.activities ?? []).map((a) =>
@@ -70,6 +84,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       setArchivedActivities(all.filter((a) => a.archived));
     } catch (err) {
       console.error('Failed to load activities from API:', err);
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -94,6 +109,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       setActivities((prev) => [...prev, build(toActivity(created), [], defs, [])]);
     } catch (err) {
       console.error('API createActivity failed:', err);
+      reportMutationError(err);
     }
   };
 
@@ -103,6 +119,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       patchActivity(activityId, (a) => ({ ...a, name: updated.name }));
     } catch (err) {
       console.error('API updateActivity failed:', err);
+      reportMutationError(err);
     }
   };
 
@@ -116,6 +133,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       );
     } catch (err) {
       console.error('API toggleCompletion failed:', err);
+      reportMutationError(err);
     }
   };
 
@@ -129,6 +147,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       );
     } catch (err) {
       console.error('API toggleCompletion failed:', err);
+      reportMutationError(err);
     }
   };
 
@@ -139,6 +158,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       patchActivity(mapped.activityId, (a) => ({ ...a, rewardIssues: [...a.rewardIssues, mapped] }));
     } catch (err) {
       console.error('API createRewardIssue failed:', err);
+      reportMutationError(err);
     }
   };
 
@@ -152,6 +172,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       }));
     } catch (err) {
       console.error('API updateRewardIssue failed:', err);
+      reportMutationError(err);
     }
   };
 
@@ -160,6 +181,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       await apiDeleteRewardIssue(id);
     } catch (err) {
       console.error('API deleteRewardIssue failed:', err);
+      reportMutationError(err);
       return;
     }
     const owner = [...activities, ...archivedActivities].find((a) => a.rewardIssues.some((r) => r.id === id));
@@ -172,6 +194,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       await apiDeleteSeriesDefinition(activityId, id);
     } catch (err) {
       console.error('API deleteSeriesDefinition failed:', err);
+      reportMutationError(err);
       return;
     }
     patchActivity(activityId, (a) => ({ ...a, seriesDefinitions: a.seriesDefinitions.filter((d) => d.id !== id) }));
@@ -184,6 +207,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       patchActivity(activityId, (a) => ({ ...a, seriesDefinitions: [...a.seriesDefinitions, mapped] }));
     } catch (err) {
       console.error('API createSeriesDefinition failed:', err);
+      reportMutationError(err);
     }
   };
 
@@ -192,6 +216,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       await restoreActivity(activityId);
     } catch (err) {
       console.error('API restoreActivity failed:', err);
+      reportMutationError(err);
       return;
     }
     const activity = archivedActivities.find((a) => a.id === activityId);
@@ -212,6 +237,7 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
       }
     } catch (err) {
       console.error('API deleteActivity failed:', err);
+      reportMutationError(err);
       return;
     }
     setActivities((prev) => prev.filter((a) => a.id !== activityId));
@@ -224,6 +250,10 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
     activities,
     archivedActivities,
     loading,
+    loadError,
+    retryLoad: () => {
+      void load();
+    },
     addActivity,
     updateName,
     toggleDone,

@@ -7,6 +7,7 @@ import { MonitoringPage } from '@components/MonitoringPage/MonitoringPage';
 import { ArchivePage } from '@components/ArchivePage/ArchivePage';
 import { DataActions } from '@components/DataActions/DataActions';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay';
+import { LoadError } from '@components/LoadError/LoadError';
 import { LoginPage } from '@components/LoginPage/LoginPage';
 import { ActivitiesProvider } from '@/hooks/ActivitiesContext';
 import { SeriesProvider } from '@/hooks/SeriesContext';
@@ -20,7 +21,7 @@ function MainApp() {
   const [page, setPage] = useState<Page>('dashboard');
   const { logout } = useAuth();
   const { t } = useLocale();
-  const { loading } = useActivities();
+  const { loading, loadError, retryLoad } = useActivities();
 
   return (
     <div className="app">
@@ -35,9 +36,15 @@ function MainApp() {
         <PageTabs page={page} onChange={setPage} />
       </header>
       <main className="app-main">
-        {page === 'dashboard' && <Dashboard />}
-        {page === 'monitoring' && <MonitoringPage />}
-        {page === 'archive' && <ArchivePage />}
+        {loadError ? (
+          <LoadError retry={retryLoad} />
+        ) : (
+          <>
+            {page === 'dashboard' && <Dashboard />}
+            {page === 'monitoring' && <MonitoringPage />}
+            {page === 'archive' && <ArchivePage />}
+          </>
+        )}
       </main>
       {loading && <LoadingOverlay />}
     </div>

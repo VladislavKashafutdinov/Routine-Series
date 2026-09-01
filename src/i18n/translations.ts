@@ -82,6 +82,12 @@ export interface Strings {
   // AppHeader
   logoutButton: string;
 
+  // Errors
+  mutationError: string;
+  mutationTimeout: string;
+  loadErrorMessage: string;
+  retryButton: string;
+
   // HistoryModal
   historyAria: (name: string) => string;
   daysSuffix: (n: number) => string;
@@ -155,6 +161,11 @@ const en: Strings = {
 
   logoutButton: 'Sign out',
 
+  mutationError: 'Could not save changes. Please try again.',
+  mutationTimeout: 'The server is busy. Please try again in a moment.',
+  loadErrorMessage: 'Could not load your data. Check the connection and try again.',
+  retryButton: 'Retry',
+
   historyAria: (name: string) => `History for ${name}`,
   daysSuffix: (n: number) => enPlural(n, 'day', 'days'),
   lastNDays: (n: number) => `Last ${n} days`,
@@ -226,6 +237,11 @@ const ru: Strings = {
   loginWait: (n: number) => `Подождите ${n} с`,
 
   logoutButton: 'Выйти',
+
+  mutationError: 'Не удалось сохранить изменения. Попробуйте ещё раз.',
+  mutationTimeout: 'Сервер занят. Попробуйте ещё раз через пару секунд.',
+  loadErrorMessage: 'Не удалось загрузить данные. Проверьте соединение и повторите попытку.',
+  retryButton: 'Повторить',
 
   historyAria: (name: string) => `История: ${name}`,
   daysSuffix: (n: number) => ruPlural(n, 'день', 'дня', 'дней'),
