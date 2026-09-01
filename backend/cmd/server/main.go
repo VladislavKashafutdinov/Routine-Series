@@ -26,6 +26,7 @@ import (
 	"routine-series/backend/internal/auth"
 	"routine-series/backend/internal/completion"
 	"routine-series/backend/internal/dataimport"
+	"routine-series/backend/internal/dataload"
 	"routine-series/backend/internal/dbpool"
 	"routine-series/backend/internal/health"
 	"routine-series/backend/internal/reward"
@@ -135,6 +136,10 @@ func main() {
 		r.Post("/api/v1/reward-issues", rewardH.Create)
 		r.Patch("/api/v1/reward-issues/{id}", rewardH.Update)
 		r.Delete("/api/v1/reward-issues/{id}", rewardH.Delete)
+
+		// Aggregated load — the whole dataset in a single request.
+		dataH := &dataload.Handlers{Pool: pool}
+		r.Get("/api/v1/data", dataH.Load)
 	})
 
 	// Import may legitimately take longer than a regular request. Registered

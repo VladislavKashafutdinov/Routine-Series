@@ -108,6 +108,36 @@ definitions:
       series_definitions:
         type: integer
     type: object
+  dataload.ActivityData:
+    properties:
+      archived:
+        type: boolean
+      completions:
+        items:
+          $ref: '#/definitions/completion.Completion'
+        type: array
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      reward_issues:
+        items:
+          $ref: '#/definitions/reward.RewardIssue'
+        type: array
+      series_definitions:
+        items:
+          $ref: '#/definitions/seriesdefinition.SeriesDefinition'
+        type: array
+    type: object
+  dataload.Response:
+    properties:
+      activities:
+        items:
+          $ref: '#/definitions/dataload.ActivityData'
+        type: array
+    type: object
   reward.CreateRequest:
     properties:
       activity_id:
@@ -745,6 +775,34 @@ paths:
       summary: Toggle completion
       tags:
       - completions
+  /data:
+    get:
+      description: Returns all activities of the user with their series definitions,
+        completions and reward issues in a single payload.
+      parameters:
+      - description: Completions up to this date (YYYY-MM-DD)
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dataload.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Load all data
+      tags:
+      - data
   /health:
     get:
       description: Returns ok if the server and database are reachable.

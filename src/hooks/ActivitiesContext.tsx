@@ -1,18 +1,13 @@
 import type { Activity, ActivityWithStreak, Completion, RewardIssue, SeriesDefinition } from '@/types';
 import { createContext, useCallback, useEffect, useState } from 'react';
 
-import { archiveActivity, createActivity, deleteActivityHard, fetchActivities, fetchArchivedActivities, restoreActivity, updateActivity } from '@/api/activities';
-import { fetchCompletions, toggleCompletion } from '@/api/completions';
-import { createRewardIssue, deleteRewardIssue as apiDeleteRewardIssue, fetchRewardIssues, updateRewardIssue as apiUpdateRewardIssue } from '@/api/rewardIssues';
-import { createSeriesDefinition as apiCreateSeriesDefinition, deleteSeriesDefinition as apiDeleteSeriesDefinition, fetchSeriesDefinitions } from '@/api/seriesDefinitions';
+import { archiveActivity, createActivity, deleteActivityHard, restoreActivity, updateActivity } from '@/api/activities';
+import { toggleCompletion } from '@/api/completions';
+import { createRewardIssue, deleteRewardIssue as apiDeleteRewardIssue, updateRewardIssue as apiUpdateRewardIssue } from '@/api/rewardIssues';
+import { createSeriesDefinition as apiCreateSeriesDefinition, deleteSeriesDefinition as apiDeleteSeriesDefinition } from '@/api/seriesDefinitions';
+import { fetchAllData } from '@/api/data';
 import { toActivity, toCompletion, toRewardIssue, toSeriesDefinition } from '@/api/mapping';
-import type { ApiActivityWithDef } from '@/api/types';
 import { useVirtualToday } from './VirtualTodayContext';
-
-// CompletionsTab calendar starts at Jan 1970, so fetch completions from epoch
-const COMPLETIONS_FROM = '1970-01-01';
-// Reward issues are paginated client-side (PER_PAGE 50) — fetch all in one page
-const REWARD_ISSUES_LIMIT = 1000;
 
 export interface ActivitiesValue {
   activities: ActivityWithStreak[];
@@ -61,31 +56,18 @@ export function ActivitiesProvider({ children }: { children: React.ReactNode }) 
   const { virtualToday } = useVirtualToday();
 
   const load = useCallback(async () => {
-    const buildOne = async (apiActivity: ApiActivityWithDef): Promise<ActivityWithStreak> => {
-      const [defs, comps, issues] = await Promise.all([
-        fetchSeriesDefinitions(apiActivity.id),
-        fetchCompletions(apiActivity.id, COMPLETIONS_FROM, virtualToday),
-        fetchRewardIssues(apiActivity.id, REWARD_ISSUES_LIMIT, 0),
-      ]);
-      return build(
-        toActivity(apiActivity),
-        (comps ?? []).map(toCompletion),
-        (defs ?? []).map(toSeriesDefinition),
-        (issues?.items ?? []).map(toRewardIssue),
-      );
-    };
-
     try {
-      const [activeList, archivedList] = await Promise.all([
-        fetchActivities(),
-        fetchArchivedActivities(),
-      ]);
-      const [active, archived] = await Promise.all([
-        Promise.all((activeList ?? []).map(buildOne)),
-        Promise.all((archivedList ?? []).map(buildOne)),
-      ]);
-      setActivities(active);
-      setArchivedActivities(archived);
+      const data = await fetchAllData(virtualToday);
+      const all = (data.activities ?? []).map((a) =>
+        build(
+          toActivity(a),
+          (a.completions ?? []).map(toCompletion),
+          (a.series_definitions ?? []).map(toSeriesDefinition),
+          (a.reward_issues ?? []).map(toRewardIssue),
+        ),
+      );
+      setActivities(all.filter((a) => !a.archived));
+      setArchivedActivities(all.filter((a) => a.archived));
     } catch (err) {
       console.error('Failed to load activities from API:', err);
     } finally {

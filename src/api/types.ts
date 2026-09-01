@@ -21,6 +21,18 @@ export interface ApiActivityWithDef extends ApiActivity {
   definition?: ApiSeriesDefinition;
 }
 
+/** GET /api/v1/data — activity together with all its dependent data. */
+export interface ApiActivityData extends ApiActivity {
+  series_definitions: ApiSeriesDefinition[];
+  completions: ApiCompletion[];
+  reward_issues: ApiRewardIssue[];
+}
+
+/** GET /api/v1/data response — the whole dataset in one payload. */
+export interface ApiAllData {
+  activities: ApiActivityData[];
+}
+
 export interface ApiCompletion {
   id: number;
   activity_id: number;

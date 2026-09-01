@@ -842,6 +842,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/data": {
+            "get": {
+                "description": "Returns all activities of the user with their series definitions, completions and reward issues in a single payload.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data"
+                ],
+                "summary": "Load all data",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Completions up to this date (YYYY-MM-DD)",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dataload.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "description": "Returns ok if the server and database are reachable.",
@@ -1275,6 +1316,52 @@ const docTemplate = `{
                 },
                 "series_definitions": {
                     "type": "integer"
+                }
+            }
+        },
+        "dataload.ActivityData": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "completions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/completion.Completion"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "reward_issues": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/reward.RewardIssue"
+                    }
+                },
+                "series_definitions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/seriesdefinition.SeriesDefinition"
+                    }
+                }
+            }
+        },
+        "dataload.Response": {
+            "type": "object",
+            "properties": {
+                "activities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dataload.ActivityData"
+                    }
                 }
             }
         },
