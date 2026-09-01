@@ -2,18 +2,8 @@
 
 .app { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; }
 
-.app-header { text-align: center; margin-bottom: 32px; }
+.app-header { position: relative; text-align: center; margin-bottom: 32px; }
 .app-header h1 { margin: 0; font-size: 1.6rem; font-weight: 700; }
-
-.app-logout {
-  margin: 8px 0 0 12px;
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-  font-size: 0.85rem;
-}
 
 .app-main { display: flex; flex-direction: column; gap: 24px; }
 

@@ -50,11 +50,8 @@ main.tsx
                     └── SeriesProvider       (computeSeries для всех активностей)
                         └── MainApp
                             ├── AppHeader
-                            │   ├── LangSwitcher
-                            │   ├── LogoutButton            («Выйти»: logout на сервер + очистка токенов)
-                            │   ├── PageTabs                («Выполнение» | «Награды» (бейджик unissued) | «Мониторинг» | «Архив»)
-                            │   ├── DataActions             (⤓ экспорт / ⤒ импорт через API)
-                            │   └── TimeTravel              (◀ YYYY-MM-DD ▶ «Сегодня», VirtualTodayContext)
+                            │   ├── HeaderMenu             (☰ справа: LangSwitcher / «Архив» / DataActions / TimeTravel / «Выйти»)
+                            │   └── PageTabs                («Выполнение» | «Награды» (бейджик unissued) | «Мониторинг»)
                             │
                             ├── [«Выполнение»] Dashboard
                             │   ├── Section «Не выполнено»

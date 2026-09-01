@@ -84,6 +84,9 @@ export interface Strings {
 
   // AppHeader
   logoutButton: string;
+  menuButton: string;
+  exportButton: string;
+  importButton: string;
 
   // Errors
   mutationError: string;
@@ -166,6 +169,9 @@ const en: Strings = {
   loginWait: (n: number) => `Wait ${n}s`,
 
   logoutButton: 'Sign out',
+  menuButton: 'Menu',
+  exportButton: 'Export',
+  importButton: 'Import',
 
   mutationError: 'Could not save changes. Please try again.',
   mutationTimeout: 'The server is busy. Please try again in a moment.',
@@ -246,6 +252,9 @@ const ru: Strings = {
   loginWait: (n: number) => `Подождите ${n} с`,
 
   logoutButton: 'Выйти',
+  menuButton: 'Меню',
+  exportButton: 'Экспорт',
+  importButton: 'Импорт',
 
   mutationError: 'Не удалось сохранить изменения. Попробуйте ещё раз.',
   mutationTimeout: 'Сервер занят. Попробуйте ещё раз через пару секунд.',

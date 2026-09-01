@@ -15,7 +15,7 @@ const EXPORT_TO = '9999-12-31';
 const REWARD_ISSUES_LIMIT = 1000;
 
 export function DataActions() {
-  const { lang } = useLocale();
+  const { t, lang } = useLocale();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleExport = async () => {
@@ -88,11 +88,11 @@ export function DataActions() {
   return (
     <div className="data-actions">
       <input ref={fileRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleFile} />
-      <button className="data-actions__btn" onClick={handleExport} title={lang === 'en' ? 'Export' : 'Экспорт'}>
-        ⤓
+      <button className="data-actions__btn" onClick={handleExport} title={t.exportButton}>
+        ⤓ {t.exportButton}
       </button>
-      <button className="data-actions__btn" onClick={handleImport} title={lang === 'en' ? 'Import' : 'Импорт'}>
-        ⤒
+      <button className="data-actions__btn" onClick={handleImport} title={t.importButton}>
+        ⤒ {t.importButton}
       </button>
     </div>
   );

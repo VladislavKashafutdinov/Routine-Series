@@ -14,7 +14,6 @@ const PAGES: { key: Page; en: string; ru: string }[] = [
   { key: 'dashboard', en: 'Activities', ru: 'Активности' },
   { key: 'rewards', en: 'Rewards', ru: 'Награды' },
   { key: 'monitoring', en: 'Monitoring', ru: 'Мониторинг' },
-  { key: 'archive', en: 'Archive', ru: 'Архив' },
 ];
 
 export function PageTabs({ page, onChange, badges }: Props) {
