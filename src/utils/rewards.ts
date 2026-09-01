@@ -1,4 +1,4 @@
-import type { ComputedSeries, RewardIssue, SeriesDefinition } from '@/types';
+import type { ActivityWithStreak, ComputedSeries, RewardIssue, SeriesDefinition } from '@/types';
 
 export function calcEarnedByCurrency(series: ComputedSeries[]): Record<string, number> {
   const result: Record<string, number> = {};
@@ -33,4 +33,28 @@ export function getCurrencies(defs: SeriesDefinition[], issues: RewardIssue[]): 
   for (const d of defs) set.add(d.currency);
   for (const r of issues) set.add(r.currency);
   return [...set];
+}
+
+export interface UnissuedEntry {
+  activity: ActivityWithStreak;
+  currency: string;
+  amount: number;
+}
+
+/** Unissued rewards per activity and currency across the given activities. */
+export function calcUnissuedEntries(
+  activities: ActivityWithStreak[],
+  seriesMap: Map<number, ComputedSeries[]>,
+): UnissuedEntry[] {
+  const result: UnissuedEntry[] = [];
+  for (const a of activities) {
+    const series = seriesMap.get(a.id) || [];
+    const earned = calcEarnedByCurrency(series);
+    const issued = calcIssuedByCurrency(a.rewardIssues);
+    const unissued = calcUnissuedByCurrency(earned, issued);
+    for (const [currency, amount] of Object.entries(unissued)) {
+      result.push({ activity: a, currency, amount });
+    }
+  }
+  return result;
 }

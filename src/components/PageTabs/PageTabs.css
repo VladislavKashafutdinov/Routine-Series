@@ -6,6 +6,9 @@
 }
 
 .page-tabs__btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   background: none;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -23,4 +26,13 @@
   background: var(--primary);
   color: #fff;
   border-color: var(--primary);
+}
+
+.page-tabs__badge {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
 }

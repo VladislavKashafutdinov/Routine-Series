@@ -52,7 +52,7 @@ main.tsx
                             ├── AppHeader
                             │   ├── LangSwitcher
                             │   ├── LogoutButton            («Выйти»: logout на сервер + очистка токенов)
-                            │   ├── PageTabs                («Выполнение» | «Мониторинг» | «Архив»)
+                            │   ├── PageTabs                («Выполнение» | «Награды» (бейджик unissued) | «Мониторинг» | «Архив»)
                             │   ├── DataActions             (⤓ экспорт / ⤒ импорт через API)
                             │   └── TimeTravel              (◀ YYYY-MM-DD ▶ «Сегодня», VirtualTodayContext)
                             │
@@ -70,6 +70,11 @@ main.tsx
                             │           ├── SeriesProgress
                             │           ├── ToggleDoneBtn   («Отменить»)
                             │           └── DeleteButton
+                            │
+                            ├── [«Награды»] RewardsPage
+                            │   ├── Кнопка «Начислить все награды» (вне баннеров)
+                            │   ├── UnissuedRewardBanner[]  (по одному на activity+currency: name + unissued + «Начислить»)
+                            │   └── IssueRewardModal (оверлей, initialCurrency + defaultAmount)
                             │
                             ├── [«Мониторинг»] MonitoringPage
                             │   └── ActivityAccordion[]     (один открыт одновременно, computeSeries на месте)

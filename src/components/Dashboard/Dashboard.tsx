@@ -2,7 +2,6 @@ import './Dashboard.css';
 
 import { ActivityCard } from '@components/ActivityCard/ActivityCard';
 import { AddActivity } from '@components/AddActivity/AddActivity';
-import { IssueBanner } from '@components/IssueBanner/IssueBanner';
 import { useActivities } from '@/hooks/useActivities';
 import { useLocale } from '@/i18n/LocaleContext';
 import { useVirtualToday } from '@/hooks/VirtualTodayContext';
@@ -18,8 +17,6 @@ export function Dashboard() {
   return (
     <div className="dashboard">
       <AddActivity />
-
-      <IssueBanner activities={activities} />
 
       {activities.length === 0 && (
         <div className="dash-msg">{t.empty}</div>

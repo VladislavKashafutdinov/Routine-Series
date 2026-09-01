@@ -1,19 +1,21 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { LangSwitcher } from '@components/LangSwitcher/LangSwitcher';
 import { PageTabs } from '@components/PageTabs/PageTabs';
 import { TimeTravel } from '@components/TimeTravel/TimeTravel';
 import { Dashboard } from '@components/Dashboard/Dashboard';
 import { MonitoringPage } from '@components/MonitoringPage/MonitoringPage';
+import { RewardsPage } from '@components/RewardsPage/RewardsPage';
 import { ArchivePage } from '@components/ArchivePage/ArchivePage';
 import { DataActions } from '@components/DataActions/DataActions';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay';
 import { LoadError } from '@components/LoadError/LoadError';
 import { LoginPage } from '@components/LoginPage/LoginPage';
 import { ActivitiesProvider } from '@/hooks/ActivitiesContext';
-import { SeriesProvider } from '@/hooks/SeriesContext';
+import { SeriesProvider, useAllSeries } from '@/hooks/SeriesContext';
 import { useActivities } from '@/hooks/useActivities';
 import { useAuth } from '@/hooks/AuthContext';
 import { useLocale } from '@/i18n/LocaleContext';
+import { calcUnissuedEntries } from '@/utils/rewards';
 import type { Page } from '@components/PageTabs/PageTabs';
 import './App.css';
 
@@ -21,7 +23,12 @@ function MainApp() {
   const [page, setPage] = useState<Page>('dashboard');
   const { logout } = useAuth();
   const { t } = useLocale();
-  const { loading, loadError, retryLoad } = useActivities();
+  const { loading, loadError, retryLoad, activities } = useActivities();
+  const seriesMap = useAllSeries();
+  const unissuedCount = useMemo(
+    () => calcUnissuedEntries(activities, seriesMap).length,
+    [activities, seriesMap],
+  );
 
   return (
     <div className="app">
@@ -33,7 +40,7 @@ function MainApp() {
         </button>
         <TimeTravel />
         <DataActions />
-        <PageTabs page={page} onChange={setPage} />
+        <PageTabs page={page} onChange={setPage} badges={{ rewards: unissuedCount }} />
       </header>
       <main className="app-main">
         {loadError ? (
@@ -42,6 +49,7 @@ function MainApp() {
           <>
             {page === 'dashboard' && <Dashboard />}
             {page === 'monitoring' && <MonitoringPage />}
+            {page === 'rewards' && <RewardsPage />}
             {page === 'archive' && <ArchivePage />}
           </>
         )}

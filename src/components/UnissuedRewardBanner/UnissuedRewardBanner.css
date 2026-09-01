@@ -1,33 +1,27 @@
-.ibanner {
+.ureward-banner {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 12px;
   background: var(--surface);
   border: 1px solid var(--primary);
   border-radius: var(--radius);
   padding: 12px 16px;
 }
 
-.ibanner__row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.ibanner__name {
+.ureward-banner__name {
   font-weight: 600;
   font-size: 0.9rem;
   flex: 1;
 }
 
-.ibanner__amount {
+.ureward-banner__amount {
   font-size: 0.85rem;
   color: var(--primary);
   font-weight: 600;
   white-space: nowrap;
 }
 
-.ibanner__btn {
+.ureward-banner__btn {
   padding: 3px 12px;
   border: 1px solid var(--primary);
   border-radius: var(--radius);
@@ -40,7 +34,7 @@
   white-space: nowrap;
 }
 
-.ibanner__btn:hover {
+.ureward-banner__btn:hover {
   background: var(--primary);
   color: #fff;
 }

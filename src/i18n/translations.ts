@@ -40,6 +40,9 @@ export interface Strings {
 
   // Monitoring
   monitoringTitle: string;
+  rewardsTab: string;
+  issueAllRewards: string;
+  noUnissuedRewards: string;
   seriesHistoryTab: string;
   rewardHistoryTab: string;
   issueReward: string;
@@ -124,6 +127,9 @@ const en: Strings = {
   doneTitle: 'Done',
 
   monitoringTitle: 'Monitoring',
+  rewardsTab: 'Rewards',
+  issueAllRewards: 'Issue all rewards',
+  noUnissuedRewards: 'All rewards are issued.',
   seriesHistoryTab: 'Series history',
   rewardHistoryTab: 'Reward history',
   issueReward: 'Issue reward',
@@ -201,6 +207,9 @@ const ru: Strings = {
   doneTitle: 'Выполнено',
 
   monitoringTitle: 'Мониторинг',
+  rewardsTab: 'Награды',
+  issueAllRewards: 'Начислить все награды',
+  noUnissuedRewards: 'Все награды начислены.',
   seriesHistoryTab: 'История серий',
   rewardHistoryTab: 'История начислений',
   issueReward: 'Начислить',

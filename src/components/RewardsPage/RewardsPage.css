@@ -1,0 +1,43 @@
+.rewards-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rewards-page__title {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.rewards-page__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.rewards-page__issue-all {
+  padding: 6px 16px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: #fff;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rewards-page__issue-all:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.rewards-page__issue-all:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.rewards-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
