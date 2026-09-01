@@ -57,19 +57,19 @@ main.tsx
                             │   └── TimeTravel              (◀ YYYY-MM-DD ▶ «Сегодня», VirtualTodayContext)
                             │
                             ├── [«Выполнение»] Dashboard
-                            │   ├── AddActivity             (название + длина/награда/валюта)
                             │   ├── Section «Не выполнено»
                             │   │   └── ActivityCard[]
                             │   │       ├── EditableName    (inline-редактирование)
                             │   │       ├── SeriesProgress  (квадратики, без кликов)
                             │   │       ├── ToggleDoneBtn   («Отметить»)
                             │   │       └── DeleteButton    (×, с подтверждением)
-                            │   └── Section «Выполнено»
-                            │       └── ActivityCard[]
-                            │           ├── EditableName
-                            │           ├── SeriesProgress
-                            │           ├── ToggleDoneBtn   («Отменить»)
-                            │           └── DeleteButton
+                            │   ├── Section «Выполнено»
+                            │   │   └── ActivityCard[]
+                            │   │       ├── EditableName
+                            │   │       ├── SeriesProgress
+                            │   │       ├── ToggleDoneBtn   («Отменить»)
+                            │   │       └── DeleteButton
+                            │   └── AddActivity         (карточка с «+» после секций → модалка: название + длина/награда/валюта)
                             │
                             ├── [«Награды»] RewardsPage
                             │   ├── Кнопка «Начислить все награды» (вне баннеров)

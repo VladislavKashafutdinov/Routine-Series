@@ -16,8 +16,6 @@ export function Dashboard() {
 
   return (
     <div className="dashboard">
-      <AddActivity />
-
       {activities.length === 0 && (
         <div className="dash-msg">{t.empty}</div>
       )}
@@ -43,6 +41,10 @@ export function Dashboard() {
           </div>
         </section>
       )}
+
+      <div className="dash-grid">
+        <AddActivity />
+      </div>
     </div>
   );
 }

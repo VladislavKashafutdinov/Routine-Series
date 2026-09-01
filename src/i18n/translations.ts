@@ -122,7 +122,7 @@ const en: Strings = {
   claimReward: 'Claim reward',
 
   loading: 'Loading…',
-  empty: 'No tasks yet. Add one above to get started.',
+  empty: 'No tasks yet. Add the first one.',
   pendingTitle: 'Not done',
   doneTitle: 'Done',
 
@@ -202,7 +202,7 @@ const ru: Strings = {
   claimReward: 'Получить награду',
 
   loading: 'Загрузка…',
-  empty: 'Пока нет задач. Добавьте первую выше.',
+  empty: 'Пока нет задач. Добавьте первую.',
   pendingTitle: 'Не выполнено',
   doneTitle: 'Выполнено',
 
