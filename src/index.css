@@ -42,3 +42,16 @@ body {
 
 button { font-family: inherit; cursor: pointer; }
 input { font-family: inherit; }
+
+/* Mobile: fire tap handlers on the first tap instead of waiting for the
+   double-tap-zoom gesture (the "first tap only focuses" symptom). */
+button,
+input,
+textarea,
+select,
+[role='button'],
+.ctab__day,
+.card__name {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
