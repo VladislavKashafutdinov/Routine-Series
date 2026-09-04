@@ -21,10 +21,3 @@
   opacity: 0.6;
   cursor: default;
 }
-
-/* Mobile refreshes by pulling down — hide the desktop button on touch devices. */
-@media (pointer: coarse) {
-  .refresh-btn {
-    display: none;
-  }
-}

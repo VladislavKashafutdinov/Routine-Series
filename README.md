@@ -51,7 +51,7 @@ main.tsx
                         └── MainApp
                             ├── PullToRefresh          (mobile: потянуть вниз → обновить данные)
                             ├── AppHeader
-                            │   ├── RefreshButton          (↻ слева, только desktop)
+                            │   ├── RefreshButton          (↻ слева; на мобильных дублирует pull-to-refresh)
                             │   ├── HeaderMenu             (☰ справа: LangSwitcher / «Архив» / DataActions / TimeTravel / «Выйти»)
                             │   └── PageTabs                («Выполнение» | «Награды» (бейджик unissued) | «Мониторинг»)
                             │
