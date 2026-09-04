@@ -49,7 +49,9 @@ main.tsx
                 └── ActivitiesProvider       (общее хранилище данных: загрузка из API + все мутации)
                     └── SeriesProvider       (computeSeries для всех активностей)
                         └── MainApp
+                            ├── PullToRefresh          (mobile: потянуть вниз → обновить данные)
                             ├── AppHeader
+                            │   ├── RefreshButton          (↻ слева, только desktop)
                             │   ├── HeaderMenu             (☰ справа: LangSwitcher / «Архив» / DataActions / TimeTravel / «Выйти»)
                             │   └── PageTabs                («Выполнение» | «Награды» (бейджик unissued) | «Мониторинг»)
                             │

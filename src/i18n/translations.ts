@@ -87,6 +87,7 @@ export interface Strings {
   menuButton: string;
   exportButton: string;
   importButton: string;
+  refreshButton: string;
 
   // Errors
   mutationError: string;
@@ -172,6 +173,7 @@ const en: Strings = {
   menuButton: 'Menu',
   exportButton: 'Export',
   importButton: 'Import',
+  refreshButton: 'Refresh',
 
   mutationError: 'Could not save changes. Please try again.',
   mutationTimeout: 'The server is busy. Please try again in a moment.',
@@ -255,6 +257,7 @@ const ru: Strings = {
   menuButton: 'Меню',
   exportButton: 'Экспорт',
   importButton: 'Импорт',
+  refreshButton: 'Обновить',
 
   mutationError: 'Не удалось сохранить изменения. Попробуйте ещё раз.',
   mutationTimeout: 'Сервер занят. Попробуйте ещё раз через пару секунд.',

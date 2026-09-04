@@ -1,0 +1,12 @@
+.pull-refresh {
+  min-height: 100%;
+}
+
+.pull-refresh__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--muted);
+  transition: height 0.15s ease;
+}

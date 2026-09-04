@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { HeaderMenu } from '@components/HeaderMenu/HeaderMenu';
 import { PageTabs } from '@components/PageTabs/PageTabs';
+import { PullToRefresh } from '@components/PullToRefresh/PullToRefresh';
+import { RefreshButton } from '@components/RefreshButton/RefreshButton';
 import { Dashboard } from '@components/Dashboard/Dashboard';
 import { MonitoringPage } from '@components/MonitoringPage/MonitoringPage';
 import { RewardsPage } from '@components/RewardsPage/RewardsPage';
@@ -26,26 +28,29 @@ function MainApp() {
   );
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Routine Series</h1>
-        <HeaderMenu onOpenArchive={() => setPage('archive')} />
-        <PageTabs page={page} onChange={setPage} badges={{ rewards: unissuedCount }} />
-      </header>
-      <main className="app-main">
-        {loadError ? (
-          <LoadError retry={retryLoad} />
-        ) : (
-          <>
-            {page === 'dashboard' && <Dashboard />}
-            {page === 'monitoring' && <MonitoringPage />}
-            {page === 'rewards' && <RewardsPage />}
-            {page === 'archive' && <ArchivePage />}
-          </>
-        )}
-      </main>
-      {loading && <LoadingOverlay />}
-    </div>
+    <PullToRefresh refreshing={loading} onRefresh={retryLoad}>
+      <div className="app">
+        <header className="app-header">
+          <h1>Routine Series</h1>
+          <RefreshButton busy={loading} onRefresh={retryLoad} />
+          <HeaderMenu onOpenArchive={() => setPage('archive')} />
+          <PageTabs page={page} onChange={setPage} badges={{ rewards: unissuedCount }} />
+        </header>
+        <main className="app-main">
+          {loadError ? (
+            <LoadError retry={retryLoad} />
+          ) : (
+            <>
+              {page === 'dashboard' && <Dashboard />}
+              {page === 'monitoring' && <MonitoringPage />}
+              {page === 'rewards' && <RewardsPage />}
+              {page === 'archive' && <ArchivePage />}
+            </>
+          )}
+        </main>
+        {loading && <LoadingOverlay />}
+      </div>
+    </PullToRefresh>
   );
 }
 

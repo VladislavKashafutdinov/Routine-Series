@@ -1,0 +1,30 @@
+.refresh-btn {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Mobile refreshes by pulling down — hide the desktop button on touch devices. */
+@media (pointer: coarse) {
+  .refresh-btn {
+    display: none;
+  }
+}
