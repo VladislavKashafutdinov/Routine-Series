@@ -63,6 +63,7 @@ export const SeriesWidget = memo(function SeriesWidget({ startDate, seriesLength
               <div
                 key={d}
                 className={`swidget__dot${done ? ' swidget__dot--done' : ''}`}
+                title={d}
               />
             );
           })}

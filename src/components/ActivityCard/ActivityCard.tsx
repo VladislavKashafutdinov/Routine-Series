@@ -83,16 +83,14 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
             {activity.name}
           </span>
         )}
-        <div className="card__actions">
-          <button
-            className="card__del"
-            disabled={busy}
-            onClick={handleDelete}
-            title={t.deleteTitle}
-          >
-            {busy ? <Spinner /> : '🗑️'}
-          </button>
-        </div>
+        <button
+          className="card__del"
+          disabled={busy}
+          onClick={handleDelete}
+          title={t.deleteTitle}
+        >
+          {busy ? <Spinner /> : '×'}
+        </button>
       </div>
       {activity.seriesDefinitions.length > 0 && (
         <>
@@ -107,11 +105,11 @@ export const ActivityCard = memo(function ActivityCard({ activity }: Props) {
         </>
       )}
       <button
-        className={`card__done ${isDoneToday ? 'card__done--undo' : 'card__done--complete'}`}
+        className={`card__done ${isDoneToday ? 'card__done--yes' : 'card__done--no'}`}
         disabled={busy}
         onClick={handleToggle}
       >
-        {busy ? <Spinner /> : isDoneToday ? t.undo : t.complete}
+        {busy ? <Spinner /> : isDoneToday ? t.doneToday : t.markDone}
       </button>
     </div>
   );

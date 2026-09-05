@@ -1,8 +1,8 @@
 .sprog { display: flex; gap: 3px; justify-content: flex-start; flex-wrap: wrap; max-width: 100%; }
 
 .sprog__dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
+  width: 14px; height: 14px;
+  border-radius: 3px;
   background: var(--border);
 }
 
