@@ -33,19 +33,26 @@
 
 .card__name:hover { background: var(--bg); }
 
-.card__del {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 1.2rem;
-  line-height: 1;
-  padding: 2px 4px;
-  border-radius: 4px;
-  opacity: 0;
+.card__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding-right: 4px;
 }
 
-.card:hover .card__del { opacity: 1; }
-.card__del:hover { color: var(--danger); }
+.card__del {
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 3px 5px;
+  cursor: pointer;
+}
+
+.card__del:hover { border-color: var(--danger); color: var(--danger); }
 
 .card__reward {
   font-size: 0.8rem;
@@ -62,21 +69,21 @@
   cursor: pointer;
 }
 
-.card__done--no {
-  background: var(--surface);
-  color: var(--text);
-  border: 2px solid var(--border);
-}
-
-.card__done--no:hover { border-color: var(--primary); color: var(--primary); }
-
-.card__done--yes {
+.card__done--complete {
   background: var(--primary);
   color: #fff;
   border: 2px solid var(--primary);
 }
 
-.card__done--yes:hover { background: var(--primary-hover); }
+.card__done--complete:hover { background: var(--primary-hover); }
+
+.card__done--undo {
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--border);
+}
+
+.card__done--undo:hover { border-color: var(--primary); color: var(--primary); }
 
 .card__done:disabled,
 .card__del:disabled {

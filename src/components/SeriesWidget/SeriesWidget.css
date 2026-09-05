@@ -29,22 +29,12 @@
 }
 
 .swidget__dot {
-  width: 18px; height: 18px;
-  border-radius: 3px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
   background: var(--border);
 }
 
 .swidget__dot--done { background: var(--primary); }
-
-.swidget__dot--clickable {
-  cursor: pointer;
-  outline: 2px solid var(--primary);
-  outline-offset: 1px;
-}
-
-.swidget__dot--clickable:hover {
-  filter: brightness(1.2);
-}
 
 .swidget__badge {
   font-size: 0.7rem;

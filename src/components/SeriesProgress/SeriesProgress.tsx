@@ -26,11 +26,10 @@ export const SeriesProgress = memo(function SeriesProgress({ startDate, seriesLe
 
   return (
     <div className="sprog">
-      {dates.map((d, i) => (
+      {dates.map((_, i) => (
         <div
           key={i}
           className={`sprog__dot ${i < doneCount ? 'sprog__dot--done' : ''}`}
-          title={d}
         />
       ))}
     </div>

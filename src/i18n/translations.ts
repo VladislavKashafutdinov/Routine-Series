@@ -28,8 +28,8 @@ export interface Strings {
   deleteConfirm: (name: string) => string;
   deleteTitle: string;
   streakDays: (n: number) => string;
-  doneToday: string;
-  markDone: string;
+  complete: string;
+  undo: string;
   claimReward: string;
 
   // Dashboard
@@ -121,8 +121,8 @@ const en: Strings = {
   deleteConfirm: (name: string) => `Delete "${name}"?`,
   deleteTitle: 'Delete',
   streakDays: (n: number) => enPlural(n, 'day', 'days'),
-  doneToday: '✓ Done today',
-  markDone: 'Mark done',
+  complete: 'Complete',
+  undo: 'Undo',
   claimReward: 'Claim reward',
 
   loading: 'Loading…',
@@ -205,8 +205,8 @@ const ru: Strings = {
   deleteConfirm: (name: string) => `Удалить «${name}»?`,
   deleteTitle: 'Удалить',
   streakDays: (n: number) => ruPlural(n, 'день', 'дня', 'дней'),
-  doneToday: '✓ Выполнено',
-  markDone: 'Отметить',
+  complete: 'Выполнить',
+  undo: 'Отменить',
   claimReward: 'Получить награду',
 
   loading: 'Загрузка…',
